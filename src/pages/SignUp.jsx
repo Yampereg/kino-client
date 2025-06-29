@@ -7,22 +7,23 @@ export default function SignUp() {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    const res = await fetch("http://10.0.0.1:8080/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, name, password }),
-    });
+async function handleSubmit(e) {
+  e.preventDefault();
 
-    if (res.ok) {
-      navigate("/login");
-    } else {
-      alert("Registration failed");
-    }
+  const res = await fetch(`${apiBaseUrl}/api/auth/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, name, password }),
+  });
+
+  if (res.ok) {
+    navigate("/login");
+  } else {
+    alert("Registration failed");
   }
-
+}
   return (
     <div className="font-kino flex flex-col items-center min-h-[100dvh] overflow-hidden relative" style={{ backgroundColor: "#111111", color: "#ACACAC" }}>
       {/* Banner with overlay and higher fade */}

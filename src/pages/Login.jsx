@@ -8,6 +8,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const { token, setToken } = useAuth();
   const navigate = useNavigate();
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     if (token) {
@@ -17,7 +18,8 @@ export default function Login() {
 
 async function handleSubmit(e) {
   e.preventDefault();
-  const res = await fetch("http://10.0.0.1:8080/api/auth/login", {
+
+  const res = await fetch(`${apiBaseUrl}/api/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name, password }),
