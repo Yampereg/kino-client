@@ -1,0 +1,144 @@
+.recommendations-page {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: black;
+  color: white;
+}
+
+.banner-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  top: 0;
+  left: 0;
+  z-index: 0;
+}
+
+.banner-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(6px) brightness(0.4); /* less blur */
+  transform: scale(1.08);
+  position: absolute;
+  bottom: 40%; /* start from just above title */
+}
+
+
+.banner-fade {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 40%;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.5));
+  z-index: 1;
+}
+
+/* Film card */
+.film-card {
+  position: relative;
+  z-index: 2;
+  width: 90%;
+  max-width: 350px;
+  margin-bottom: 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+
+.film-card-poster {
+  width: 80%;
+  border-radius: 18px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+.film-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-top: 0.3rem;
+}
+
+.film-genres {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.genre-tag {
+  border: 1px solid white;
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.75rem;
+  opacity: 0.95;
+  font-family: 'Inter', sans-serif;
+}
+
+.film-overview {
+  font-size: 0.85rem;
+  font-family: 'Inter', sans-serif;
+  color: #cccccc;
+  padding: 0 1rem;
+  text-align: center;
+  line-height: 1.4;
+  max-height: 6em;
+  overflow: hidden;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 1rem;
+  gap: 1.8rem;
+}
+
+.icon-button {
+  background: transparent;
+  font-size: 2rem;
+  border: none;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.icon-button:hover {
+  transform: scale(1.15);
+}
+
+.dislike {
+  color: #ff4d4d;
+}
+
+.like {
+  color: #66ffb2;
+}
+
+.maybe-button {
+  background: transparent;
+  border: 2px solid #aaa;
+  color: #ccc;
+  padding: 0.45rem 1.4rem;
+  border-radius: 25px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s ease;
+}
+
+.maybe-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-color: #fff;
+}

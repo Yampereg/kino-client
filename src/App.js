@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import Main from "./pages/Main";
+import RecommendationsPage from "./pages/RecommendationsPage";
 import PrivateRoute from "./Components/PrivateRoute"
 
 function App() {
@@ -11,10 +12,10 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route
-          path="/main"
+          path="/recommendations"
           element={
             <PrivateRoute>
-              <Main />
+              <RecommendationsPage />
             </PrivateRoute>
           }
         />

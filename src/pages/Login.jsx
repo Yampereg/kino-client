@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../AuthContext";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -12,7 +12,7 @@ export default function Login() {
 
   useEffect(() => {
     if (token) {
-      navigate("/main");
+      navigate("/recommendations");
     }
   }, [token, navigate]);
 
@@ -28,7 +28,7 @@ async function handleSubmit(e) {
   if (res.ok) {
     const data = await res.json();
     setToken(data.token);
-    navigate("/main");
+    navigate("/recommendations");
   } else {
     alert("Login failed");
   }
