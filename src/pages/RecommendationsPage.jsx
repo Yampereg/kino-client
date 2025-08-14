@@ -23,12 +23,18 @@ export default function RecommendationsPage() {
     }
   };
 
-  const advanceToNextFilm = () => {
-    setTopIndex(prev => prev + 1);
-    if (films.length - topIndex <= 3) {
+ const advanceToNextFilm = () => {
+  setTopIndex(prev => {
+    const nextIndex = prev + 1;
+
+    // Only fetch when the current batch of 3 is finished
+    if ((nextIndex % 3) === 0) {
       loadMoreFilms();
     }
-  };
+
+    return nextIndex;
+  });
+};
 
   const handleSwipe = (direction) => {
     const film = films[topIndex];
