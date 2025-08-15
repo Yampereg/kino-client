@@ -9,7 +9,7 @@
   --banner-min-height: 160px;
   --banner-blur: 2px;
   --banner-brightness: 0.95;
-  --page-gray: #111111; /* darker gray background to match fade target */
+  --page-gray: #111111; /* page gray matches overlay target */
   --bottom-actions-height: 120px;
   --film-card-top-offset: 0.18;
 }
@@ -128,7 +128,7 @@ html, body {
   top: calc(var(--banner-height) * var(--film-card-top-offset));
   left: 50%;
   transform: translateX(-50%);
-  bottom: calc(var(--bottom-actions-height) + 20px); /* reserve bottom for buttons */
+  bottom: calc(var(--bottom-actions-height) + 40px); /* reserve larger bottom for buttons */
   width: min(92vw, var(--page-max-width));
   display: flex;
   flex-direction: column;
@@ -189,20 +189,20 @@ html, body {
   font-size: 0.8rem;
 }
 
-/* Synopsis — taller so you can see multiple lines before scrolling */
+/* Synopsis — taller so you can see multiple lines before scrolling (now slightly reduced) */
 .film-overview {
   font-weight: 300;
-  font-size: clamp(13px, 1vw + 11px, 15px); /* slightly larger to improve legibility */
+  font-size: clamp(13px, 1vw + 11px, 15px);
   max-width: 640px;
   margin-top: 6px;
-  padding: 0 16px 24px 16px; /* keep space at bottom */
+  padding: 0 16px 44px 16px; /* ensure enough bottom padding so text never hides under buttons */
   line-height: 1.6;
   color: var(--text-muted);
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
-  max-height: min(40vh, 260px); /* larger visible area before synopsis scrolls */
+  max-height: min(32vh, 200px); /* show a bit less than before */
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  letter-spacing: 0.15px;
+  letter-spacing: 0.12px;
   font-kerning: normal;
   text-rendering: optimizeLegibility;
 }
@@ -219,7 +219,7 @@ html, body {
   display: flex;
   gap: 36px;
   justify-content: center;
-  z-index: 18; /* bring above other content */
+  z-index: 22; /* bring above other content */
   padding-bottom: env(safe-area-inset-bottom);
 }
 
