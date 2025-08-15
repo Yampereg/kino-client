@@ -16,29 +16,29 @@ export default function Login() {
     }
   }, [token, navigate]);
 
-async function handleSubmit(e) {
-  e.preventDefault();
+  async function handleSubmit(e) {
+    e.preventDefault();
 
-  const res = await fetch(`${apiBaseUrl}/api/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, password }),
-  });
+    const res = await fetch(`${apiBaseUrl}/api/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, password }),
+    });
 
-  if (res.ok) {
-    const data = await res.json();
-    setToken(data.token);
-    navigate("/recommendations");
-  } else {
-    alert("Login failed");
+    if (res.ok) {
+      const data = await res.json();
+      setToken(data.token);
+      navigate("/recommendations");
+    } else {
+      alert("Login failed");
+    }
   }
-}
+
   return (
     <div
       className="font-kino flex flex-col items-center min-h-[100dvh] overflow-hidden relative"
       style={{ backgroundColor: "#111111", color: "#ACACAC" }}
     >
-      {/* Banner with overlay and fade */}
       <div className="relative w-full h-60">
         <img src="/banner.png" alt="Banner" className="w-full h-full object-cover" />
         <div className="absolute inset-0" style={{ backgroundColor: "rgba(17,17,17,0.4)" }} />
@@ -83,7 +83,7 @@ async function handleSubmit(e) {
               required
             />
             <img
-              src="/eye.png"
+              src={showPassword ? "/closedeye.png" : "/eye.png"}
               alt="Toggle visibility"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-2 top-2 w-5 h-5 cursor-pointer"
@@ -112,7 +112,7 @@ async function handleSubmit(e) {
           className="text-center mt-4 text-sm font-extralight w-4/5"
           style={{ color: "#ACACAC" }}
         >
-          Don’t have an account?{" "}
+          Don’t have an account? {""}
           <Link to="/signup" className="font-semibold underline" style={{ color: "#ACACAC" }}>
             Sign Up!
           </Link>
