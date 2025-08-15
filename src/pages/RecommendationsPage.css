@@ -147,17 +147,7 @@ html, body {
   -webkit-user-drag: none;
 }
 
-/* Title — big headline */
-.film-title {
-  margin-top: 8px;
-  margin-bottom: 4px;
-  font-size: clamp(28px, 6.5vw, 56px);
-  font-weight: 700;
-  line-height: 1.05;
-  letter-spacing: -0.5px;
-  text-wrap: balance;
-  text-shadow: 0 3px 22px rgba(0, 0, 0, 0.65);
-}
+
 
 /* Genres */
 .film-genres {
@@ -177,18 +167,32 @@ html, body {
 }
 
 /* Synopsis — thinner and smaller font */
+/* Title — big headline */
+.film-title {
+  margin-top: 8px;
+  margin-bottom: 4px;
+  font-size: clamp(28px, 6vw, 48px); /* slightly smaller max */
+  font-weight: 700;
+  line-height: 1.1; /* increased line height to prevent letters crowding */
+  letter-spacing: 0; /* reset negative spacing */
+  text-wrap: balance;
+  text-shadow: 0 3px 22px rgba(0, 0, 0, 0.65);
+}
+
+/* Synopsis — thinner, smaller, with safe bottom padding */
 .film-overview {
-  font-weight: 200; /* thinner */
-  font-size: clamp(13px, 1vw + 10px, 14px); /* smaller */
+  font-weight: 200; /* thin */
+  font-size: clamp(12px, 0.9vw + 10px, 13px); /* smaller */
   max-width: 640px;
-  margin-top: 2px;
-  padding: 0 16px;
-  line-height: 1.5;
+  margin-top: 4px;
+  padding: 0 16px 12px 16px; /* extra bottom padding to avoid collision with buttons */
+  line-height: 1.55; /* slightly taller for readability */
   color: var(--text-muted);
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
-  max-height: calc(100vh - var(--bottom-actions-height) - 360px);
+  max-height: calc(100vh - var(--bottom-actions-height) - 300px); /* give space for buttons */
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  letter-spacing: 0; /* remove weird spacing */
 }
 
 .film-overview::-webkit-scrollbar { width: 6px; }
