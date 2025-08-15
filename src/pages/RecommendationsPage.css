@@ -29,6 +29,58 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.background-banner {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  z-index: 0;
+  filter: brightness(var(--banner-brightness)) blur(var(--banner-blur));
+  pointer-events: none;
+}
+
+.background-fade {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  z-index: 1; /* Above background, below content */
+  pointer-events: none;
+}
+
+/* Make sure content stays above */
+.top-nav,
+.film-card,
+.action-buttons {
+  position: relative;
+  z-index: 2;
+}
+
+
+.poster-fade {
+  position: absolute;   /* inside recommendations-page */
+  bottom: 0;            /* pinned to bottom */
+  left: 0;
+  width: 100%;          /* stretch full page width */
+  height: 100vh;         /* adjust fade height as desired */
+  background-position: bottom;
+  background-repeat: no-repeat;
+  background-size: 100% 100%; /* stretch to fit width & height */
+  z-index: 1;           /* above poster, below text/content */
+  pointer-events: none;
+}
+
+/* Keep text above fade */
+.film-title,
+.film-genres,
+.film-overview {
+  position: relative;
+  z-index: 2;
+}
+
+
 /* Page container */
 .recommendations-page {
   color: #ACACAC;
@@ -44,36 +96,6 @@ html, body {
   --banner-height: clamp(160px, 45vh, 75vh);
 }
 
-/* Top banner */
-.top-banner {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: var(--banner-height);
-  min-height: var(--banner-min-height);
-  max-height: 100vh;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  filter: blur(var(--banner-blur)) brightness(var(--banner-brightness));
-  transform: translateZ(0);
-  z-index: 0;
-  pointer-events: none;
-  background-color: rgba(30,30,30,0.6);
-}
-
-/* Banner overlay — fade starts roughly at title height */
-.banner-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: calc(var(--banner-height) + 1px);
-  background: linear-gradient(to bottom, rgba(0,0,0,0.45) 25%, rgba(0,0,0,0.45) 80%, rgba(17,17,17,0.65) 92%, var(--page-gray) 100%);
-  z-index: 1;
-  pointer-events: none;
-}
 
 .icon-image {
   width: 120px;
@@ -117,7 +139,6 @@ html, body {
   color: #9a9a9a;
 }
 
-/* Film card */
 .film-card {
   position: absolute;
   top: calc(var(--banner-height) * var(--film-card-top-offset));
@@ -128,6 +149,7 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-end; /* push poster to bottom */
   gap: 12px;
   text-align: center;
   z-index: 6;
@@ -135,6 +157,14 @@ html, body {
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
+}
+
+.poster-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end; /* poster pinned to bottom of container */
 }
 
 .film-card::-webkit-scrollbar { width: 8px; }
@@ -178,8 +208,8 @@ html, body {
 }
 
 .genre-tag {
-  color: #ACACAC;
-  border: 1px solid #ACACAC;
+  color: #ADADAD;
+  border: 1px solid #575757;
   padding: 0 9px;
   border-radius: 999px;
   font-size: 0.8rem;
@@ -220,14 +250,14 @@ html, body {
 }
 
 .icon-button,
-.maybe-button {
+.skip-button {
   border: none;
   color: #fff;
   cursor: pointer;
   transition: transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
 }
 
-.maybe-button {
+.skip-button {
   min-width: 120px;
   height: 54px;
   padding: 0 24px;
@@ -250,17 +280,10 @@ html, body {
 }
 
 .icon-button:active,
-.maybe-button:active { transform: scale(0.96); }
+.skip-button:active { transform: scale(0.96); }
 .icon-button:disabled,
-.maybe-button:disabled { opacity: 0.55; cursor: not-allowed; }
+.skip-button:disabled { opacity: 0.55; cursor: not-allowed; }
 
-.empty-state {
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-  color: #e2e2e2;
-  font-size: 18px;
-}
 
 @media (min-width: 768px) {
   .film-card {

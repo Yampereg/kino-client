@@ -89,19 +89,16 @@ export default function RecommendationsPage() {
 
   return (
     <div className="recommendations-page font-kino">
-      {/* Top banner */}
+      {/* Background layers */}
       <div
-        className="top-banner"
-        style={{
-          backgroundImage: `url(${bannerUrl})`,
-          backgroundPosition: 'center',
-          backgroundSize: 'cover',
-          backgroundRepeat: 'no-repeat'
-        }}
+        className="background-banner"
+        style={{ backgroundImage: `url(${bannerUrl})` }}
+      />
+      <div
+        className="background-fade"
+        style={{ backgroundImage: `url('/backgroundfade.png')` }}
       />
 
-      {/* Banner overlay */}
-      <div className="banner-overlay" />
 
       {/* Top nav */}
       <header className="top-nav">
@@ -110,38 +107,35 @@ export default function RecommendationsPage() {
         <span className="nav-item">For You</span>
       </header>
 
-      {/* Film card */}
-      <main className="film-card">
-        <img
-          src={posterUrl}
-          alt={film.title}
-          className="film-card-poster"
-          draggable="false"
-        />
 
-        <h1 className="film-title text-5xl font-bold mt-6 mb-6">
-          {film.title}
-        </h1>
+<main className="film-card">
+  <img
+    src={posterUrl}
+    alt={film.title}
+    className="film-card-poster"
+    draggable="false"
+  />
+  <h1 className="film-title text-5xl font-bold mt-6 mb-6">
+    {film.title}
+  </h1>
+  <div className="film-genres">
+    {(film.genres || []).slice(0, 4).map((g) => (
+      <span key={g.id ?? g.name} className="genre-tag">{g.name}</span>
+    ))}
+  </div>
+  {film.overview && (
+    <p className="film-overview">{film.overview}</p>
+  )}
+</main>
 
-        <div className="film-genres">
-          {(film.genres || []).slice(0, 4).map((g) => (
-            <span key={g.id ?? g.name} className="genre-tag">
-              {g.name}
-            </span>
-          ))}
-          {Array.isArray(film.genres) && film.genres.length > 4 && (
-            <span className="genre-tag more-tag">
-              +{film.genres.length - 4}
-            </span>
-          )}
-        </div>
+{/* Poster fade outside of film-card */}
+<div
+  className="poster-fade"
+  style={{ backgroundImage: `url('/posterfade.png')` }}
+/>
 
-        {film.overview && (
-          <p className="film-overview">
-            {film.overview}
-          </p>
-        )}
-      </main>
+
+      {/* Action buttons */}
       <div className="action-buttons">
         <img
           src="/dislike.png"
@@ -151,8 +145,8 @@ export default function RecommendationsPage() {
           style={{ cursor: isProcessing ? 'not-allowed' : 'pointer', opacity: isProcessing ? 0.55 : 1 }}
         />
         <img
-          src="/maybe.png"
-          alt="Maybe"
+          src="/skip.png"
+          alt="Skip"
           onClick={handleSuperlike}
           className="icon-image"
           style={{ cursor: isProcessing ? 'not-allowed' : 'pointer', opacity: isProcessing ? 0.55 : 1 }}
@@ -165,7 +159,6 @@ export default function RecommendationsPage() {
           style={{ cursor: isProcessing ? 'not-allowed' : 'pointer', opacity: isProcessing ? 0.55 : 1 }}
         />
       </div>
-
 
       {detailFilm && (
         <FilmDetailModal film={detailFilm} onClose={() => setDetailFilm(null)} />
