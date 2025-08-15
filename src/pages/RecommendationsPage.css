@@ -9,7 +9,7 @@
   --banner-min-height: 160px;
   --banner-blur: 2px;
   --banner-brightness: 0.95;
-  --page-gray: #000000;
+  --page-gray: #111111; /* darker gray background to match fade target */
   --bottom-actions-height: 120px;
   --film-card-top-offset: 0.18;
 }
@@ -62,19 +62,19 @@ html, body {
   background-color: rgba(30,30,30,0.6);
 }
 
-/* Banner overlay — 50% top / 50% bottom fade */
+/* Banner overlay — pushed lower so fade starts much lower and blends smoothly into #111111 */
 .banner-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: var(--banner-height);
+  height: calc(var(--banner-height) + 1px);
   background: linear-gradient(
     to bottom,
     rgba(0, 0, 0, 0.45) 0%,
-    rgba(0, 0, 0, 0.25) 35%,
-    #2a2a2a 55%,
-    #111111 100%
+    rgba(0, 0, 0, 0.45) 80%, /* keep the dark banner until 80% */
+    rgba(17,17,17,0.65) 92%, /* start blending toward the gray */
+    var(--page-gray) 100% /* final target gray */
   );
   z-index: 1;
   pointer-events: none;
@@ -122,12 +122,13 @@ html, body {
   color: #9a9a9a;
 }
 
-/* Film card */
+/* Film card — use top+bottom to create a fixed scrollable block */
 .film-card {
   position: absolute;
   top: calc(var(--banner-height) * var(--film-card-top-offset));
   left: 50%;
   transform: translateX(-50%);
+  bottom: calc(var(--bottom-actions-height) + 20px); /* reserve bottom for buttons */
   width: min(92vw, var(--page-max-width));
   display: flex;
   flex-direction: column;
@@ -135,11 +136,10 @@ html, body {
   gap: 12px;
   text-align: center;
   z-index: 6;
-  /* reserve space for fixed buttons so content doesn't get covered */
-  padding-bottom: calc(var(--bottom-actions-height) + 28px);
-  max-height: calc(100vh - var(--bottom-actions-height) - 24px);
-  overflow: auto;
+  padding-bottom: 12px; /* small internal padding */
+  overflow: auto; /* the whole block is scrollable */
   -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
 }
 
 .film-card::-webkit-scrollbar { width: 8px; }
@@ -163,8 +163,8 @@ html, body {
   margin-bottom: 4px;
   font-size: clamp(26px, 6.5vw, 52px);
   font-weight: 700;
-  line-height: 1.2; /* increased to prevent tight lines */
-  letter-spacing: 0.35px; /* gentle spacing to avoid letters touching */
+  line-height: 1.2;
+  letter-spacing: 0.35px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-kerning: normal;
@@ -189,20 +189,20 @@ html, body {
   font-size: 0.8rem;
 }
 
-/* Synopsis — thinner and smaller font, and never collides with buttons */
+/* Synopsis — taller so you can see multiple lines before scrolling */
 .film-overview {
-  font-weight: 300; /* thin but readable */
-  font-size: clamp(12px, 1vw + 10px, 14px); /* slightly smaller */
+  font-weight: 300;
+  font-size: clamp(13px, 1vw + 11px, 15px); /* slightly larger to improve legibility */
   max-width: 640px;
   margin-top: 6px;
-  padding: 0 16px 36px 16px; /* larger bottom padding to avoid buttons */
-  line-height: 1.65; /* taller for readability */
+  padding: 0 16px 24px 16px; /* keep space at bottom */
+  line-height: 1.6;
   color: var(--text-muted);
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
-  max-height: calc(100vh - var(--bottom-actions-height) - 320px);
+  max-height: min(40vh, 260px); /* larger visible area before synopsis scrolls */
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  letter-spacing: 0.2px; /* avoid tight kerning */
+  letter-spacing: 0.15px;
   font-kerning: normal;
   text-rendering: optimizeLegibility;
 }
