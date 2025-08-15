@@ -14,27 +14,34 @@
   --film-card-top-offset: 0.18; /* fraction of banner-height where card sits */
 }
 
-/* Reset default body/html margin/padding */
+/* Prevent the whole page from scrolling / bouncing on mobile */
 html, body {
   margin: 0;
   padding: 0;
   background: var(--page-gray);
-  overflow-x: hidden;
+  overflow: hidden;               /* LOCK page scrolling */
+  height: 100vh;                  /* ensure full-viewport sizing */
+  overscroll-behavior: none;      /* prevent bounce/overscroll on mobile */
+  -webkit-overflow-scrolling: touch;
   min-height: 100%;
 }
 
 /* Page background: transparent at top (so banner shows), dark below */
 .recommendations-page {
   position: relative;
-  min-height: 100vh;
+  height: 100vh;                  /* locked to viewport */
   color: #fff;
-  overflow: hidden;
+  overflow: hidden;               /* ensure no body scroll */
   display: flex;
   align-items: stretch;
   justify-content: flex-start;
   margin: 0;
   padding: 0;
   background-color: var(--page-gray);
+
+  /* make banner a bit more adaptive so it never pushes card off-screen */
+  /* This keeps design identical but caps extreme banner heights on some screens */
+  --banner-height: clamp(160px, 45vh, 75vh);
 }
 
 /* Top banner area */
@@ -104,7 +111,10 @@ html, body {
   color: #9a9a9a;
 }
 
-/* Film card */
+/* Film card
+   - pinned in the viewport (absolute), but limited height so it never pushes page to scroll
+   - internal scrolling enabled if the card content is too tall (page stays locked)
+*/
 .film-card {
   position: absolute;
   top: calc(var(--banner-height) * var(--film-card-top-offset));
@@ -120,11 +130,22 @@ html, body {
   z-index: 6;
   padding-bottom: 8px;
   pointer-events: auto;
+
+  /* ensure card fits inside viewport under the fixed action buttons */
+  max-height: calc(100vh - var(--bottom-actions-height) - 24px);
+  overflow: auto; /* internal scroll if content is too tall */
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
 }
+
+/* small scrollbar styling for the internal scroll (keeps UI tidy) */
+.film-card::-webkit-scrollbar { width: 8px; }
+.film-card::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 8px; }
 
 /* Poster */
 .film-card-poster {
-  width: min(68vw, 270px);
+  /* slightly reduced default width to help extremely small viewports fit */
+  width: min(60vw, 270px);
   max-width: 300px;
   border-radius: var(--poster-radius);
   object-fit: cover;
@@ -134,10 +155,11 @@ html, body {
   -webkit-user-drag: none;
 }
 
+/* Title size responsive so tall titles don't overflow */
 .film-title {
   margin-top: 8px;
   margin-bottom: 4px;
-  font-size: 30px;
+  font-size: clamp(18px, 4vw, 30px); /* made responsive */
   font-weight: 600;
   line-height: 1.15;
   text-shadow: 0 2px 16px rgba(0, 0, 0, 0.6);
@@ -166,7 +188,10 @@ html, body {
   white-space: nowrap;
 }
 
-/* Overview */
+/* Overview
+   - allow internal scrolling inside the overview if it gets long
+   - set a ceiling so the card overall still fits
+*/
 .film-overview {
   font-family: 'kino-light', sans-serif;
   width: 100%;
@@ -181,7 +206,15 @@ html, body {
   box-shadow: none;
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
   z-index: 6;
+
+  max-height: calc(100vh - var(--bottom-actions-height) - 360px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
+
+/* small scrollbar for overview */
+.film-overview::-webkit-scrollbar { height: 6px; width: 6px; }
+.film-overview::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 6px; }
 
 /* Action buttons */
 .action-buttons {
