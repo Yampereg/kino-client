@@ -24,6 +24,8 @@ html, body {
   overscroll-behavior: none;
   -webkit-overflow-scrolling: touch;
   min-height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Page container */
@@ -62,6 +64,11 @@ html, body {
 
 /* Banner overlay — 50% top / 50% bottom fade */
 .banner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--banner-height);
   background: linear-gradient(
     to bottom,
     rgba(0, 0, 0, 0.45) 0%,
@@ -69,6 +76,8 @@ html, body {
     #2a2a2a 55%,
     #111111 100%
   );
+  z-index: 1;
+  pointer-events: none;
 }
 
 .icon-image {
@@ -126,7 +135,8 @@ html, body {
   gap: 12px;
   text-align: center;
   z-index: 6;
-  padding-bottom: 8px;
+  /* reserve space for fixed buttons so content doesn't get covered */
+  padding-bottom: calc(var(--bottom-actions-height) + 28px);
   max-height: calc(100vh - var(--bottom-actions-height) - 24px);
   overflow: auto;
   -webkit-overflow-scrolling: touch;
@@ -147,7 +157,20 @@ html, body {
   -webkit-user-drag: none;
 }
 
-
+/* Title — big headline (fixed spacing) */
+.film-title {
+  margin-top: 8px;
+  margin-bottom: 4px;
+  font-size: clamp(26px, 6.5vw, 52px);
+  font-weight: 700;
+  line-height: 1.2; /* increased to prevent tight lines */
+  letter-spacing: 0.35px; /* gentle spacing to avoid letters touching */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-kerning: normal;
+  text-wrap: balance;
+  text-shadow: 0 3px 22px rgba(0, 0, 0, 0.65);
+}
 
 /* Genres */
 .film-genres {
@@ -166,33 +189,22 @@ html, body {
   font-size: 0.8rem;
 }
 
-/* Synopsis — thinner and smaller font */
-/* Title — big headline */
-.film-title {
-  margin-top: 8px;
-  margin-bottom: 4px;
-  font-size: clamp(28px, 6vw, 48px); /* slightly smaller max */
-  font-weight: 700;
-  line-height: 1.1; /* increased line height to prevent letters crowding */
-  letter-spacing: 0; /* reset negative spacing */
-  text-wrap: balance;
-  text-shadow: 0 3px 22px rgba(0, 0, 0, 0.65);
-}
-
-/* Synopsis — thinner, smaller, with safe bottom padding */
+/* Synopsis — thinner and smaller font, and never collides with buttons */
 .film-overview {
-  font-weight: 200; /* thin */
-  font-size: clamp(12px, 0.9vw + 10px, 13px); /* smaller */
+  font-weight: 300; /* thin but readable */
+  font-size: clamp(12px, 1vw + 10px, 14px); /* slightly smaller */
   max-width: 640px;
-  margin-top: 4px;
-  padding: 0 16px 12px 16px; /* extra bottom padding to avoid collision with buttons */
-  line-height: 1.55; /* slightly taller for readability */
+  margin-top: 6px;
+  padding: 0 16px 36px 16px; /* larger bottom padding to avoid buttons */
+  line-height: 1.65; /* taller for readability */
   color: var(--text-muted);
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
-  max-height: calc(100vh - var(--bottom-actions-height) - 300px); /* give space for buttons */
+  max-height: calc(100vh - var(--bottom-actions-height) - 320px);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  letter-spacing: 0; /* remove weird spacing */
+  letter-spacing: 0.2px; /* avoid tight kerning */
+  font-kerning: normal;
+  text-rendering: optimizeLegibility;
 }
 
 .film-overview::-webkit-scrollbar { width: 6px; }
@@ -207,7 +219,7 @@ html, body {
   display: flex;
   gap: 36px;
   justify-content: center;
-  z-index: 12;
+  z-index: 18; /* bring above other content */
   padding-bottom: env(safe-area-inset-bottom);
 }
 
