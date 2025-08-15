@@ -65,7 +65,7 @@ export default function RecommendationsPage() {
 
   if (!token) {
     return (
-      <div className="empty-state">
+      <div className="empty-state font-kino">
         Please log in to get recommendations.
       </div>
     );
@@ -73,7 +73,7 @@ export default function RecommendationsPage() {
 
   if (!film) {
     return (
-      <div className="empty-state">
+      <div className="empty-state font-kino">
         {error || 'No more films!'}
       </div>
     );
@@ -88,8 +88,8 @@ export default function RecommendationsPage() {
   const posterUrl = `https://image.tmdb.org/t/p/w500/${film.posterPath}`;
 
   return (
-    <div className="recommendations-page">
-      {/* Top banner fixed to the top (only covers top area) */}
+    <div className="recommendations-page font-kino">
+      {/* Top banner */}
       <div
         className="top-banner"
         style={{
@@ -100,17 +100,17 @@ export default function RecommendationsPage() {
         }}
       />
 
-      {/* Banner overlay (fades banner into the gray page) */}
+      {/* Banner overlay */}
       <div className="banner-overlay" />
 
       {/* Top nav */}
       <header className="top-nav">
-        <span className="nav-item active font-kino">Home</span>
+        <span className="nav-item active">Home</span>
         <span className="nav-sep">|</span>
-        <span className="nav-item font-kino">For You</span>
+        <span className="nav-item">For You</span>
       </header>
 
-      {/* Center stack: poster -> title -> tags -> overview */}
+      {/* Film card */}
       <main className="film-card">
         <img
           src={posterUrl}
@@ -119,21 +119,25 @@ export default function RecommendationsPage() {
           draggable="false"
         />
 
-        <h2 className="film-title font-kino">{film.title}</h2>
+        <h1 className="film-title text-5xl font-bold mt-6 mb-6">
+          {film.title}
+        </h1>
 
-        <div className="film-genres font-kino">
+        <div className="film-genres">
           {(film.genres || []).slice(0, 4).map((g) => (
             <span key={g.id ?? g.name} className="genre-tag">
               {g.name}
             </span>
           ))}
           {Array.isArray(film.genres) && film.genres.length > 4 && (
-            <span className="genre-tag more-tag">+{film.genres.length - 4}</span>
+            <span className="genre-tag more-tag">
+              +{film.genres.length - 4}
+            </span>
           )}
         </div>
 
         {film.overview && (
-          <p className="film-overview font-kino-light">
+          <p className="film-overview">
             {film.overview}
           </p>
         )}

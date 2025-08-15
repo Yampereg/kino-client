@@ -5,46 +5,43 @@
   --text-muted: #cfcfcf;
 
   /* Tunable values */
-  --banner-height: 75vh;       /* stretched way down (~75% of viewport) */
-  --banner-min-height: 160px;  /* min height for small screens */
-  --banner-blur: 2px;          /* banner blur (adjust if needed) */
-  --banner-brightness: 0.95;   /* slight brightness change */
-  --page-gray: #000000;        /* very dark bottom area */
-  --bottom-actions-height: 120px; /* safe bottom spacing so UI not covered */
-  --film-card-top-offset: 0.18; /* fraction of banner-height where card sits */
+  --banner-height: 75vh;
+  --banner-min-height: 160px;
+  --banner-blur: 2px;
+  --banner-brightness: 0.95;
+  --page-gray: #000000;
+  --bottom-actions-height: 120px;
+  --film-card-top-offset: 0.18;
 }
 
-/* Prevent the whole page from scrolling / bouncing on mobile */
+/* Prevent page scroll on mobile */
 html, body {
   margin: 0;
   padding: 0;
   background: var(--page-gray);
-  overflow: hidden;               /* LOCK page scrolling */
-  height: 100vh;                  /* ensure full-viewport sizing */
-  overscroll-behavior: none;      /* prevent bounce/overscroll on mobile */
+  overflow: hidden;
+  height: 100vh;
+  overscroll-behavior: none;
   -webkit-overflow-scrolling: touch;
   min-height: 100%;
 }
 
-/* Page background: transparent at top (so banner shows), dark below */
+/* Page container — Tailwind’s font-kino class will apply KinoFont globally */
 .recommendations-page {
-  position: relative;
-  height: 100vh;                  /* locked to viewport */
   color: #fff;
-  overflow: hidden;               /* ensure no body scroll */
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
   display: flex;
   align-items: stretch;
   justify-content: flex-start;
   margin: 0;
   padding: 0;
   background-color: var(--page-gray);
-
-  /* make banner a bit more adaptive so it never pushes card off-screen */
-  /* This keeps design identical but caps extreme banner heights on some screens */
   --banner-height: clamp(160px, 45vh, 75vh);
 }
 
-/* Top banner area */
+/* Top banner */
 .top-banner {
   position: fixed;
   top: 0;
@@ -58,24 +55,23 @@ html, body {
   background-repeat: no-repeat;
   filter: blur(var(--banner-blur)) brightness(var(--banner-brightness));
   transform: translateZ(0);
-  z-index: 0; /* behind overlay and UI */
+  z-index: 0;
   pointer-events: none;
-  background-color: rgba(30,30,30,0.6); /* fallback if image missing */
+  background-color: rgba(30,30,30,0.6);
 }
 
-/* Banner overlay (fades banner into the page / dark below) */
+/* Banner overlay — 50% top / 50% bottom fade */
 .banner-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: calc(var(--banner-height) + 1px); /* cover rounding gaps */
+  height: calc(var(--banner-height) + 1px);
   background: linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0.45) 0%,
-    rgba(0, 0, 0, 0.25) 35%,
-    #2a2a2a 55%,
-    var(--page-gray) 100%
+  rgba(0, 0, 0, 0.45) 0%,
+  rgba(0, 0, 0, 0.45) 70%, 
+  var(--page-gray) 100%
   );
   z-index: 1;
   pointer-events: none;
@@ -99,7 +95,7 @@ html, body {
 
 .nav-item {
   color: #c9c9c9;
-  letter-spacing: 0.2px;
+  font-weight: 400;
 }
 
 .nav-item.active {
@@ -111,16 +107,12 @@ html, body {
   color: #9a9a9a;
 }
 
-/* Film card
-   - pinned in the viewport (absolute), but limited height so it never pushes page to scroll
-   - internal scrolling enabled if the card content is too tall (page stays locked)
-*/
+/* Film card */
 .film-card {
   position: absolute;
   top: calc(var(--banner-height) * var(--film-card-top-offset));
   left: 50%;
   transform: translateX(-50%);
-  margin: 0;
   width: min(92vw, var(--page-max-width));
   display: flex;
   flex-direction: column;
@@ -129,22 +121,16 @@ html, body {
   text-align: center;
   z-index: 6;
   padding-bottom: 8px;
-  pointer-events: auto;
-
-  /* ensure card fits inside viewport under the fixed action buttons */
   max-height: calc(100vh - var(--bottom-actions-height) - 24px);
-  overflow: auto; /* internal scroll if content is too tall */
+  overflow: auto;
   -webkit-overflow-scrolling: touch;
-  box-sizing: border-box;
 }
 
-/* small scrollbar styling for the internal scroll (keeps UI tidy) */
 .film-card::-webkit-scrollbar { width: 8px; }
 .film-card::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 8px; }
 
 /* Poster */
 .film-card-poster {
-  /* slightly reduced default width to help extremely small viewports fit */
   width: min(60vw, 270px);
   max-width: 300px;
   border-radius: var(--poster-radius);
@@ -155,14 +141,16 @@ html, body {
   -webkit-user-drag: none;
 }
 
-/* Title size responsive so tall titles don't overflow */
+/* Title — big headline */
 .film-title {
   margin-top: 8px;
   margin-bottom: 4px;
-  font-size: clamp(18px, 4vw, 30px); /* made responsive */
-  font-weight: 600;
-  line-height: 1.15;
-  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.6);
+  font-size: clamp(28px, 6.5vw, 56px);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.5px;
+  text-wrap: balance;
+  text-shadow: 0 3px 22px rgba(0, 0, 0, 0.65);
 }
 
 /* Genres */
@@ -170,53 +158,37 @@ html, body {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-  align-items: center;
   justify-content: center;
-  width: 100%;
   padding: 4px 0;
 }
 
 .genre-tag {
-  background: transparent !important;
   color: #fff;
   border: 1px solid #fff;
   padding: 5px 9px;
   border-radius: 999px;
   font-size: 0.8rem;
-  line-height: 1;
-  box-shadow: none;
-  white-space: nowrap;
 }
 
-/* Overview
-   - allow internal scrolling inside the overview if it gets long
-   - set a ceiling so the card overall still fits
-*/
+/* Synopsis — regular reading size */
 .film-overview {
-  font-family: 'kino-light', sans-serif;
-  width: 100%;
+  font-weight: 400;
   max-width: 640px;
   margin-top: 2px;
   padding: 0 16px;
-  line-height: 1.35;
-  font-size: clamp(13px, 0.9vw + 11px, 16px);
+  line-height: 1.5;
+  font-size: clamp(15px, 1.2vw + 12px, 16px);
   color: var(--text-muted);
-  background: transparent !important;
-  border-radius: 12px;
-  box-shadow: none;
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
-  z-index: 6;
-
   max-height: calc(100vh - var(--bottom-actions-height) - 360px);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
 
-/* small scrollbar for overview */
-.film-overview::-webkit-scrollbar { height: 6px; width: 6px; }
+.film-overview::-webkit-scrollbar { width: 6px; }
 .film-overview::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 6px; }
 
-/* Action buttons */
+/* Buttons */
 .action-buttons {
   position: fixed;
   left: 0;
@@ -225,7 +197,6 @@ html, body {
   display: flex;
   gap: 36px;
   justify-content: center;
-  align-items: center;
   z-index: 12;
   padding-bottom: env(safe-area-inset-bottom);
 }
@@ -233,31 +204,9 @@ html, body {
 .icon-button,
 .maybe-button {
   border: none;
-  outline: none;
   color: #fff;
   cursor: pointer;
   transition: transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
-  will-change: transform;
-}
-
-.icon-button {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  background: #1f1f1f;
-  font-size: 30px;
-  display: grid;
-  place-items: center;
-  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255,255,255,0.06);
-}
-
-.icon-button:active {
-  transform: scale(0.96);
-}
-
-.icon-button:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
 }
 
 .maybe-button {
@@ -271,27 +220,31 @@ html, body {
   box-shadow: 0 8px 26px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255,255,255,0.06);
 }
 
-.maybe-button:active {
-  transform: translateY(1px) scale(0.99);
+.icon-button {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #1f1f1f;
+  font-size: 30px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255,255,255,0.06);
 }
 
-.maybe-button:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
+.icon-button:active,
+.maybe-button:active { transform: scale(0.96); }
 
-/* Empty state */
+.icon-button:disabled,
+.maybe-button:disabled { opacity: 0.55; cursor: not-allowed; }
+
 .empty-state {
-  position: relative;
   min-height: 100vh;
   display: grid;
   place-items: center;
   color: #e2e2e2;
   font-size: 18px;
-  text-align: center;
 }
 
-/* Desktop tweak */
 @media (min-width: 768px) {
   .film-card {
     top: calc(var(--banner-height) * max(0.06, var(--film-card-top-offset)));
