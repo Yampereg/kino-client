@@ -32,27 +32,30 @@ export default function RecommendationsPage() {
     }
   };
 
-  const handleInteraction = async (type) => {
-    if (isProcessing) return;
-    const film = films[batchIndex];
-    if (!film) return;
+const handleInteraction = async (type) => {
+  if (isProcessing) return;
+  const film = films[batchIndex];
+  if (!film) return;
 
-    setIsProcessing(true);
-    setError('');
-    try {
-      await sendInteraction(token, film.id, type);
+  setIsProcessing(true);
+  setError('');
 
-      if (batchIndex >= films.length - 1) {
-        await loadNextBatch();
-      } else {
-        setBatchIndex((i) => i + 1);
-      }
-    } catch (err) {
-      console.error(`Failed to ${type} film`, err);
-      setError(`Failed to ${type}.`);
-      setIsProcessing(false);
+  try {
+    await sendInteraction(token, film.id, type);
+
+    if (batchIndex >= films.length - 1) {
+      await loadNextBatch();
+    } else {
+      setBatchIndex((i) => i + 1);
+      setIsProcessing(false); // re-enable buttons immediately after increment
     }
-  };
+  } catch (err) {
+    console.error(`Failed to ${type} film`, err);
+    setError(`Failed to ${type}.`);
+    setIsProcessing(false); // re-enable buttons on error
+  }
+};
+
 
   const handleSwipe = (direction) => {
     const type = direction === 'right' ? 'like' : 'dislike';
