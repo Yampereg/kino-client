@@ -2,16 +2,17 @@
   --page-max-width: 430px;
   --poster-radius: 16px;
   --poster-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
-  --text-muted: #cfcfcf;
+  --text-muted: #ACACAC;
 
   /* Tunable values */
   --banner-height: 75vh;
   --banner-min-height: 160px;
   --banner-blur: 2px;
   --banner-brightness: 0.95;
-  --page-gray: #111111; /* page gray matches overlay target */
+  --page-gray: #111111;
   --bottom-actions-height: 120px;
   --film-card-top-offset: 0.18;
+  --action-button-gap: 16px;
 }
 
 /* Prevent page scroll on mobile */
@@ -30,7 +31,7 @@ html, body {
 
 /* Page container */
 .recommendations-page {
-  color: #fff;
+  color: #ACACAC;
   position: relative;
   height: 100vh;
   overflow: hidden;
@@ -62,20 +63,14 @@ html, body {
   background-color: rgba(30,30,30,0.6);
 }
 
-/* Banner overlay — pushed lower so fade starts much lower and blends smoothly into #111111 */
+/* Banner overlay — fade starts roughly at title height */
 .banner-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   height: calc(var(--banner-height) + 1px);
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.45) 0%,
-    rgba(0, 0, 0, 0.45) 80%, /* keep the dark banner until 80% */
-    rgba(17,17,17,0.65) 92%, /* start blending toward the gray */
-    var(--page-gray) 100% /* final target gray */
-  );
+  background: linear-gradient(to bottom, rgba(0,0,0,0.45) 25%, rgba(0,0,0,0.45) 80%, rgba(17,17,17,0.65) 92%, var(--page-gray) 100%);
   z-index: 1;
   pointer-events: none;
 }
@@ -122,13 +117,13 @@ html, body {
   color: #9a9a9a;
 }
 
-/* Film card — use top+bottom to create a fixed scrollable block */
+/* Film card */
 .film-card {
   position: absolute;
   top: calc(var(--banner-height) * var(--film-card-top-offset));
   left: 50%;
   transform: translateX(-50%);
-  bottom: calc(var(--bottom-actions-height) + 40px); /* reserve larger bottom for buttons */
+  bottom: calc(var(--bottom-actions-height) + 40px);
   width: min(92vw, var(--page-max-width));
   display: flex;
   flex-direction: column;
@@ -136,8 +131,8 @@ html, body {
   gap: 12px;
   text-align: center;
   z-index: 6;
-  padding-bottom: 12px; /* small internal padding */
-  overflow: auto; /* the whole block is scrollable */
+  padding-bottom: 12px;
+  overflow: auto;
   -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
 }
@@ -157,14 +152,15 @@ html, body {
   -webkit-user-drag: none;
 }
 
-/* Title — big headline (fixed spacing) */
+/* Title */
 .film-title {
   margin-top: 8px;
   margin-bottom: 4px;
-  font-size: clamp(26px, 6.5vw, 52px);
-  font-weight: 700;
+  font-size: clamp(36px, 8vw, 70px);
+  font-weight: 900;
   line-height: 1.2;
   letter-spacing: 0.35px;
+  color: #ACACAC;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-kerning: normal;
@@ -182,24 +178,24 @@ html, body {
 }
 
 .genre-tag {
-  color: #fff;
-  border: 1px solid #fff;
-  padding: 5px 9px;
+  color: #ACACAC;
+  border: 1px solid #ACACAC;
+  padding: 0 9px;
   border-radius: 999px;
   font-size: 0.8rem;
 }
 
-/* Synopsis — taller so you can see multiple lines before scrolling (now slightly reduced) */
+/* Synopsis */
 .film-overview {
   font-weight: 300;
   font-size: clamp(13px, 1vw + 11px, 15px);
   max-width: 640px;
   margin-top: 6px;
-  padding: 0 16px 44px 16px; /* ensure enough bottom padding so text never hides under buttons */
-  line-height: 1.6;
-  color: var(--text-muted);
+  padding: 0 16px 44px 16px;
+  line-height: 1.3;
+  color: #ACACAC;
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
-  max-height: min(32vh, 200px); /* show a bit less than before */
+  max-height: min(32vh, 200px);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   letter-spacing: 0.12px;
@@ -217,9 +213,9 @@ html, body {
   right: 0;
   bottom: 0px;
   display: flex;
-  gap: 36px;
+  gap: 12px;
   justify-content: center;
-  z-index: 22; /* bring above other content */
+  z-index: 22;
   padding-bottom: env(safe-area-inset-bottom);
 }
 
