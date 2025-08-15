@@ -142,37 +142,30 @@ export default function RecommendationsPage() {
           </p>
         )}
       </main>
-
-      {/* Bottom actions */}
       <div className="action-buttons">
-        <button
-          className="icon-button dislike"
+        <img
+          src="/dislike.png"
+          alt="Dislike"
           onClick={() => handleSwipe('left')}
-          disabled={isProcessing}
-          aria-label="Dislike"
-          title="Dislike"
-        >
-          💔
-        </button>
-
-        <button
-          className="maybe-button"
+          className="icon-image"
+          style={{ cursor: isProcessing ? 'not-allowed' : 'pointer', opacity: isProcessing ? 0.55 : 1 }}
+        />
+        <img
+          src="/maybe.png"
+          alt="Maybe"
           onClick={handleSuperlike}
-          disabled={isProcessing}
-        >
-          Maybe
-        </button>
-
-        <button
-          className="icon-button like"
+          className="icon-image"
+          style={{ cursor: isProcessing ? 'not-allowed' : 'pointer', opacity: isProcessing ? 0.55 : 1 }}
+        />
+        <img
+          src="/like.png"
+          alt="Like"
           onClick={() => handleSwipe('right')}
-          disabled={isProcessing}
-          aria-label="Like"
-          title="Like"
-        >
-          🤍
-        </button>
+          className="icon-image"
+          style={{ cursor: isProcessing ? 'not-allowed' : 'pointer', opacity: isProcessing ? 0.55 : 1 }}
+        />
       </div>
+
 
       {detailFilm && (
         <FilmDetailModal film={detailFilm} onClose={() => setDetailFilm(null)} />

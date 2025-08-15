@@ -26,7 +26,7 @@ html, body {
   min-height: 100%;
 }
 
-/* Page container — Tailwind’s font-kino class will apply KinoFont globally */
+/* Page container */
 .recommendations-page {
   color: #fff;
   position: relative;
@@ -62,19 +62,25 @@ html, body {
 
 /* Banner overlay — 50% top / 50% bottom fade */
 .banner-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: calc(var(--banner-height) + 1px);
   background: linear-gradient(
     to bottom,
-  rgba(0, 0, 0, 0.45) 0%,
-  rgba(0, 0, 0, 0.45) 70%, 
-  var(--page-gray) 100%
+    rgba(0, 0, 0, 0.45) 0%,
+    rgba(0, 0, 0, 0.25) 35%,
+    #2a2a2a 55%,
+    #111111 100%
   );
-  z-index: 1;
-  pointer-events: none;
+}
+
+.icon-image {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  user-select: none;
+  transition: transform 120ms ease, opacity 120ms ease;
+}
+
+.icon-image:active {
+  transform: scale(0.96);
 }
 
 /* Top nav */
@@ -170,14 +176,14 @@ html, body {
   font-size: 0.8rem;
 }
 
-/* Synopsis — regular reading size */
+/* Synopsis — thinner and smaller font */
 .film-overview {
-  font-weight: 400;
+  font-weight: 200; /* thinner */
+  font-size: clamp(13px, 1vw + 10px, 14px); /* smaller */
   max-width: 640px;
   margin-top: 2px;
   padding: 0 16px;
   line-height: 1.5;
-  font-size: clamp(15px, 1.2vw + 12px, 16px);
   color: var(--text-muted);
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
   max-height: calc(100vh - var(--bottom-actions-height) - 360px);
@@ -233,7 +239,6 @@ html, body {
 
 .icon-button:active,
 .maybe-button:active { transform: scale(0.96); }
-
 .icon-button:disabled,
 .maybe-button:disabled { opacity: 0.55; cursor: not-allowed; }
 
