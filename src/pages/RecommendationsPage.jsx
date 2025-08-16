@@ -112,12 +112,15 @@ const handleInteraction = async (type) => {
 
 
 <main className="film-card">
-  <img
-    src={posterUrl}
-    alt={film.title}
-    className="film-card-poster"
-    draggable="false"
-  />
+  <div className="poster-container">
+    <img
+      src={posterUrl}
+      alt={film.title}
+      className="film-card-poster"
+      draggable="false"
+    />
+  </div>
+
   <h1 className="film-title text-5xl font-bold mt-6 mb-6">
     {film.title}
   </h1>
@@ -131,12 +134,12 @@ const handleInteraction = async (type) => {
   )}
 </main>
 
+
 {/* Poster fade outside of film-card */}
 <div
   className="poster-fade"
   style={{ backgroundImage: `url('/posterfade.png')` }}
 />
-
 
       {/* Action buttons */}
       <div className="action-buttons">
