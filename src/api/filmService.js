@@ -40,6 +40,27 @@ export function fetchNextFilms() {
   return apiFetch("/api/films/next");
 }
 
-export function sendInteraction(filmId, type) {
-  return apiFetch(`/api/interaction/${type}/${filmId}`, { method: "POST" });
+export async function sendInteraction(token, filmId, type) {
+  const url = `${apiBaseUrl}/api/interaction/${type}/${filmId}`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    if (res.status === 401) {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    }
+    throw new Error(`Failed to ${type} film ${filmId}`);
+  }
+
+  const contentType = res.headers.get("content-type");
+  if (contentType && contentType.includes("application/json")) {
+    return res.json(); // parse JSON if available
+  }
+  return null; // if backend returned plain text, just ignore it
 }
