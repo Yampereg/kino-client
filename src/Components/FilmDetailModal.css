@@ -144,6 +144,9 @@
   overflow: hidden;          /* hide overflow if it exceeds */
 }
 
+
+
+
 .modal-rating-inline {
   font-size: 1.1rem;
   font-weight: 300;
@@ -156,8 +159,8 @@
   color: #cfcfcf;
   font-size: 0.9rem; /* smaller */
   text-align: center;
+  margin-top: 100px; /* space above it */
 }
-
 
 .modal-overview {
   margin-top: 22px;
@@ -170,18 +173,26 @@
   overflow-wrap: break-word; /* prevent words from overflowing */
   word-break: break-word;    /* extra safety for long words */
 }
-
 .actors-section {
-  margin-top: 13px;
-  padding-top: 18px;
-  overflow-x: auto; /* allow horizontal scroll */
-  scrollbar-width: none; /* Firefox */
+  position: absolute;      /* take it out of normal flow */
+  bottom: 200px;            /* adjust so it sits above action buttons */
+  left: 24px;              /* align with content padding */
+  right: 24px;
+  overflow-x: auto;
+  display: flex;
+  scrollbar-width: none;
+  gap: 28px;
+  padding: 0;
+  margin: 0;
+  border-top: none;        /* remove the line */
+  z-index: 50;             /* make sure it’s above other content */
 }
 
 /* Chrome, Safari, Edge */
 .actors-section::-webkit-scrollbar {
   display: none;
 }
+
 
 .actors-row {
   display: flex;
@@ -273,6 +284,20 @@
   .actor-item { width: 76px; }
   .actors-row { gap: 16px; }
   .modal-banner { height: 38vh; }
-  .modal-header { flex-direction: column; margin-top: 140px; }
+  .modal-header { flex-direction: column; margin-top: 120px; }
   .header-left, .header-right { width: 100%; align-items: center; text-align: center; }
+}
+
+.modal-bottom-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background: #0f0f0f;
+  padding: 12px 24px;
+  display: flex;
+  flex-direction: column; /* ensures top-to-bottom stacking */
+  gap: 12px;
+  z-index: 50;
 }

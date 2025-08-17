@@ -55,15 +55,11 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
 
             {/* Right column: title + rating + genres */}
             <div className="header-right">
-<div className="title-row">
-<h1 className="modal-title">
-  {film.title} <span className="modal-rating-inline">⭐ {film.voteAverage?.toFixed(1)}</span>
-</h1>
-
-
-
-</div>
-
+              <div className="title-row">
+                <h1 className="modal-title">
+                  {film.title} <span className="modal-rating-inline">⭐ {film.voteAverage?.toFixed(1)}</span>
+                </h1>
+              </div>
 
               <div className="modal-tags">
                 {(film.genres || []).map((g) => (
@@ -76,6 +72,16 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
           {/* Overview */}
           {film.overview && <p className="modal-overview">{film.overview}</p>}
 
+          {/* Credits */}
+          <div className="modal-credits">
+            {film.writers?.length > 0 && (
+              <div><strong>Writers:</strong> {film.writers.join(" · ")}</div>
+            )}
+          </div>
+        </div>
+
+        {/* Fixed bottom container: actors + directors + action buttons */}
+        <div className="modal-bottom-container">
           {/* Actors */}
           {actors.length > 0 && (
             <div className="actors-section">
@@ -96,20 +102,13 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
             </div>
           )}
 
-          {/* Credits */}
-          <div className="modal-credits">
-            {film.writers?.length > 0 && (
-              <div><strong>Writers:</strong> {film.writers.join(" · ")}</div>
-            )}
-          </div>
-{directors && (
-  <div className="modal-directors">
-    <strong>{(film.directors || []).length > 1 ? "Directors" : "Director"}</strong>
-    &nbsp; · &nbsp; {directors}
-  </div>
-)}
-
-
+          {/* Directors */}
+          {directors && (
+            <div className="modal-directors">
+              <strong>{(film.directors || []).length > 1 ? "Directors" : "Director"}</strong>
+              &nbsp; · &nbsp; {directors}
+            </div>
+          )}
 
           {/* Action buttons */}
           <ActionButtons
