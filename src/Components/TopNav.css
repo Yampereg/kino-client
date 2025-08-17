@@ -1,0 +1,32 @@
+.top-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: white;
+  z-index: 20;
+  position: relative;
+}
+
+.nav-item {
+  margin: 0 8px;
+  cursor: pointer;
+  opacity: 0.75;
+  transition: opacity 0.2s ease;
+}
+
+.nav-item:hover {
+  opacity: 1;
+}
+
+.nav-item.active {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.nav-sep {
+  margin: 0 4px;
+  color: rgba(255, 255, 255, 0.5);
+}
