@@ -164,15 +164,30 @@
 
 .modal-overview {
   margin-top: 22px;
-  line-height: 1.4;       /* smaller spacing between lines */
+  line-height: 1.4;
   font-size: 1.05rem;
   color: #ADADAD;
   max-width: 900px;
-  position: relative;     /* ensure it respects z-index */
-  z-index: 50;            /* bring it to the front above other layers */
-  overflow-wrap: break-word; /* prevent words from overflowing */
-  word-break: break-word;    /* extra safety for long words */
+  position: relative;
+  z-index: 50;
+  overflow-wrap: break-word;
+  word-break: break-word;
+
+  /* New scrollable box */
+  max-height: calc(1.4 * 1.05rem * 4); /* 4 lines with line-height factored in */
+  overflow-y: auto;
+  display: block;
 }
+
+/* Hide scrollbar (optional, keeps it clean) */
+.modal-overview::-webkit-scrollbar {
+  width: 6px;
+}
+.modal-overview::-webkit-scrollbar-thumb {
+  background-color: rgba(255,255,255,0.2);
+  border-radius: 3px;
+}
+
 .actors-section {
   position: absolute;      /* take it out of normal flow */
   bottom: 200px;            /* adjust so it sits above action buttons */
