@@ -172,6 +172,8 @@ html, body {
 .film-card-poster {
   width: min(60vw, 270px);
   max-width: 300px;
+  margin-bottom: 20px; /* pushes next element down */
+  margin-top: 10px;
   border-radius: var(--poster-radius);
   object-fit: cover;
   box-shadow: var(--poster-shadow);
@@ -189,7 +191,6 @@ html, body {
   margin-top: 8px;
   margin-bottom: 4px;
   font-size: clamp(36px, 8vw, 70px);
-  padding: 10px;
   font-weight: 900;
   line-height: 1.2;
   letter-spacing: 0.35px;
