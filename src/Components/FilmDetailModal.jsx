@@ -64,12 +64,12 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
             </div>
           </div>
 
+          {/* Directors removed from bottom container and placed above overview previously — now removed here (we show them below actors) */}
+
           {/* Overview */}
           {film.overview && <p className="modal-overview">{film.overview}</p>}
-        </div>
 
-        <div className="modal-bottom-container">
-          {/* Actors */}
+          {/* Actors: now in normal flow directly below overview */}
           {actors.length > 0 && (
             <div className="actors-section">
               <div className="actors-row">
@@ -89,7 +89,7 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
             </div>
           )}
 
-          {/* Directors centered */}
+          {/* Directors: now directly below actors (centered) */}
           {directors && (
             <div className="modal-directors">
               <strong>{(film.directors || []).length > 1 ? "Directors" : "Director"}</strong>
@@ -97,7 +97,16 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
             </div>
           )}
 
-          {/* Action buttons */}
+          {/* Optional credits kept in flow */}
+          <div className="modal-credits">
+            {film.writers?.length > 0 && (
+              <div><strong>Writers:</strong> {film.writers.join(" · ")}</div>
+            )}
+          </div>
+        </div>
+
+        {/* Bottom container now contains only action buttons (anchored to bottom) */}
+        <div className="modal-bottom-container">
           <ActionButtons
             films={[film]}
             setFilms={setFilms}
