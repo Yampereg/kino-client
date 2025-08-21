@@ -168,7 +168,7 @@
   overflow-wrap: break-word;
   word-break: break-word;
 
-  max-height: calc(1.4 * 1.05rem * 4); /* approx 4 lines */
+  max-height: calc(1.05rem * 4); /* approx 4 lines */
   overflow-y: auto;
   display: block;
   padding-right: 6px; /* prevent scrollbar overlapping text */
