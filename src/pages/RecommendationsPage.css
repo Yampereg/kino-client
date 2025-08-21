@@ -185,6 +185,7 @@ html, body {
 /* Title */
 .film-title {
   margin: 0 0 2px 0; /* 🔹 smaller gap under title */
+  margin-top: 10px;
   font-size: clamp(36px, 8vw, 70px);
   font-weight: 900;
   line-height: 1.2;
