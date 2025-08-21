@@ -163,7 +163,7 @@ html, body {
   justify-content: center;
   align-items: flex-start; /* always stick poster to top */
   min-height: 300px;       /* ensures poster has breathing room */
-  margin-bottom: 30px;     /* increased spacing before title */
+  margin-bottom: 36px;     /* 🔹 bigger gap before title */
 }
 
 .film-card-poster {
@@ -184,7 +184,7 @@ html, body {
 
 /* Title */
 .film-title {
-  margin: 0 0 4px 0; /* no top margin, only bottom */
+  margin: 0 0 2px 0; /* 🔹 smaller gap under title */
   font-size: clamp(36px, 8vw, 70px);
   font-weight: 900;
   line-height: 1.2;
@@ -203,7 +203,8 @@ html, body {
   gap: 8px;
   flex-wrap: wrap;
   justify-content: center;
-  padding: 4px 0;
+  padding: 2px 0; /* 🔹 less vertical space */
+  margin-top: 0px;
 }
 
 .genre-tag {
