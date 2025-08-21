@@ -149,8 +149,7 @@
 .modal-directors {
   color: #cfcfcf;
   font-size: 0.9rem;
-  margin-top: 32px; /* space above synopsis */
-  margin-bottom: 12px; /* small gap before synopsis */
+  margin-top: 10px; /* space above synopsis */
   text-align: center;
   max-width: 900px;
   position: relative;
