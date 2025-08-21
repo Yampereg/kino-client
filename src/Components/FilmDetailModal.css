@@ -46,7 +46,6 @@
   z-index: 1;
 }
 
-
 /* Poster */
 .modal-poster {
   width: 130px;
@@ -64,12 +63,12 @@
   display: inline-flex;
   justify-content: center;
   gap: 6px;
-    flex-wrap: nowrap;
+  flex-wrap: nowrap;
 }
 
 /* Container content padding */
 .modal-content {
-  padding: 26px 24px 42px; /* reduce left/right padding for spacing */
+  padding: 26px 24px 42px;
   color: white;
   overflow: hidden;
   flex: 1;
@@ -78,18 +77,17 @@
 /* Header grid */
 .modal-header {
   display: grid;
-  grid-template-columns: 130px 1fr; /* left: poster, right: title+rating+genres */
+  grid-template-columns: 130px 1fr;
   gap: 24px;
-  align-items: start; /* top alignment */
+  align-items: start;
   margin-top: 80px;
-  max-width: 900px; /* limit width so content doesn't stretch */
+  max-width: 900px;
   margin-left: auto;
-  margin-right: auto; /* center horizontally */
+  margin-right: auto;
   position: relative;
   z-index: 20;
 }
 
-/* Left column already handled by poster + poster-meta */
 .header-left {
   display: flex;
   flex-direction: column;
@@ -99,8 +97,8 @@
 .header-right {
   display: flex;
   flex-direction: column;
-  gap: 16px; /* add more space between title-row and genres */
-  align-items: flex-start; /* align content to the left */
+  gap: 16px;
+  align-items: flex-start;
 }
 
 .modal-tags {
@@ -109,14 +107,10 @@
   flex-wrap: wrap;
 }
 
-
-
-
 .modal-rating {
   font-size: 1.2rem;
   color: #e6d07a;
 }
-
 
 .genre-tag {
   background: rgba(255,255,255,0.04);
@@ -126,11 +120,12 @@
   font-size: 0.95rem;
   color: #cfcfcf;
 }
+
 .title-row {
   display: flex;
   align-items: center;
   gap: 12px;
-  flex-wrap: nowrap; /* force everything to stay on one line */
+  flex-wrap: nowrap;
 }
 
 .modal-title {
@@ -140,30 +135,25 @@
   font-weight: 800;
   color: #ddd;
   text-align: left;
-
-  overflow: hidden;          /* hide overflow if it exceeds */
+  overflow: hidden;
 }
-
-
-
 
 .modal-rating-inline {
   font-size: 1.1rem;
   font-weight: 300;
   color: #fff;
-  flex-shrink: 0;           /* never shrink the rating */
+  flex-shrink: 0;
 }
-
 
 .modal-directors {
   color: #cfcfcf;
-  font-size: 0.9rem; /* smaller */
+  font-size: 0.9rem;
   text-align: center;
-  margin-top: 100px; /* space above it */
+  margin-top: 100px;
 }
 
+/* Scrollable overview (approx 4 lines) */
 .modal-overview {
-  margin-top: 22px;
   line-height: 1.4;
   font-size: 1.05rem;
   color: #ADADAD;
@@ -173,47 +163,36 @@
   overflow-wrap: break-word;
   word-break: break-word;
 
-  /* New scrollable box */
-  max-height: calc(1.4 * 1.05rem * 4); /* 4 lines with line-height factored in */
+  max-height: calc(1.4 * 1.05rem * 4); /* approx 4 lines */
   overflow-y: auto;
   display: block;
+  padding-right: 6px; /* prevent scrollbar overlapping text */
+  margin-bottom: 12px; /* spacing before actors bar */
 }
 
-/* Hide scrollbar (optional, keeps it clean) */
-.modal-overview::-webkit-scrollbar {
-  width: 6px;
-}
-.modal-overview::-webkit-scrollbar-thumb {
-  background-color: rgba(255,255,255,0.2);
-  border-radius: 3px;
-}
-
+/* Actors bar flows naturally below overview */
 .actors-section {
-  position: absolute;      /* take it out of normal flow */
-  bottom: 200px;            /* adjust so it sits above action buttons */
-  left: 24px;              /* align with content padding */
-  right: 24px;
-  overflow-x: auto;
+  position: relative;
   display: flex;
+  overflow-x: auto;
   scrollbar-width: none;
   gap: 28px;
   padding: 0;
   margin: 0;
-  border-top: none;        /* remove the line */
-  z-index: 50;             /* make sure it’s above other content */
+  border-top: none;
+  z-index: 50;
 }
 
-/* Chrome, Safari, Edge */
 .actors-section::-webkit-scrollbar {
   display: none;
 }
-
 
 .actors-row {
   display: flex;
   gap: 28px;
   flex-wrap: nowrap;
 }
+
 .actor-item {
   width: 92px;
   text-align: center;
@@ -221,6 +200,7 @@
   color: #adadad;
   flex: 0 0 auto;
 }
+
 .actor-photo {
   width: 92px;
   height: 92px;
@@ -230,12 +210,13 @@
   box-shadow: 0 6px 20px rgba(0,0,0,0.6);
   border: 4px solid rgba(255,255,255,0.03);
 }
+
 .actor-name {
   margin-top: 8px;
   font-size: 0.85rem;
   color: #adadad;
-  white-space: normal; /* allow wrapping */
-  overflow: visible;   /* show all lines */
+  white-space: normal;
+  overflow: visible;
   text-overflow: unset;
 }
 
@@ -244,6 +225,7 @@
   flex-direction: column;
   align-items: center;
 }
+
 .actor-more-circle {
   width: 92px;
   height: 92px;
@@ -312,7 +294,7 @@
   background: #0f0f0f;
   padding: 12px 24px;
   display: flex;
-  flex-direction: column; /* ensures top-to-bottom stacking */
+  flex-direction: column;
   gap: 12px;
   z-index: 50;
 }
