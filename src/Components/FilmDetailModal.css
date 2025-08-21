@@ -145,11 +145,16 @@
   flex-shrink: 0;
 }
 
+/* Directors line above synopsis */
 .modal-directors {
   color: #cfcfcf;
   font-size: 0.9rem;
-  text-align: center;
-  margin-top: 100px;
+  margin-top: 32px; /* space above synopsis */
+  margin-bottom: 12px; /* small gap before synopsis */
+  text-align: left;
+  max-width: 900px;
+  position: relative;
+  z-index: 50;
 }
 
 /* Scrollable overview (approx 4 lines) */
@@ -167,7 +172,7 @@
   overflow-y: auto;
   display: block;
   padding-right: 6px; /* prevent scrollbar overlapping text */
-  margin-bottom: 12px; /* spacing before actors bar */
+  margin-bottom: 4px; /* smaller spacing before actors bar */
 }
 
 /* Actors bar flows naturally below overview */

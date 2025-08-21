@@ -15,7 +15,6 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
 
   const directors = (film.directors || []).map((d) => d.name).join(" · ");
 
-  // Sort actors by popularity descending
   const actors = (film.actors || []).sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
   const visibleActors = actors.slice(0, 4);
   const extraCount = Math.max(0, actors.length - visibleActors.length);
@@ -41,9 +40,8 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
 
         <div className="modal-content font-kino">
 
-          {/* Header: two-column layout */}
+          {/* Header: poster + info */}
           <div className="modal-header">
-            {/* Left column: poster + meta */}
             <div className="header-left">
               <img src={posterUrl} alt={film.title} className="modal-poster" />
               <div className="poster-meta">
@@ -53,7 +51,6 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
               </div>
             </div>
 
-            {/* Right column: title + rating + genres */}
             <div className="header-right">
               <div className="title-row">
                 <h1 className="modal-title">
@@ -69,6 +66,14 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
             </div>
           </div>
 
+          {/* Directors above overview */}
+          {directors && (
+            <div className="modal-directors">
+              <strong>{(film.directors || []).length > 1 ? "Directors" : "Director"}</strong>
+              &nbsp; · &nbsp; {directors}
+            </div>
+          )}
+
           {/* Overview */}
           {film.overview && <p className="modal-overview">{film.overview}</p>}
 
@@ -80,9 +85,8 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
           </div>
         </div>
 
-        {/* Fixed bottom container: actors + directors + action buttons */}
+        {/* Bottom: actors + action buttons */}
         <div className="modal-bottom-container">
-          {/* Actors */}
           {actors.length > 0 && (
             <div className="actors-section">
               <div className="actors-row">
@@ -102,15 +106,6 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
             </div>
           )}
 
-          {/* Directors */}
-          {directors && (
-            <div className="modal-directors">
-              <strong>{(film.directors || []).length > 1 ? "Directors" : "Director"}</strong>
-              &nbsp; · &nbsp; {directors}
-            </div>
-          )}
-
-          {/* Action buttons */}
           <ActionButtons
             films={[film]}
             setFilms={setFilms}
