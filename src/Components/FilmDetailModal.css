@@ -68,9 +68,9 @@
 
 /* Container content padding */
 .modal-content {
-  padding: 26px 24px 42px;
+  padding: 26px 24px 0; /* removed bottom padding; bottom elements handled separately */
   color: white;
-  overflow: hidden;
+  overflow: visible;
   flex: 1;
 }
 
@@ -145,19 +145,7 @@
   flex-shrink: 0;
 }
 
-/* Directors line above synopsis */
-.modal-directors {
-  color: #cfcfcf;
-  font-size: 0.9rem;
-  margin-top: 32px; /* space above synopsis */
-  margin-bottom: 12px; /* small gap before synopsis */
-  text-align: left;
-  max-width: 900px;
-  position: relative;
-  z-index: 50;
-}
-
-/* Scrollable overview (approx 4 lines) */
+/* Scrollable overview with bottom fade */
 .modal-overview {
   line-height: 1.4;
   font-size: 1.05rem;
@@ -167,15 +155,26 @@
   z-index: 50;
   overflow-wrap: break-word;
   word-break: break-word;
-
-  max-height: calc(1.4 * 1.05rem * 4); /* approx 4 lines */
+  max-height: calc(1.4 * 1.05rem * 4);
   overflow-y: auto;
   display: block;
-  padding-right: 6px; /* prevent scrollbar overlapping text */
-  margin-bottom: 4px; /* smaller spacing before actors bar */
+  padding-right: 6px;
+  margin-bottom: 8px; /* reduce space between synopsis and actors */
+
+  /* bottom fade overlay */
+}
+.modal-overview::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1.2em;
+  background: linear-gradient(to bottom, transparent, #0f0f0f);
+  pointer-events: none;
 }
 
-/* Actors bar flows naturally below overview */
+/* Actors bar flows directly below overview */
 .actors-section {
   position: relative;
   display: flex;
@@ -183,9 +182,7 @@
   scrollbar-width: none;
   gap: 28px;
   padding: 0;
-  margin: 0;
-  border-top: none;
-  z-index: 50;
+  margin-bottom: 12px; /* spacing to directors line */
 }
 
 .actors-section::-webkit-scrollbar {
@@ -245,6 +242,14 @@
   border: 4px solid rgba(255,255,255,0.03);
 }
 
+/* Directors line centered below actors */
+.modal-directors {
+  color: #cfcfcf;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
 /* Close button */
 .close-button {
   position: absolute;
@@ -256,38 +261,6 @@
   border: none;
   cursor: pointer;
   z-index: 30;
-}
-
-/* Credits */
-.modal-credits {
-  margin-top: 24px;
-  font-size: 0.95rem;
-  color: #bcbcbc;
-}
-
-.film-genres {
-  margin-top: 8px;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.genre-tag {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 12px;
-  padding: 4px 10px;
-  font-size: 0.85rem;
-  color: white;
-}
-
-@media (max-width: 720px) {
-  .actor-photo, .actor-more-circle { width: 76px; height: 76px; }
-  .actor-item { width: 76px; }
-  .actors-row { gap: 16px; }
-  .modal-banner { height: 38vh; }
-  .modal-header { flex-direction: column; margin-top: 120px; }
-  .header-left, .header-right { width: 100%; align-items: center; text-align: center; }
 }
 
 .modal-bottom-container {
@@ -302,4 +275,13 @@
   flex-direction: column;
   gap: 12px;
   z-index: 50;
+}
+
+@media (max-width: 720px) {
+  .actor-photo, .actor-more-circle { width: 76px; height: 76px; }
+  .actor-item { width: 76px; }
+  .actors-row { gap: 16px; }
+  .modal-banner { height: 38vh; }
+  .modal-header { flex-direction: column; margin-top: 120px; }
+  .header-left, .header-right { width: 100%; align-items: center; text-align: center; }
 }

@@ -39,8 +39,6 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
         <div className="banner-fade" />
 
         <div className="modal-content font-kino">
-
-          {/* Header: poster + info */}
           <div className="modal-header">
             <div className="header-left">
               <img src={posterUrl} alt={film.title} className="modal-poster" />
@@ -66,27 +64,12 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
             </div>
           </div>
 
-          {/* Directors above overview */}
-          {directors && (
-            <div className="modal-directors">
-              <strong>{(film.directors || []).length > 1 ? "Directors" : "Director"}</strong>
-              &nbsp; · &nbsp; {directors}
-            </div>
-          )}
-
           {/* Overview */}
           {film.overview && <p className="modal-overview">{film.overview}</p>}
-
-          {/* Credits */}
-          <div className="modal-credits">
-            {film.writers?.length > 0 && (
-              <div><strong>Writers:</strong> {film.writers.join(" · ")}</div>
-            )}
-          </div>
         </div>
 
-        {/* Bottom: actors + action buttons */}
         <div className="modal-bottom-container">
+          {/* Actors */}
           {actors.length > 0 && (
             <div className="actors-section">
               <div className="actors-row">
@@ -106,6 +89,15 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
             </div>
           )}
 
+          {/* Directors centered */}
+          {directors && (
+            <div className="modal-directors">
+              <strong>{(film.directors || []).length > 1 ? "Directors" : "Director"}</strong>
+              &nbsp; · &nbsp; {directors}
+            </div>
+          )}
+
+          {/* Action buttons */}
           <ActionButtons
             films={[film]}
             setFilms={setFilms}
