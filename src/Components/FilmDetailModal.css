@@ -151,7 +151,7 @@
   font-size: 0.9rem;
   margin-top: 32px; /* space above synopsis */
   margin-bottom: 12px; /* small gap before synopsis */
-  text-align: left;
+  text-align: center;
   max-width: 900px;
   position: relative;
   z-index: 50;
@@ -172,7 +172,7 @@
   overflow-y: auto;
   display: block;
   padding-right: 6px; /* prevent scrollbar overlapping text */
-  margin-bottom: 4px; /* smaller spacing before actors bar */
+  margin-bottom: 20px; /* smaller spacing before actors bar */
 }
 
 /* Actors bar flows naturally below overview */
@@ -285,7 +285,7 @@
   .actor-item { width: 76px; }
   .actors-row { gap: 16px; }
   .modal-banner { height: 38vh; }
-  .modal-header { flex-direction: column; margin-top: 120px; }
+  .modal-header { flex-direction: column; margin-top: 120px; margin-bottom: 20px; }
   .header-left, .header-right { width: 100%; align-items: center; text-align: center; }
 }
 
