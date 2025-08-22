@@ -215,24 +215,24 @@ html, body {
   border-radius: 999px;
   font-size: 0.8rem;
 }
-/* Synopsis */
 .film-overview {
+  line-height: 1.4;
+  font-size: 15px;
   font-weight: 300;
-  font-size: clamp(13px, 1vw + 11px, 15px);
-  max-width: 640px;
-  margin-top: 6px;
-  padding: 0 16px 44px 16px;
-  line-height: 1.3;
-  color: #ACACAC;
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
-  max-height: calc(1.05rem * 4); /* approx 4 lines */
+  color: #ADADAD;
+  max-width: 900px;
+  position: relative;
+  z-index: 50;
+  overflow-wrap: break-word;
+  word-break: break-word;
 
+  max-height: calc(1.05rem * 4); /* approx 4 lines */
   overflow-y: auto;
-  
+  display: block;
+  padding-right: 6px; /* prevent scrollbar overlapping text */
+  margin-bottom: 20px; /* smaller spacing before actors bar */
 }
 
-.film-overview::-webkit-scrollbar { width: 6px; }
-.film-overview::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 6px; }
 
 /* Buttons */
 .action-buttons {
