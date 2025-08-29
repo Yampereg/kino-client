@@ -30,7 +30,7 @@ export default function RecommendationsPage() {
   };
 
   const handleInteraction = async (filmId) => {
-    // Remove the first film from the array
+    // Remove the specific film from the array
     setFilms((prev) => {
       const updated = prev.filter((f) => f.id !== filmId);
       if (updated.length === 0) {
@@ -62,13 +62,18 @@ export default function RecommendationsPage() {
       <div className="background-banner" style={{ backgroundImage: `url(${bannerUrl})` }} />
       <div className="background-fade" style={{ backgroundImage: `url('/backgroundfade.png')` }} />
       <TopNav />
-      <FilmCard film={film} onOpenDetail={() => setDetailFilm(film)} />
+
+      {/* NEW: scroll wrapper placed between banner and fixed actions */}
+      <div className="film-scroll-area">
+        <FilmCard film={film} onOpenDetail={() => setDetailFilm(film)} />
+      </div>
+
       <div className="poster-fade" style={{ backgroundImage: `url('/posterfade.png')` }} />
 
-      {/* ActionButtons now calls handleInteraction */}
+      {/* ActionButtons remain fixed and unchanged */}
       <ActionButtons
-        films={[film]}        // only pass the current film
-        setFilms={handleInteraction} // handle removing and loading next
+        films={[film]}
+        setFilms={handleInteraction}
         token={token}
         loadNextBatch={loadNextBatch}
       />

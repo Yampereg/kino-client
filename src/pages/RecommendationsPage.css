@@ -15,7 +15,7 @@
   --action-button-gap: 16px;
 }
 
-/* Prevent page scroll on mobile */
+/* Prevent page scroll on mobile (we create an inner scroll area instead) */
 html, body {
   margin: 0;
   padding: 0;
@@ -86,74 +86,43 @@ html, body {
   height: 100vh;
   overflow: hidden;
   display: flex;
-  align-items: stretch;
-  justify-content: flex-start;
+  flex-direction: column;
   margin: 0;
   padding: 0;
   background-color: var(--page-gray);
   --banner-height: clamp(160px, 45vh, 75vh);
 }
 
-.icon-image {
-  width: 120px;
-  height: 120px;
-  object-fit: contain;
-  user-select: none;
-  transition: transform 120ms ease, opacity 120ms ease;
-}
-
-.icon-image:active {
-  transform: scale(0.96);
-}
-
-/* Top nav */
-.top-nav {
-  position: fixed;
-  top: 14px;
+/* NEW: Scroll wrapper that sits between banner and fixed actions.
+   This is the only place the page will scroll. */
+.film-scroll-area {
+  position: absolute;
   left: 0;
   right: 0;
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  justify-content: center;
-  font-size: clamp(14px, 1.4vw + 10px, 18px);
-  opacity: 0.95;
-  user-select: none;
-  z-index: 12;
-}
-
-.nav-item {
-  color: #c9c9c9;
-  font-weight: 400;
-}
-
-.nav-item.active {
-  color: #e7e7e7;
-  font-weight: 700;
-}
-
-.nav-sep {
-  color: #9a9a9a;
-}
-
-.film-card {
-  position: absolute;
   top: calc(var(--banner-height) * var(--film-card-top-offset));
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: calc(var(--bottom-actions-height) + 40px);
+  bottom: calc(var(--bottom-actions-height) + 12px); /* leave space for the action bar */
+  display: flex;
+  justify-content: center;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  z-index: 6;
+  box-sizing: border-box;
+  padding-top: 0; /* keep poster aligned */
+}
+
+/* Film card is now normal (not constrained top+bottom); it lives inside the scroll area */
+.film-card {
   width: min(92vw, var(--page-max-width));
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end; /* push poster to bottom */
+  justify-content: flex-start; /* poster stays at top */
   gap: 12px;
   text-align: center;
   z-index: 6;
-  padding-bottom: 12px;
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
+  padding: 20px 0 40px 0;
   box-sizing: border-box;
+  /* allow card to grow naturally (scroll happens in .film-scroll-area) */
 }
 
 .poster-container {
@@ -163,7 +132,7 @@ html, body {
   justify-content: center;
   align-items: flex-start; /* always stick poster to top */
   min-height: 300px;       /* ensures poster has breathing room */
-  margin-bottom: 36px;     /* 🔹 bigger gap before title */
+  margin-bottom: 36px;     /* bigger gap before title */
 }
 
 .film-card-poster {
@@ -184,8 +153,7 @@ html, body {
 
 /* Title */
 .film-title {
-  margin: 0 0 2px 0; /* 🔹 smaller gap under title */
-  margin-top: 10px;
+  margin: 10px 0 2px 0; /* smaller gap under title */
   font-size: clamp(36px, 8vw, 70px);
   font-weight: 900;
   line-height: 1.2;
@@ -204,7 +172,7 @@ html, body {
   gap: 8px;
   flex-wrap: wrap;
   justify-content: center;
-  padding: 2px 0; /* 🔹 less vertical space */
+  padding: 2px 0; /* less vertical space */
   margin-top: 0px;
 }
 
@@ -215,6 +183,8 @@ html, body {
   border-radius: 999px;
   font-size: 0.8rem;
 }
+
+/* KEEP synopsis scrolling exactly like you had it */
 .film-overview {
   line-height: 1.4;
   font-size: 15px;
@@ -230,11 +200,10 @@ html, body {
   overflow-y: auto;
   display: block;
   padding-right: 6px; /* prevent scrollbar overlapping text */
-  margin-bottom: 20px; /* smaller spacing before actors bar */
+  margin-bottom: 20px; /* spacing before actors bar */
 }
 
-
-/* Buttons */
+/* Buttons: left exactly as you had them (sizes preserved) */
 .action-buttons {
   position: fixed;
   left: 0;
@@ -245,14 +214,7 @@ html, body {
   justify-content: center;
   z-index: 22;
   padding-bottom: env(safe-area-inset-bottom);
-}
-
-.icon-button,
-.skip-button {
-  border: none;
-  color: #fff;
-  cursor: pointer;
-  transition: transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
+  background: linear-gradient(to top, rgba(17,17,17,1) 70%, rgba(17,17,17,0) 100%);
 }
 
 .skip-button {
@@ -263,6 +225,8 @@ html, body {
   background: #2a2a2a;
   font-size: 18px;
   font-weight: 600;
+  border: none;
+  color: #fff;
   box-shadow: 0 8px 26px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255,255,255,0.06);
 }
 
@@ -274,6 +238,8 @@ html, body {
   font-size: 30px;
   display: grid;
   place-items: center;
+  border: none;
+  color: #fff;
   box-shadow: 0 8px 26px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255,255,255,0.06);
 }
 
@@ -283,7 +249,8 @@ html, body {
 .skip-button:disabled { opacity: 0.55; cursor: not-allowed; }
 
 @media (min-width: 768px) {
-  .film-card {
+  /* slightly adjust top on larger screens (keeps poster placement similar to original) */
+  .film-scroll-area {
     top: calc(var(--banner-height) * max(0.06, var(--film-card-top-offset)));
   }
 }

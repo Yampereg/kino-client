@@ -14,7 +14,6 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
   const posterUrl = film.posterPath ? `https://image.tmdb.org/t/p/w500/${film.posterPath}` : bannerUrl;
 
   const directors = (film.directors || []).map((d) => d.name).join(" · ");
-
   const actors = (film.actors || []).sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
   const visibleActors = actors.slice(0, 4);
   const extraCount = Math.max(0, actors.length - visibleActors.length);
@@ -38,10 +37,17 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
         <div className="modal-banner" style={{ backgroundImage: `url(${bannerUrl})` }} />
         <div className="banner-fade" />
 
+        {/* Scrollable content */}
         <div className="modal-content font-kino">
           <div className="modal-header">
             <div className="header-left">
-              <img src={posterUrl} alt={film.title} className="modal-poster" />
+              {/* Poster now closes modal on click */}
+              <img
+                src={posterUrl}
+                alt={film.title}
+                className="modal-poster"
+                onClick={onClose}
+              />
               <div className="poster-meta">
                 <span>{film.releaseDate?.split("-")[0]}</span> •
                 <span>{film.adult ? "18+" : "PG-13"}</span> •
@@ -64,12 +70,10 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
             </div>
           </div>
 
-          {/* Directors removed from bottom container and placed above overview previously — now removed here (we show them below actors) */}
-
           {/* Overview */}
           {film.overview && <p className="modal-overview">{film.overview}</p>}
 
-          {/* Actors: now in normal flow directly below overview */}
+          {/* Actors */}
           {actors.length > 0 && (
             <div className="actors-section">
               <div className="actors-row">
@@ -89,7 +93,7 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
             </div>
           )}
 
-          {/* Directors: now directly below actors (centered) */}
+          {/* Directors */}
           {directors && (
             <div className="modal-directors">
               <strong>{(film.directors || []).length > 1 ? "Directors" : "Director"}</strong>
@@ -97,22 +101,22 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
             </div>
           )}
 
-          {/* Optional credits kept in flow */}
+          {/* Credits */}
           <div className="modal-credits">
             {film.writers?.length > 0 && (
               <div><strong>Writers:</strong> {film.writers.join(" · ")}</div>
             )}
           </div>
-        </div>
 
-        {/* Bottom container now contains only action buttons (anchored to bottom) */}
-        <div className="modal-bottom-container">
-          <ActionButtons
-            films={[film]}
-            setFilms={setFilms}
-            token={token}
-            loadNextBatch={wrappedLoadNextBatch}
-          />
+          {/* Sticky bottom action bar */}
+          <div className="modal-bottom-container">
+            <ActionButtons
+              films={[film]}
+              setFilms={setFilms}
+              token={token}
+              loadNextBatch={wrappedLoadNextBatch}
+            />
+          </div>
         </div>
       </div>
     </div>

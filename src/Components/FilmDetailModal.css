@@ -5,7 +5,6 @@
   width: 100vw;
   height: 100vh;
   background-color: #000;
-  overflow: hidden;
   z-index: 1000;
   display: flex;
   justify-content: center;
@@ -16,9 +15,8 @@
 .modal-container {
   position: relative;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   background: #0f0f0f;
-  overflow: visible;
   display: flex;
   flex-direction: column;
 }
@@ -53,6 +51,7 @@
   box-shadow: 0 10px 34px rgba(0,0,0,0.6);
   background: #111;
   z-index: 25;
+  cursor: pointer; /* make it look clickable */
 }
 
 /* Meta info under poster */
@@ -66,12 +65,12 @@
   flex-wrap: nowrap;
 }
 
-/* Container content padding */
+/* Scrollable content */
 .modal-content {
   padding: 26px 24px 42px;
   color: white;
-  overflow: hidden;
   flex: 1;
+  overflow-y: auto;
 }
 
 /* Header grid */
@@ -145,18 +144,18 @@
   flex-shrink: 0;
 }
 
-/* Directors line above synopsis */
+/* Directors line */
 .modal-directors {
   color: #cfcfcf;
   font-size: 0.9rem;
-  margin-top: 10px; /* space above synopsis */
+  margin-top: 10px;
   text-align: center;
   max-width: 900px;
   position: relative;
   z-index: 50;
 }
 
-/* Scrollable overview (approx 4 lines) */
+/* Overview */
 .modal-overview {
   line-height: 1.4;
   font-size: 15px;
@@ -167,33 +166,23 @@
   z-index: 50;
   overflow-wrap: break-word;
   word-break: break-word;
-
-  max-height: calc(1.05rem * 4); /* approx 4 lines */
-  overflow-y: auto;
-  display: block;
-  padding-right: 6px; /* prevent scrollbar overlapping text */
-  margin-bottom: 20px; /* smaller spacing before actors bar */
+  margin-bottom: 20px;
 }
 
-/* Actors bar flows naturally below overview */
+/* Actors */
 .actors-section {
   position: relative;
   display: flex;
   overflow-x: auto;
   scrollbar-width: none;
   gap: 28px;
-  border-top: none;
   z-index: 50;
 }
-
-.actors-section::-webkit-scrollbar {
-  display: none;
-}
+.actors-section::-webkit-scrollbar { display: none; }
 
 .actors-row {
   display: flex;
   flex-wrap: nowrap;
-  
 }
 
 .actor-item {
@@ -218,9 +207,6 @@
   margin-top: 8px;
   font-size: 0.85rem;
   color: #adadad;
-  white-space: normal;
-  overflow: visible;
-  text-overflow: unset;
 }
 
 .actor-more {
@@ -228,7 +214,6 @@
   flex-direction: column;
   align-items: center;
 }
-
 .actor-more-circle {
   width: 92px;
   height: 92px;
@@ -287,13 +272,14 @@
   .header-left, .header-right { width: 100%; align-items: center; text-align: center; }
 }
 
+/* Bottom fixed bar (same dark bg) */
 .modal-bottom-container {
-  position: absolute;
+  position: sticky;
   bottom: 0;
   left: 0;
   right: 0;
   width: 100%;
-  background: #0f0f0f;
+  background: #0f0f0f; /* match modal background */
   padding: 12px 24px;
   display: flex;
   flex-direction: column;
