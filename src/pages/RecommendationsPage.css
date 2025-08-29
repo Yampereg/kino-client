@@ -92,22 +92,21 @@ html, body {
   --banner-height: clamp(160px, 45vh, 75vh);
 }
 
-/* Scroll wrapper */
 .film-scroll-area {
   position: absolute;
   left: 0;
   right: 0;
   top: calc(var(--banner-height) * var(--film-card-top-offset));
-  bottom: 0;
+  bottom: calc(var(--bottom-actions-height) + env(safe-area-inset-bottom)); /* stop scroll above buttons */
   display: flex;
   justify-content: center;
-  overflow-y: auto; /* scrolls the whole content */
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   z-index: 6;
   box-sizing: border-box;
   padding-left: 12px;
   padding-right: 12px;
-  padding-bottom: calc(var(--bottom-actions-height) + env(safe-area-inset-bottom) + 24px); /* reserve space for buttons */
+  /* remove padding-bottom */
 }
 
 /* Film card */
