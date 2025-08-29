@@ -13,6 +13,7 @@
   --bottom-actions-height: 120px;
   --film-card-top-offset: 0.18;
   --action-button-gap: 16px;
+  --bottom-actions-height: 150px; 
 }
 
 /* Prevent page scroll on mobile */
