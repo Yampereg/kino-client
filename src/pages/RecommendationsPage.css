@@ -13,7 +13,6 @@
   --bottom-actions-height: 120px;
   --film-card-top-offset: 0.18;
   --action-button-gap: 16px;
-  --bottom-actions-height: 150px; 
 }
 
 /* Prevent page scroll on mobile */
@@ -99,7 +98,7 @@ html, body {
   left: 0;
   right: 0;
   top: calc(var(--banner-height) * var(--film-card-top-offset));
-  bottom: calc(var(--bottom-actions-height) + env(safe-area-inset-bottom) + 24px);
+  bottom: calc(var(--bottom-actions-height) + env(safe-area-inset-bottom) + 10px);
   display: flex;
   justify-content: center;
   overflow-y: auto;
@@ -246,5 +245,6 @@ html, body {
   .film-scroll-area {
     top: calc(var(--banner-height) * max(0.06, var(--film-card-top-offset)));
     bottom: calc(var(--bottom-actions-height) + env(safe-area-inset-bottom) + 12px);
+  
   }
 }

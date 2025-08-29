@@ -10,7 +10,7 @@
 }
 
 .icon-image {
-  width: 110px;
+  width: 100px;
   height: 110px;
   transition: transform 0.2s ease, opacity 0.2s ease;
 }
