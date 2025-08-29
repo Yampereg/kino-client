@@ -244,7 +244,7 @@ html, body {
 @media (min-width: 768px) {
   .film-scroll-area {
     top: calc(var(--banner-height) * max(0.06, var(--film-card-top-offset)));
-    bottom: calc(var(--bottom-actions-height) + env(safe-area-inset-bottom) + 12px);
+    bottom: calc(var(--bottom-actions-height) + env(safe-area-inset-bottom));
   
   }
 }
