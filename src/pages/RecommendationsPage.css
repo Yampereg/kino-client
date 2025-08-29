@@ -10,7 +10,7 @@
   --banner-blur: 2px;
   --banner-brightness: 0.95;
   --page-gray: #111111;
-  --bottom-actions-height: 150px; /* updated for larger buttons */
+  --bottom-actions-height: 150px; /* increased for enlarged buttons */
   --film-card-top-offset: 0.18;
   --action-button-gap: 16px;
 }
@@ -92,21 +92,22 @@ html, body {
   --banner-height: clamp(160px, 45vh, 75vh);
 }
 
+/* Scroll wrapper */
 .film-scroll-area {
   position: absolute;
   left: 0;
   right: 0;
   top: calc(var(--banner-height) * var(--film-card-top-offset));
-  bottom: 0; /* keep full height */
+  bottom: 0;
   display: flex;
   justify-content: center;
-  overflow-y: auto; /* scrolling happens here */
+  overflow-y: auto; /* scrolls the whole content */
   -webkit-overflow-scrolling: touch;
   z-index: 6;
   box-sizing: border-box;
   padding-left: 12px;
   padding-right: 12px;
-  padding-bottom: calc(var(--bottom-actions-height) + env(safe-area-inset-bottom) + 24px); /* THIS ensures content stops above buttons */
+  padding-bottom: calc(var(--bottom-actions-height) + env(safe-area-inset-bottom) + 24px); /* reserve space for buttons */
 }
 
 /* Film card */
@@ -173,7 +174,7 @@ html, body {
   font-size: 0.8rem;
 }
 
-/* Overview - expand naturally, scroll handled by film-scroll-area */
+/* Overview - expands naturally, scroll handled by film-scroll-area */
 .film-overview {
   line-height: 1.4;
   font-size: 15px;
@@ -185,8 +186,6 @@ html, body {
   overflow-wrap: break-word;
   word-break: break-word;
   margin-bottom: 20px;
-
-  /* removed max-height and internal scroll */
 }
 
 /* Buttons */
