@@ -183,28 +183,6 @@ html, body {
   font-size: 0.8rem;
 }
 
-/* Synopsis / overview
-   Keep internal scroll on larger screens, but allow more room on mobile
-*/
-.film-overview {
-  line-height: 1.4;
-  font-size: 15px;
-  font-weight: 300;
-  color: #ADADAD;
-  max-width: 900px;
-  position: relative;
-  z-index: 50;
-  overflow-wrap: break-word;
-  word-break: break-word;
-
-  /* default: a short internal scroll (approx 4 lines) */
-  max-height: calc(1.05rem * 4);
-  overflow-y: auto;
-  display: block;
-  padding-right: 6px; /* prevent scrollbar overlapping text */
-  margin-bottom: 20px; /* spacing before actors bar */
-}
-
 /* make internal synopsis slightly taller on small screens so user sees content easier */
 @media (max-width: 420px) {
   .film-overview {
@@ -227,33 +205,50 @@ html, body {
   background: linear-gradient(to top, rgba(17,17,17,1) 72%, rgba(17,17,17,0) 100%);
 }
 
-/* Skip button keeps desktop visual; grows on small devices */
-.skip-button {
-  min-width: clamp(120px, 30vw, 160px);
-  height: clamp(54px, 8vw, 64px);
-  padding: 0 24px;
-  border-radius: 14px;
-  background: #2a2a2a;
-  font-size: clamp(16px, 3.5vw, 18px);
-  font-weight: 600;
-  border: none;
-  color: #fff;
-  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255,255,255,0.06);
+/* Film overview should grow naturally; allow page scroll instead */
+.film-overview {
+  line-height: 1.4;
+  font-size: 15px;
+  font-weight: 300;
+  color: #ADADAD;
+  max-width: 900px;
+  position: relative;
+  z-index: 50;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  padding-right: 6px;
+  margin-bottom: 20px;
+  overflow-y: visible;   /* remove internal scroll */
+  max-height: none;      /* let parent scroll handle overflow */
 }
 
-/* Icon buttons scale responsively so they're not tiny on phones */
+/* Action buttons: bigger minimum size */
 .icon-button {
-  width: clamp(64px, 18vw, 96px);
-  height: clamp(64px, 18vw, 96px);
+  width: clamp(70px, 20vw, 96px);   /* min 70px even on small phones */
+  height: clamp(70px, 20vw, 96px);
   border-radius: 50%;
   background: #1f1f1f;
-  font-size: clamp(22px, 6vw, 30px);
+  font-size: clamp(24px, 7vw, 32px);  /* keep icons legible */
   display: grid;
   place-items: center;
   border: none;
   color: #fff;
   box-shadow: 0 8px 26px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255,255,255,0.06);
 }
+
+.skip-button {
+  min-width: clamp(130px, 35vw, 180px);
+  height: clamp(56px, 9vw, 70px);
+  padding: 0 24px;
+  border-radius: 14px;
+  background: #2a2a2a;
+  font-size: clamp(16px, 4vw, 20px);
+  font-weight: 600;
+  border: none;
+  color: #fff;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255,255,255,0.06);
+}
+
 
 .icon-button:active,
 .skip-button:active { transform: scale(0.96); }
