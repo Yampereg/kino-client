@@ -92,13 +92,12 @@ html, body {
   --banner-height: clamp(160px, 45vh, 75vh);
 }
 
-/* Scroll wrapper */
 .film-scroll-area {
   position: absolute;
   left: 0;
   right: 0;
   top: calc(var(--banner-height) * var(--film-card-top-offset));
-  bottom: 0;
+  bottom: 0; /* keep full height */
   display: flex;
   justify-content: center;
   overflow-y: auto; /* scrolling happens here */
@@ -107,7 +106,7 @@ html, body {
   box-sizing: border-box;
   padding-left: 12px;
   padding-right: 12px;
-  padding-bottom: calc(var(--bottom-actions-height) + env(safe-area-inset-bottom) + 24px); /* safe space for buttons */
+  padding-bottom: calc(var(--bottom-actions-height) + env(safe-area-inset-bottom) + 24px); /* THIS ensures content stops above buttons */
 }
 
 /* Film card */
