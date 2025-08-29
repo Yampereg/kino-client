@@ -10,7 +10,7 @@
   --banner-blur: 2px;
   --banner-brightness: 0.95;
   --page-gray: #111111;
-  --bottom-actions-height: 120px;
+  --bottom-actions-height: 120px; /* reserved height for fixed action bar */
   --film-card-top-offset: 0.18;
   --action-button-gap: 16px;
 }
@@ -93,24 +93,27 @@ html, body {
   --banner-height: clamp(160px, 45vh, 75vh);
 }
 
-/* NEW: Scroll wrapper that sits between banner and fixed actions.
+/* Scroll wrapper that sits between banner and fixed actions.
    This is the only place the page will scroll. */
 .film-scroll-area {
   position: absolute;
   left: 0;
   right: 0;
   top: calc(var(--banner-height) * var(--film-card-top-offset));
-  bottom: calc(var(--bottom-actions-height) + 12px); /* leave space for the action bar */
+  /* reserve space for action bar + safe area + a bit extra so content can scroll above the bar */
+  bottom: calc(var(--bottom-actions-height) + env(safe-area-inset-bottom) + 24px);
   display: flex;
   justify-content: center;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   z-index: 6;
   box-sizing: border-box;
-  padding-top: 0; /* keep poster aligned */
+  padding-top: 0; /* keep poster aligned at top of card */
+  padding-left: 12px;
+  padding-right: 12px;
 }
 
-/* Film card is now normal (not constrained top+bottom); it lives inside the scroll area */
+/* Film card lives inside the scroll area */
 .film-card {
   width: min(92vw, var(--page-max-width));
   display: flex;
@@ -122,7 +125,6 @@ html, body {
   z-index: 6;
   padding: 20px 0 40px 0;
   box-sizing: border-box;
-  /* allow card to grow naturally (scroll happens in .film-scroll-area) */
 }
 
 .poster-container {
@@ -147,9 +149,6 @@ html, body {
   -webkit-user-drag: none;
   flex-shrink: 0; /* prevents cut when synopsis is short */
 }
-
-.film-card::-webkit-scrollbar { width: 8px; }
-.film-card::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 8px; }
 
 /* Title */
 .film-title {
@@ -184,7 +183,9 @@ html, body {
   font-size: 0.8rem;
 }
 
-/* KEEP synopsis scrolling exactly like you had it */
+/* Synopsis / overview
+   Keep internal scroll on larger screens, but allow more room on mobile
+*/
 .film-overview {
   line-height: 1.4;
   font-size: 15px;
@@ -196,14 +197,22 @@ html, body {
   overflow-wrap: break-word;
   word-break: break-word;
 
-  max-height: calc(1.05rem * 4); /* approx 4 lines */
+  /* default: a short internal scroll (approx 4 lines) */
+  max-height: calc(1.05rem * 4);
   overflow-y: auto;
   display: block;
   padding-right: 6px; /* prevent scrollbar overlapping text */
   margin-bottom: 20px; /* spacing before actors bar */
 }
 
-/* Buttons: left exactly as you had them (sizes preserved) */
+/* make internal synopsis slightly taller on small screens so user sees content easier */
+@media (max-width: 420px) {
+  .film-overview {
+    max-height: calc(1.05rem * 6); /* allow about 6 lines before internal scroll */
+  }
+}
+
+/* Buttons: responsive sizes so they are not tiny on mobile */
 .action-buttons {
   position: fixed;
   left: 0;
@@ -213,29 +222,32 @@ html, body {
   gap: 12px;
   justify-content: center;
   z-index: 22;
-  padding-bottom: env(safe-area-inset-bottom);
-  background: linear-gradient(to top, rgba(17,17,17,1) 70%, rgba(17,17,17,0) 100%);
+  padding: 10px 16px calc(env(safe-area-inset-bottom) + 12px);
+  /* subtle background so top of the bar reads well on top of faded poster */
+  background: linear-gradient(to top, rgba(17,17,17,1) 72%, rgba(17,17,17,0) 100%);
 }
 
+/* Skip button keeps desktop visual; grows on small devices */
 .skip-button {
-  min-width: 120px;
-  height: 54px;
+  min-width: clamp(120px, 30vw, 160px);
+  height: clamp(54px, 8vw, 64px);
   padding: 0 24px;
   border-radius: 14px;
   background: #2a2a2a;
-  font-size: 18px;
+  font-size: clamp(16px, 3.5vw, 18px);
   font-weight: 600;
   border: none;
   color: #fff;
   box-shadow: 0 8px 26px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255,255,255,0.06);
 }
 
+/* Icon buttons scale responsively so they're not tiny on phones */
 .icon-button {
-  width: 72px;
-  height: 72px;
+  width: clamp(64px, 18vw, 96px);
+  height: clamp(64px, 18vw, 96px);
   border-radius: 50%;
   background: #1f1f1f;
-  font-size: 30px;
+  font-size: clamp(22px, 6vw, 30px);
   display: grid;
   place-items: center;
   border: none;
@@ -252,5 +264,6 @@ html, body {
   /* slightly adjust top on larger screens (keeps poster placement similar to original) */
   .film-scroll-area {
     top: calc(var(--banner-height) * max(0.06, var(--film-card-top-offset)));
+    bottom: calc(var(--bottom-actions-height) + env(safe-area-inset-bottom) + 12px);
   }
 }

@@ -63,14 +63,14 @@ export default function RecommendationsPage() {
       <div className="background-fade" style={{ backgroundImage: `url('/backgroundfade.png')` }} />
       <TopNav />
 
-      {/* NEW: scroll wrapper placed between banner and fixed actions */}
+      {/* Scroll wrapper placed between banner and fixed actions */}
       <div className="film-scroll-area">
         <FilmCard film={film} onOpenDetail={() => setDetailFilm(film)} />
       </div>
 
       <div className="poster-fade" style={{ backgroundImage: `url('/posterfade.png')` }} />
 
-      {/* ActionButtons remain fixed and unchanged */}
+      {/* ActionButtons remain fixed and unchanged in behavior */}
       <ActionButtons
         films={[film]}
         setFilms={handleInteraction}
