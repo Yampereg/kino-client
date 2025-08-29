@@ -10,12 +10,12 @@
   --banner-blur: 2px;
   --banner-brightness: 0.95;
   --page-gray: #111111;
-  --bottom-actions-height: 120px; /* reserved height for fixed action bar */
+  --bottom-actions-height: 120px;
   --film-card-top-offset: 0.18;
   --action-button-gap: 16px;
 }
 
-/* Prevent page scroll on mobile (we create an inner scroll area instead) */
+/* Prevent page scroll on mobile */
 html, body {
   margin: 0;
   padding: 0;
@@ -46,11 +46,11 @@ html, body {
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
-  z-index: 1; /* Above background, below content */
+  z-index: 1;
   pointer-events: none;
 }
 
-/* Make sure content stays above */
+/* Content stays above */
 .top-nav,
 .film-card,
 .action-buttons {
@@ -59,19 +59,18 @@ html, body {
 }
 
 .poster-fade {
-  position: absolute;   /* inside recommendations-page */
-  bottom: 0;            /* pinned to bottom */
+  position: absolute;
+  bottom: 0;
   left: 0;
-  width: 100%;          /* stretch full page width */
-  height: 100vh;         /* adjust fade height as desired */
+  width: 100%;
+  height: 100vh;
   background-position: bottom;
   background-repeat: no-repeat;
-  background-size: 100% 100%; /* stretch to fit width & height */
-  z-index: 1;           /* above poster, below text/content */
+  background-size: 100% 100%;
+  z-index: 1;
   pointer-events: none;
 }
 
-/* Keep text above fade */
 .film-title,
 .film-genres,
 .film-overview {
@@ -93,14 +92,12 @@ html, body {
   --banner-height: clamp(160px, 45vh, 75vh);
 }
 
-/* Scroll wrapper that sits between banner and fixed actions.
-   This is the only place the page will scroll. */
+/* Scroll wrapper */
 .film-scroll-area {
   position: absolute;
   left: 0;
   right: 0;
   top: calc(var(--banner-height) * var(--film-card-top-offset));
-  /* reserve space for action bar + safe area + a bit extra so content can scroll above the bar */
   bottom: calc(var(--bottom-actions-height) + env(safe-area-inset-bottom) + 24px);
   display: flex;
   justify-content: center;
@@ -108,18 +105,17 @@ html, body {
   -webkit-overflow-scrolling: touch;
   z-index: 6;
   box-sizing: border-box;
-  padding-top: 0; /* keep poster aligned at top of card */
   padding-left: 12px;
   padding-right: 12px;
 }
 
-/* Film card lives inside the scroll area */
+/* Film card */
 .film-card {
   width: min(92vw, var(--page-max-width));
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start; /* poster stays at top */
+  justify-content: flex-start;
   gap: 12px;
   text-align: center;
   z-index: 6;
@@ -132,36 +128,31 @@ html, body {
   width: 100%;
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* always stick poster to top */
-  min-height: 300px;       /* ensures poster has breathing room */
-  margin-bottom: 36px;     /* bigger gap before title */
+  align-items: flex-start;
+  min-height: 300px;
+  margin-bottom: 36px;
 }
 
 .film-card-poster {
   width: min(60vw, 270px);
   max-width: 300px;
-  margin: 0; /* remove margins, spacing handled by container */
   border-radius: var(--poster-radius);
   object-fit: cover;
   box-shadow: var(--poster-shadow);
   background: #111;
   user-select: none;
   -webkit-user-drag: none;
-  flex-shrink: 0; /* prevents cut when synopsis is short */
+  flex-shrink: 0;
 }
 
 /* Title */
 .film-title {
-  margin: 10px 0 2px 0; /* smaller gap under title */
+  margin: 10px 0 2px 0;
   font-size: clamp(36px, 8vw, 70px);
   font-weight: 900;
   line-height: 1.2;
   letter-spacing: 0.35px;
   color: #ACACAC;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-kerning: normal;
-  text-wrap: balance;
   text-shadow: 0 3px 22px rgba(0, 0, 0, 0.65);
 }
 
@@ -171,8 +162,7 @@ html, body {
   gap: 8px;
   flex-wrap: wrap;
   justify-content: center;
-  padding: 2px 0; /* less vertical space */
-  margin-top: 0px;
+  padding: 2px 0;
 }
 
 .genre-tag {
@@ -183,29 +173,7 @@ html, body {
   font-size: 0.8rem;
 }
 
-/* make internal synopsis slightly taller on small screens so user sees content easier */
-@media (max-width: 420px) {
-  .film-overview {
-    max-height: calc(1.05rem * 6); /* allow about 6 lines before internal scroll */
-  }
-}
-
-/* Buttons: responsive sizes so they are not tiny on mobile */
-.action-buttons {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0px;
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  z-index: 22;
-  padding: 10px 16px calc(env(safe-area-inset-bottom) + 12px);
-  /* subtle background so top of the bar reads well on top of faded poster */
-  background: linear-gradient(to top, rgba(17,17,17,1) 72%, rgba(17,17,17,0) 100%);
-}
-
-/* Film overview should grow naturally; allow page scroll instead */
+/* Overview with scroll */
 .film-overview {
   line-height: 1.4;
   font-size: 15px;
@@ -216,47 +184,64 @@ html, body {
   z-index: 50;
   overflow-wrap: break-word;
   word-break: break-word;
+  max-height: calc(1.05rem * 6);
+  overflow-y: auto;
   padding-right: 6px;
   margin-bottom: 20px;
-  overflow-y: visible;   /* remove internal scroll */
-  max-height: none;      /* let parent scroll handle overflow */
 }
 
-/* Action buttons: bigger minimum size */
-.icon-button {
-  width: clamp(70px, 20vw, 96px);   /* min 70px even on small phones */
-  height: clamp(70px, 20vw, 96px);
-  border-radius: 50%;
-  background: #1f1f1f;
-  font-size: clamp(24px, 7vw, 32px);  /* keep icons legible */
-  display: grid;
-  place-items: center;
+
+/* Buttons */
+.action-buttons {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0px;
+  display: flex;
+  gap: 12px;
+  height: 100px;
+  justify-content: center;
+  z-index: 22;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.icon-button,
+.skip-button {
   border: none;
   color: #fff;
-  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255,255,255,0.06);
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
 }
 
 .skip-button {
-  min-width: clamp(130px, 35vw, 180px);
-  height: clamp(56px, 9vw, 70px);
+  min-width: 120px;
+  height: 54px;
   padding: 0 24px;
   border-radius: 14px;
   background: #2a2a2a;
-  font-size: clamp(16px, 4vw, 20px);
+  font-size: 18px;
   font-weight: 600;
-  border: none;
-  color: #fff;
   box-shadow: 0 8px 26px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255,255,255,0.06);
 }
 
+.icon-button {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #1f1f1f;
+  font-size: 30px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255,255,255,0.06);
+}
 
 .icon-button:active,
 .skip-button:active { transform: scale(0.96); }
 .icon-button:disabled,
 .skip-button:disabled { opacity: 0.55; cursor: not-allowed; }
+ 
 
 @media (min-width: 768px) {
-  /* slightly adjust top on larger screens (keeps poster placement similar to original) */
   .film-scroll-area {
     top: calc(var(--banner-height) * max(0.06, var(--film-card-top-offset)));
     bottom: calc(var(--bottom-actions-height) + env(safe-area-inset-bottom) + 12px);
