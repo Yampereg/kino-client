@@ -98,16 +98,16 @@ html, body {
   left: 0;
   right: 0;
   top: calc(var(--banner-height) * var(--film-card-top-offset));
-  bottom: 0; /* stretch to bottom */
+  bottom: 0;
   display: flex;
   justify-content: center;
-  overflow-y: auto;
+  overflow-y: auto; /* scrolling happens here */
   -webkit-overflow-scrolling: touch;
   z-index: 6;
   box-sizing: border-box;
   padding-left: 12px;
   padding-right: 12px;
-  padding-bottom: calc(var(--bottom-actions-height) + env(safe-area-inset-bottom) + 24px); /* space for buttons */
+  padding-bottom: calc(var(--bottom-actions-height) + env(safe-area-inset-bottom) + 24px); /* safe space for buttons */
 }
 
 /* Film card */
@@ -174,7 +174,7 @@ html, body {
   font-size: 0.8rem;
 }
 
-/* Overview with scroll */
+/* Overview - expand naturally, scroll handled by film-scroll-area */
 .film-overview {
   line-height: 1.4;
   font-size: 15px;
@@ -185,10 +185,9 @@ html, body {
   z-index: 50;
   overflow-wrap: break-word;
   word-break: break-word;
-  max-height: calc(1.05rem * 6);
-  overflow-y: auto;
-  padding-right: 6px;
   margin-bottom: 20px;
+
+  /* removed max-height and internal scroll */
 }
 
 /* Buttons */
