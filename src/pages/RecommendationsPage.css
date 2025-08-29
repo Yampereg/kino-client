@@ -10,7 +10,7 @@
   --banner-blur: 2px;
   --banner-brightness: 0.95;
   --page-gray: #111111;
-  --bottom-actions-height: 120px;
+  --bottom-actions-height: 150px; /* updated for larger buttons */
   --film-card-top-offset: 0.18;
   --action-button-gap: 16px;
 }
@@ -98,7 +98,7 @@ html, body {
   left: 0;
   right: 0;
   top: calc(var(--banner-height) * var(--film-card-top-offset));
-  bottom: calc(var(--bottom-actions-height) + env(safe-area-inset-bottom));
+  bottom: 0; /* stretch to bottom */
   display: flex;
   justify-content: center;
   overflow-y: auto;
@@ -107,6 +107,7 @@ html, body {
   box-sizing: border-box;
   padding-left: 12px;
   padding-right: 12px;
+  padding-bottom: calc(var(--bottom-actions-height) + env(safe-area-inset-bottom) + 24px); /* space for buttons */
 }
 
 /* Film card */
@@ -190,13 +191,12 @@ html, body {
   margin-bottom: 20px;
 }
 
-
 /* Buttons */
 .action-buttons {
   position: fixed;
   left: 0;
   right: 0;
-  bottom: 0px;
+  bottom: 0;
   display: flex;
   gap: 12px;
   height: 100px;
@@ -239,12 +239,17 @@ html, body {
 .skip-button:active { transform: scale(0.96); }
 .icon-button:disabled,
 .skip-button:disabled { opacity: 0.55; cursor: not-allowed; }
- 
 
+/* Desktop media query */
 @media (min-width: 768px) {
   .film-scroll-area {
     top: calc(var(--banner-height) * max(0.06, var(--film-card-top-offset)));
-    bottom: calc(var(--bottom-actions-height) + env(safe-area-inset-bottom));
-  
+  }
+}
+
+/* Mobile media query for larger buttons */
+@media (max-width: 767px) {
+  :root {
+    --bottom-actions-height: 150px; /* match enlarged icons */
   }
 }
