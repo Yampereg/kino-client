@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./FilmDetailModal.css";
 import ActionButtons from "../Components/ActionButtons";
 
@@ -15,7 +15,11 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
 
   const directors = (film.directors || []).map((d) => d.name).join(" · ");
   const actors = (film.actors || []).sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
-  const visibleActors = actors.slice(0, 4);
+
+  // state for expanded actors
+  const [expandedActors, setExpandedActors] = useState(false);
+
+  const visibleActors = expandedActors ? actors : actors.slice(0, 4);
   const extraCount = Math.max(0, actors.length - visibleActors.length);
 
   const actorImg = (p) =>
@@ -31,10 +35,15 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-container" onClick={(e) => e.stopPropagation()}>
-        <button className="close-button" onClick={onClose} aria-label="Close">✕</button>
+        <button className="close-button" onClick={onClose} aria-label="Close">
+          ✕
+        </button>
 
         {/* Banner */}
-        <div className="modal-banner" style={{ backgroundImage: `url(${bannerUrl})` }} />
+        <div
+          className="modal-banner"
+          style={{ backgroundImage: `url(${bannerUrl})` }}
+        />
         <div className="banner-fade" />
 
         {/* Scrollable content */}
@@ -50,21 +59,29 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
               />
               <div className="poster-meta">
                 <span>{film.releaseDate?.split("-")[0]}</span> •
-                <span>{film.adult ? "18+" : "PG-13"}</span> •
-                <span>{film.runtime ? `${Math.floor(film.runtime / 60)}h ${film.runtime % 60}m` : ""}</span>
+                <span>
+                  {film.runtime
+                    ? `${Math.floor(film.runtime / 60)}h ${film.runtime % 60}m`
+                    : ""}
+                </span>
               </div>
             </div>
 
             <div className="header-right">
               <div className="title-row">
                 <h1 className="modal-title">
-                  {film.title} <span className="modal-rating-inline">⭐ {film.voteAverage?.toFixed(1)}</span>
+                  {film.title}{" "}
+                  <span className="modal-rating-inline">
+                    ⭐ {film.voteAverage?.toFixed(1)}
+                  </span>
                 </h1>
               </div>
 
               <div className="modal-tags">
                 {(film.genres || []).map((g) => (
-                  <span key={g.id ?? g.name} className="genre-tag">{g.name}</span>
+                  <span key={g.id ?? g.name} className="genre-tag">
+                    {g.name}
+                  </span>
                 ))}
               </div>
             </div>
@@ -75,16 +92,28 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
 
           {/* Actors */}
           {actors.length > 0 && (
-            <div className="actors-section">
+            <div
+              className={`actors-section ${
+                visibleActors.length <= 3 ? "centered" : ""
+              }`}
+            >
               <div className="actors-row">
                 {visibleActors.map((a) => (
                   <div className="actor-item" key={a.id}>
-                    <img src={actorImg(a.profilePath)} alt={a.name} className="actor-photo" />
+                    <img
+                      src={actorImg(a.profilePath)}
+                      alt={a.name}
+                      className="actor-photo"
+                    />
                     <div className="actor-name">{a.name}</div>
                   </div>
                 ))}
-                {extraCount > 0 && (
-                  <div className="actor-item actor-more">
+                {!expandedActors && extraCount > 0 && (
+                  <div
+                    className="actor-item actor-more"
+                    onClick={() => setExpandedActors(true)}
+                    style={{ cursor: "pointer" }}
+                  >
                     <div className="actor-more-circle">+{extraCount}</div>
                     <div className="actor-name">more</div>
                   </div>
@@ -96,7 +125,9 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
           {/* Directors */}
           {directors && (
             <div className="modal-directors">
-              <strong>{(film.directors || []).length > 1 ? "Directors" : "Director"}</strong>
+              <strong>
+                {(film.directors || []).length > 1 ? "Directors" : "Director"}
+              </strong>
               &nbsp; · &nbsp; {directors}
             </div>
           )}
@@ -104,7 +135,9 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
           {/* Credits */}
           <div className="modal-credits">
             {film.writers?.length > 0 && (
-              <div><strong>Writers:</strong> {film.writers.join(" · ")}</div>
+              <div>
+                <strong>Writers:</strong> {film.writers.join(" · ")}
+              </div>
             )}
           </div>
 

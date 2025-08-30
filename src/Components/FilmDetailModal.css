@@ -127,15 +127,65 @@
 }
 
 /* Actors */
-.actors-section { position: relative; display: flex; overflow-x: auto; scrollbar-width: none; gap: 28px; z-index: 50; }
+.actors-section {
+  position: relative;
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  gap: 20px;
+  z-index: 50;
+}
+
+.actors-section.centered {
+  justify-content: center; /* apply only if 3 or fewer actors */
+}
+
 .actors-section::-webkit-scrollbar { display: none; }
 
-.actors-row { display: flex; flex-wrap: nowrap; }
-.actor-item { width: 92px; text-align: center; font-size: 0.9rem; color: #adadad; flex: 0 0 auto; }
-.actor-photo { width: 92px; height: 92px; border-radius: 50%; object-fit: cover; margin: 0 auto; box-shadow: 0 6px 20px rgba(0,0,0,0.6); border: 2px solid rgba(255,255,255,0.03); }
-.actor-name { margin-top: 8px; font-size: 0.85rem; color: #adadad; }
+.actors-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 20px;
+  min-width: max-content; /* keep scrolling if too many actors */
+}
+
+/* Actor items */
+.actor-item { 
+  width: 92px; 
+  text-align: center; 
+  font-size: 0.9rem; 
+  color: #adadad; 
+  flex: 0 0 auto; 
+}
+.actor-photo { 
+  width: 92px; 
+  height: 92px; 
+  border-radius: 50%; 
+  object-fit: cover; 
+  margin: 0 auto; 
+  box-shadow: 0 6px 20px rgba(0,0,0,0.6); 
+  border: 2px solid rgba(255,255,255,0.03); 
+}
+.actor-name { 
+  margin-top: 4px; /* reduced space between first and last name lines */
+  line-height: 1.1; /* tighter spacing */
+  font-size: 0.85rem; 
+  color: #adadad; 
+}
 .actor-more { display: flex; flex-direction: column; align-items: center; }
-.actor-more-circle { width: 92px; height: 92px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); color: #cfcfcf; font-weight: 700; font-size: 1.15rem; border: 2px solid rgba(255,255,255,0.03); }
+.actor-more-circle { 
+  width: 92px; 
+  height: 92px; 
+  border-radius: 50%; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  background: rgba(255,255,255,0.03); 
+  color: #cfcfcf; 
+  font-weight: 700; 
+  font-size: 1.15rem; 
+  border: 2px solid rgba(255,255,255,0.03); 
+}
 
 /* Close button */
 .close-button { position: absolute; top: 20px; right: 22px; font-size: 1.9rem; color: #fff; background: transparent; border: none; cursor: pointer; z-index: 30; }
