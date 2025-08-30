@@ -67,6 +67,19 @@
   justify-content: center;
   gap: 6px;
   flex-wrap: nowrap;
+  flex-direction: row;
+}
+
+/* New stars row */
+.poster-rating {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 6px;
+}
+.poster-rating img {
+  width: 18px;
+  height: 18px;
 }
 
 /* Scrollable content, same logic as main page */
@@ -108,7 +121,6 @@
 
 .title-row { display: flex; align-items: center; gap: 12px; flex-wrap: nowrap; }
 .modal-title { font-size: clamp(3rem, 5vw, 4.4rem); line-height: 1; margin: 0; font-weight: 800; color: #ddd; text-align: left; overflow: hidden; }
-.modal-rating-inline { font-size: 1.1rem; font-weight: 300; color: #fff; flex-shrink: 0; }
 
 .modal-directors { color: #cfcfcf; font-size: 0.9rem; margin-top: 10px; text-align: center; max-width: 900px; position: relative; z-index: 50; }
 

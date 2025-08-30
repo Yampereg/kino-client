@@ -32,6 +32,25 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
     onClose();
   };
 
+  // build stars array from rating (out of 10 => convert to 5 scale)
+  const buildStars = (score) => {
+    const stars = [];
+    const ratingOutOfFive = (score || 0) / 2;
+    for (let i = 1; i <= 5; i++) {
+      if (ratingOutOfFive >= i) {
+        stars.push("/fullstar.png");
+      } else if (ratingOutOfFive >= i - 0.5) {
+        stars.push("/halfstar.png");
+      } else {
+        stars.push("/emptystar.png");
+      }
+    }
+    return stars;
+  };
+
+
+  const stars = buildStars(film.voteAverage);
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-container" onClick={(e) => e.stopPropagation()}>
@@ -65,16 +84,17 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
                     : ""}
                 </span>
               </div>
+              {/* Stars under year/runtime */}
+              <div className="poster-rating">
+                {stars.map((s, idx) => (
+                  <img key={idx} src={s} alt="star" />
+                ))}
+              </div>
             </div>
 
             <div className="header-right">
               <div className="title-row">
-                <h1 className="modal-title">
-                  {film.title}{" "}
-                  <span className="modal-rating-inline">
-                    ⭐ {film.voteAverage?.toFixed(1)}
-                  </span>
-                </h1>
+                <h1 className="modal-title">{film.title}</h1>
               </div>
 
               <div className="modal-tags">
