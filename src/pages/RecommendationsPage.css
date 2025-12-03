@@ -8,9 +8,8 @@
   --banner-blur: 2px;
   --banner-brightness: 0.95;
   --page-gray: #111111;
-  --bottom-actions-height: 150px;
+  --bottom-actions-height: 100px;
   --film-card-top-offset: 0.18;
-  --action-button-gap: 16px;
 }
 
 html, body {
@@ -27,7 +26,6 @@ html, body {
 }
 
 .recommendations-page {
-  color: #ACACAC;
   position: relative;
   height: 100vh;
   width: 100%;
@@ -37,8 +35,6 @@ html, body {
   margin: 0;
   padding: 0;
   background-color: var(--page-gray);
-  box-sizing: border-box;
-  --banner-height: clamp(160px, 45vh, 75vh);
 }
 
 .background-banner {
@@ -67,21 +63,16 @@ html, body {
   position: absolute;
   left: 0;
   right: 0;
-  /* Start content below the banner offset */
-  top: calc(var(--banner-height) * var(--film-card-top-offset));
-  /* Extend to bottom of screen */
+  top: 0;
   bottom: 0;
+  padding-top: calc(var(--banner-height) * var(--film-card-top-offset));
+  padding-bottom: calc(var(--bottom-actions-height) + env(safe-area-inset-bottom) + 40px);
   display: flex;
   justify-content: center;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  z-index: 6;
+  z-index: 10;
   box-sizing: border-box;
-  padding-left: 12px;
-  padding-right: 12px;
-  /* CRITICAL FIX: Huge bottom padding ensures text scrolls completely CLEAR of the buttons */
-  padding-bottom: calc(var(--bottom-actions-height) + 100px);
-  pointer-events: auto;
 }
 
 .film-card {
@@ -92,8 +83,7 @@ html, body {
   justify-content: flex-start;
   gap: 12px;
   text-align: center;
-  z-index: 6;
-  padding: 20px 12px 0 12px;
+  z-index: 10;
   box-sizing: border-box;
 }
 
@@ -182,17 +172,11 @@ html, body {
   bottom: 0;
   display: flex;
   gap: 12px;
-  height: 100px;
+  height: var(--bottom-actions-height);
   justify-content: center;
-  z-index: 22;
+  z-index: 20;
   padding-bottom: env(safe-area-inset-bottom);
   pointer-events: auto; 
-}
-
-.top-nav,
-.action-buttons {
-  position: relative;
-  z-index: 10;
 }
 
 .icon-button,
@@ -232,12 +216,6 @@ html, body {
 
 @media (min-width: 768px) {
   .film-scroll-area {
-    top: calc(var(--banner-height) * max(0.06, var(--film-card-top-offset)));
-  }
-}
-
-@media (max-width: 767px) {
-  :root {
-    --bottom-actions-height: 150px;
+    padding-top: calc(var(--banner-height) * max(0.06, var(--film-card-top-offset)));
   }
 }

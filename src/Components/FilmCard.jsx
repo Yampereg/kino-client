@@ -1,6 +1,4 @@
 import React from "react";
-// Styles are handled globally in RecommendationsPage.css, 
-// but we keep the import if you have specific card overrides
 import "./FilmCard.css"; 
 
 export default function FilmCard({ film, onOpenDetail }) {
@@ -20,7 +18,7 @@ export default function FilmCard({ film, onOpenDetail }) {
             onClick={onOpenDetail}
           />
         ) : (
-          <div className="film-card-poster missing-poster-card">
+          <div className="film-card-poster">
             {film.title}
           </div>
         )}

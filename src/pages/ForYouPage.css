@@ -2,7 +2,7 @@
   background: #000;
   color: #fff;
   height: 100vh;
-  width: 100vw;
+  width: 100%;
   padding: 0;
   margin: 0;
   display: flex;
@@ -15,9 +15,7 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  /* Reduced top padding slightly to bring Hi User closer to TopNav if desired, 
-     but keeping enough to clear the fixed header. */
-  padding-top: 70px; 
+  padding-top: 80px; 
   padding-bottom: 40px;
   -webkit-overflow-scrolling: touch;
 }
@@ -41,7 +39,6 @@
   background: #2a2a2a;
   display: grid;
   place-items: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 .icon-svg {
@@ -60,7 +57,6 @@
   font-size: 1.8rem;
   font-weight: 800;
   color: #fff;
-  line-height: 1.1;
 }
 
 .welcome-message {
@@ -79,7 +75,6 @@
   font-weight: 800;
   margin: 0 0 16px 24px;
   color: #fff;
-  letter-spacing: 0.5px;
 }
 
 .empty-state {
@@ -87,5 +82,12 @@
   padding: 100px 20px;
   font-size: 1.2rem;
   color: #888;
-  font-weight: 500;
+}
+
+.page-footer {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #222;
+  padding: 30px 0;
 }
