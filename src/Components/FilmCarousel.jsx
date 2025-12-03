@@ -10,7 +10,6 @@ export default function FilmCarousel({ films }) {
   return (
     <div className="film-carousel-wrapper">
       <div className="film-carousel-container">
-        <span />
         {carouselFilms.map((film, index) => (
           <div 
             key={index} 
@@ -30,7 +29,6 @@ export default function FilmCarousel({ films }) {
             )}
           </div>
         ))}
-        <span />
         <div className="pagination-dots">
             {[...Array(carouselFilms.length)].map((_, i) => (
                 <span key={i} className={`dot ${i === 2 ? 'active-dot' : ''}`} />

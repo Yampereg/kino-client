@@ -1,53 +1,27 @@
-.film-card {
-  text-align: center;
-  margin-top: 5vh;
-  position: relative;
-  z-index: 10;
-  padding: 0 20px;
-}
-
-.poster-container {
+.top-nav {
+  background: transparent;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 15px 20px;
+  z-index: 100;
   display: flex;
-  justify-content: center;
+  gap: 10px;
+  font-size: 1.1rem;
+  font-weight: 500;
 }
 
-.film-card-poster {
-  max-width: 280px;
-  border-radius: 16px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
-  transition: transform 0.25s ease;
+.nav-item {
   cursor: pointer;
+  color: #888;
+  transition: color 0.1s ease;
 }
 
-.film-card-poster:hover {
-  transform: scale(1.05);
+.nav-item.active {
+  color: #fff;
 }
 
-.film-title {
-  color: white;
-  margin-top: 40px;
-}
-
-.film-genres {
-  margin-top: 8px;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.genre-tag {
-  border-radius: 12px;
-  padding: 4px 10px;
-  font-size: 0.85rem;
-  color: white;
-  background: transparent;        /* make background transparent */
-  border: 1px solid white;        /* add a visible border */
-}
-
-.film-overview {
-  margin-top: 15px;
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 1rem;
-  line-height: 1.4;
+.nav-sep {
+  color: #555;
 }
