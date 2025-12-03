@@ -26,6 +26,7 @@ html, body {
 }
 
 .recommendations-page {
+  color: #ACACAC;
   position: relative;
   height: 100vh;
   width: 100%;
@@ -59,24 +60,20 @@ html, body {
   pointer-events: none;
 }
 
-/* This is the key scrolling container */
 .film-scroll-area {
   position: absolute;
   left: 0;
   right: 0;
-  top: 0;
-  bottom: 0;
-  /* Top padding places the poster correctly */
-  padding-top: calc(var(--banner-height) * var(--film-card-top-offset));
-  /* Large Bottom padding ensures text scrolls CLEAR of the buttons */
-  padding-bottom: 220px; 
+  top: calc(var(--banner-height) * var(--film-card-top-offset));
+  /* Stops the scroll container exactly above the buttons */
+  bottom: calc(var(--bottom-actions-height) + env(safe-area-inset-bottom));
   display: flex;
   justify-content: center;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  z-index: 10;
+  z-index: 6;
   box-sizing: border-box;
-  pointer-events: auto; /* Ensures scroll works */
+  padding: 0 12px 20px 12px;
 }
 
 .film-card {
@@ -87,8 +84,10 @@ html, body {
   justify-content: flex-start;
   gap: 12px;
   text-align: center;
-  z-index: 10;
+  z-index: 6;
   box-sizing: border-box;
+  /* Add top padding for spacing inside the scroll view */
+  padding-top: 20px; 
 }
 
 .poster-container {
@@ -183,6 +182,13 @@ html, body {
   pointer-events: auto; 
 }
 
+.top-nav,
+.film-card,
+.action-buttons {
+  position: relative;
+  z-index: 10;
+}
+
 .icon-button,
 .skip-button {
   border: none;
@@ -220,6 +226,6 @@ html, body {
 
 @media (min-width: 768px) {
   .film-scroll-area {
-    padding-top: calc(var(--banner-height) * max(0.06, var(--film-card-top-offset)));
+    top: calc(var(--banner-height) * max(0.06, var(--film-card-top-offset)));
   }
 }
