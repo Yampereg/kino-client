@@ -1,5 +1,6 @@
+/* ForYouPage.css */
 .for-you-page {
-  background: #000;
+  background: var(--app-bg);
   color: #fff;
   height: 100vh;
   width: 100vw;
@@ -8,7 +9,6 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  padding-top: 70px;
   box-sizing: border-box;
 }
 
@@ -18,64 +18,73 @@
   overflow-x: hidden;
   padding-bottom: 40px;
   -webkit-overflow-scrolling: touch;
+  padding-top: 80px; 
 }
 
 .page-header {
   display: flex;
   flex-direction: column;
-  padding: 0 16px 20px 16px;
-  margin-top: 0;
+  padding: 0 24px 32px 24px;
 }
 
 .page-header .greeting {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 1.5rem;
-  font-weight: 500;
+  gap: 16px;
 }
 
 .page-header .greeting-icon {
-  width: 40px;
-  height: 40px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  background: #333;
+  background: #2a2a2a;
   display: grid;
   place-items: center;
-  font-size: 1.5rem;
-  color: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
-.page-header .welcome-message {
-  font-size: 0.95rem;
+.icon-svg {
+  width: 32px;
+  height: 32px;
+  fill: #ACACAC;
+}
+
+.header-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.user-name {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.1;
+}
+
+.welcome-message {
+  font-size: 1rem;
   color: #888;
   margin-top: 4px;
-  margin-left: 52px;
+  font-weight: 500;
 }
 
 .section {
-  padding: 0 0 24px 0;
+  padding: 0 0 32px 0;
 }
 
 .section-title {
-  font-size: 1.4rem;
-  font-weight: 700;
-  margin: 0 0 16px 16px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 0 0 20px 24px;
   color: #fff;
+  letter-spacing: 0.5px;
 }
 
 .empty-state {
   text-align: center;
-  padding: 50px 20px;
-  font-size: 1.1rem;
-  color: #acacac;
-}
-
-.page-footer {
-  text-align: center;
-  font-size: 1.5rem;
-  font-weight: 900;
-  color: #222;
-  padding: 30px 0;
-  letter-spacing: 1px;
+  padding: 100px 20px;
+  font-size: 1.2rem;
+  color: #888;
+  font-weight: 500;
 }

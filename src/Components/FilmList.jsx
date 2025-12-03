@@ -1,3 +1,4 @@
+/* FilmList.jsx */
 import React from "react";
 import "./FilmList.css";
 
@@ -8,7 +9,7 @@ export default function FilmList({ films }) {
   return (
     <div className="film-list-container">
       {films.map((film, index) => (
-        <div key={index} className="film-list-item">
+        <div key={film.id || index} className="film-list-item">
           <div className="list-poster-wrapper">
             {getPosterUrl(film.posterPath) ? (
               <img 
@@ -17,12 +18,15 @@ export default function FilmList({ films }) {
                 className="list-poster" 
               />
             ) : (
-              <div className="missing-poster-list">?</div>
+              <div className="missing-poster-list"></div>
             )}
           </div>
           <div className="list-info">
             <span className="list-title">{film.title}</span>
-            <span className="list-rating">★ {film.voteAverage ? film.voteAverage.toFixed(1) : '0.0'}</span>
+            <div className="list-rating">
+              <span className="star-icon">★</span>
+              <span>{film.voteAverage ? film.voteAverage.toFixed(1) : '0.0'}</span>
+            </div>
           </div>
         </div>
       ))}

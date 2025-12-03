@@ -1,7 +1,8 @@
+/* FilmCarousel.css */
 .film-carousel-wrapper {
-  overflow: hidden;
   position: relative;
   width: 100%;
+  padding: 10px 0 30px 0;
 }
 
 .film-carousel-container {
@@ -9,20 +10,12 @@
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
-  
-  /* Center alignment calculation:
-     50vw (half screen) - 102px (half item width including margins)
-     Item width is 180px + 12px + 12px margin = 204px total space per item.
-     Half of that space is 102px.
-  */
-  padding: 10px calc(50vw - 102px);
-  
+  /* Center alignment: 50vw - half item width (90px) - margin (12px) */
+  padding: 0 calc(50vw - 102px);
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  
-  /* Important for seamless jumping */
-  scroll-behavior: auto; 
+  gap: 0;
 }
 
 .film-carousel-container::-webkit-scrollbar {
@@ -33,11 +26,11 @@
   flex-shrink: 0;
   width: 180px;
   height: 270px;
-  /* 12px margin on each side = 24px gap total between items */
-  margin: 0 12px; 
+  margin: 0 12px;
   scroll-snap-align: center;
   position: relative;
-  transition: transform 0.3s ease;
+  perspective: 1000px;
+  z-index: 1;
 }
 
 .film-poster {
@@ -45,17 +38,24 @@
   height: 100%;
   border-radius: 12px;
   object-fit: cover;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5);
   background: #222;
-  /* Subtle dimming for all items; focus is handled by scroll-snap centering */
-  filter: brightness(0.85);
-  transition: filter 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  /* Default state for non-active items */
+  transform: scale(0.85) translateY(10px);
+  filter: brightness(0.5) saturate(0.8);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
-/* Optional: Highlight item on hover to simulate focus since we can't detect center w/o JS */
-.film-carousel-item:hover .film-poster {
-  filter: brightness(1.1);
-  transform: scale(1.02);
+/* Active state (centered item) */
+.film-carousel-item.active {
+  z-index: 10;
+}
+
+.film-carousel-item.active .film-poster {
+  transform: scale(1.1) translateY(0);
+  filter: brightness(1.05) saturate(1.1);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
 .missing-poster {
@@ -67,6 +67,33 @@
   align-items: center;
   justify-content: center;
   color: #555;
-  text-align: center;
-  padding: 10px;
+  font-weight: 600;
+  transform: scale(0.85);
+  filter: brightness(0.5);
+  transition: all 0.4s ease;
+}
+
+.film-carousel-item.active .missing-poster {
+  transform: scale(1.1);
+  filter: brightness(1);
+}
+
+.pagination-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #444;
+  transition: all 0.3s ease;
+}
+
+.dot.active-dot {
+  background-color: #fff;
+  transform: scale(1.2);
 }

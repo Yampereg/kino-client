@@ -1,14 +1,20 @@
-// src/Components/PageHeader.jsx
+/* PageHeader.jsx */
 import React from "react";
 
 export default function PageHeader() {
   return (
     <div className="page-header">
       <div className="greeting">
-        <div className="greeting-icon">👤</div> 
-        <span>Hi User</span>
+        <div className="greeting-icon">
+          <svg className="icon-svg" viewBox="0 0 24 24">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+          </svg>
+        </div>
+        <div className="header-text">
+          <span className="user-name">Hi User</span>
+          <span className="welcome-message">Welcome back to Kino</span>
+        </div>
       </div>
-      <div className="welcome-message">Welcome back to Kino</div>
     </div>
   );
 }

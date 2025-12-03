@@ -1,46 +1,52 @@
-import React, { useRef, useLayoutEffect, useMemo } from "react";
+/* FilmCarousel.jsx */
+import React, { useRef, useEffect, useState } from "react";
 import "./FilmCarousel.css";
 
 export default function FilmCarousel({ films }) {
   const scrollRef = useRef(null);
-  
-  const displayFilms = useMemo(() => {
-    return films.length > 0 ? [...films, ...films, ...films] : [];
-  }, [films]);
+  const itemsRef = useRef([]);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const getPosterUrl = (path) => 
     path ? `https://image.tmdb.org/t/p/w500/${path}` : null;
 
-  useLayoutEffect(() => {
-    if (scrollRef.current && films.length > 0) {
-      const singleSetWidth = films.length * 204;
-      scrollRef.current.scrollLeft = singleSetWidth;
-    }
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (!container || films.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = Number(entry.target.dataset.index);
+            setActiveIndex(index);
+          }
+        });
+      },
+      {
+        root: container,
+        threshold: 0.5,
+        rootMargin: "0px -45% 0px -45%"
+      }
+    );
+
+    itemsRef.current.forEach((item) => {
+      if (item) observer.observe(item);
+    });
+
+    return () => observer.disconnect();
   }, [films]);
-
-  const handleScroll = () => {
-    if (!scrollRef.current || films.length === 0) return;
-
-    const scrollLeft = scrollRef.current.scrollLeft;
-    const singleSetWidth = films.length * 204;
-
-    if (scrollLeft < singleSetWidth / 2) {
-      scrollRef.current.scrollLeft += singleSetWidth;
-    } 
-    else if (scrollLeft >= singleSetWidth * 1.5) {
-      scrollRef.current.scrollLeft -= singleSetWidth;
-    }
-  };
 
   return (
     <div className="film-carousel-wrapper">
-      <div 
-        className="film-carousel-container" 
-        ref={scrollRef}
-        onScroll={handleScroll}
-      >
-        {displayFilms.map((film, index) => (
-          <div key={index} className="film-carousel-item">
+      <div className="film-carousel-container" ref={scrollRef}>
+        {films.map((film, index) => (
+          <div 
+            key={film.id || index} 
+            className={`film-carousel-item ${index === activeIndex ? 'active' : ''}`}
+            ref={el => itemsRef.current[index] = el}
+            data-index={index}
+          >
             {getPosterUrl(film.posterPath) ? (
               <img 
                 src={getPosterUrl(film.posterPath)} 
@@ -54,6 +60,11 @@ export default function FilmCarousel({ films }) {
             )}
           </div>
         ))}
+      </div>
+      <div className="pagination-dots">
+          {films.slice(0, 5).map((_, i) => (
+              <span key={i} className={`dot ${i === (activeIndex % 5) ? 'active-dot' : ''}`} />
+          ))}
       </div>
     </div>
   );
