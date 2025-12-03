@@ -1,7 +1,7 @@
 .top-nav {
   background: transparent !important;
   background-color: transparent !important;
-  position: fixed;
+  position: fixed !important;
   top: 0;
   left: 0;
   right: 0;
@@ -14,6 +14,7 @@
   font-size: 1.1rem;
   font-weight: 500;
   pointer-events: auto;
+  box-shadow: none !important;
 }
 
 .nav-item {
@@ -28,4 +29,5 @@
 
 .nav-sep {
   color: #555;
+  margin: 0 4px;
 }
