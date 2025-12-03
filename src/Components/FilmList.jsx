@@ -22,7 +22,7 @@ export default function FilmList({ films }) {
           </div>
           <div className="list-info">
             <span className="list-title">{film.title}</span>
-            <span className="list-rating">★ {film.vote_average ? film.vote_average.toFixed(1) : '0.0'}</span>
+            <span className="list-rating">★ {film.voteAverage ? film.voteAverage.toFixed(1) : '0.0'}</span>
           </div>
         </div>
       ))}
