@@ -4,18 +4,48 @@ import FilmDetailModal from "../Components/FilmDetailModal";
 import TopNav from "../Components/TopNav.jsx";
 import FilmCard from "../Components/FilmCard";
 import ActionButtons from "../Components/ActionButtons";
+import ForYouPage from "./ForYouPage.jsx";
 import "./RecommendationsPage.css";
+
+function HomeRecommendationsView({ film, token, loadNextBatch, handleInteraction, setDetailFilm }) {
+  const bannerUrl = film.bannerPath
+    ? `https://image.tmdb.org/t/p/original/${film.bannerPath}`
+    : film.backdropPath
+    ? `https://image.tmdb.org/t/p/original/${film.backdropPath}`
+    : `https://image.tmdb.org/t/p/w500/${film.posterPath}`;
+
+  return (
+    <div className="recommendations-page font-kino">
+      <div className="background-banner" style={{ backgroundImage: `url(${bannerUrl})` }} />
+      <div className="background-fade" style={{ backgroundImage: `url('/backgroundfade.png')` }} />
+
+      <div className="film-scroll-area">
+        <FilmCard film={film} onOpenDetail={() => setDetailFilm(film)} />
+      </div>
+
+      <div className="poster-fade" style={{ backgroundImage: `url('/posterfade.png')` }} />
+
+      <ActionButtons
+        films={[film]}
+        setFilms={handleInteraction}
+        token={token}
+        loadNextBatch={loadNextBatch}
+      />
+    </div>
+  );
+}
 
 export default function RecommendationsPage() {
   const token = localStorage.getItem("token");
+  const [activeView, setActiveView] = useState('home');
   const [films, setFilms] = useState([]);
   const [detailFilm, setDetailFilm] = useState(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!token) return;
+    if (!token || activeView !== 'home') return;
     loadNextBatch();
-  }, [token]);
+  }, [token, activeView]);
 
   const loadNextBatch = async () => {
     setError("");
@@ -29,12 +59,10 @@ export default function RecommendationsPage() {
     }
   };
 
-  const handleInteraction = async (filmId) => {
-    // Remove the specific film from the array
+  const handleInteraction = (filmId) => {
     setFilms((prev) => {
       const updated = prev.filter((f) => f.id !== filmId);
       if (updated.length === 0) {
-        // If empty, load next batch automatically
         loadNextBatch();
       }
       return updated;
@@ -47,36 +75,31 @@ export default function RecommendationsPage() {
     return <div className="empty-state font-kino">Please log in to get recommendations.</div>;
   }
 
-  if (!film) {
-    return <div className="empty-state font-kino">{error || "No more films!"}</div>;
-  }
+  const renderContent = () => {
+    if (activeView === 'forYou') {
+      return <ForYouPage />;
+    }
 
-  const bannerUrl = film.bannerPath
-    ? `https://image.tmdb.org/t/p/original/${film.bannerPath}`
-    : film.backdropPath
-    ? `https://image.tmdb.org/t/p/original/${film.backdropPath}`
-    : `https://image.tmdb.org/t/p/w500/${film.posterPath}`;
+    // Default 'home' view rendering
+    if (!film) {
+      return <div className="empty-state font-kino">{error || "No more films!"}</div>;
+    }
+
+    return (
+      <HomeRecommendationsView 
+        film={film} 
+        token={token} 
+        loadNextBatch={loadNextBatch} 
+        handleInteraction={handleInteraction} 
+        setDetailFilm={setDetailFilm} 
+      />
+    );
+  };
 
   return (
-    <div className="recommendations-page font-kino">
-      <div className="background-banner" style={{ backgroundImage: `url(${bannerUrl})` }} />
-      <div className="background-fade" style={{ backgroundImage: `url('/backgroundfade.png')` }} />
-      <TopNav />
-
-      {/* Scroll wrapper placed between banner and fixed actions */}
-      <div className="film-scroll-area">
-        <FilmCard film={film} onOpenDetail={() => setDetailFilm(film)} />
-      </div>
-
-      <div className="poster-fade" style={{ backgroundImage: `url('/posterfade.png')` }} />
-
-      {/* ActionButtons remain fixed and unchanged in behavior */}
-      <ActionButtons
-        films={[film]}
-        setFilms={handleInteraction}
-        token={token}
-        loadNextBatch={loadNextBatch}
-      />
+    <>
+      <TopNav activeView={activeView} onViewChange={setActiveView} />
+      {renderContent()}
 
       {detailFilm && (
         <FilmDetailModal
@@ -88,6 +111,6 @@ export default function RecommendationsPage() {
           loadNextBatch={loadNextBatch}
         />
       )}
-    </div>
+    </>
   );
 }
