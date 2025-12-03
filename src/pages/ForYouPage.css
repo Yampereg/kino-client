@@ -1,0 +1,79 @@
+/* --- Page Layout --- */
+.for-you-page {
+  background: #000;
+  color: #fff;
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-scroll-area {
+  flex-grow: 1;
+  overflow-y: auto;
+  /* Adjust for bottom space/logo */
+  padding-bottom: 80px; 
+}
+
+/* --- Page Header (The 'Hi User' component) --- */
+.page-header {
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px 10px 16px;
+  /* Subtle bottom border to separate header from content */
+  border-bottom: 1px solid #111; 
+}
+
+.page-header .greeting {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.page-header .greeting-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #444;
+  display: grid;
+  place-items: center;
+  font-size: 1.8rem;
+}
+.page-header .welcome-message {
+  font-size: 1rem;
+  color: #acacac;
+  margin-top: 4px;
+}
+
+
+/* --- Section Headers and Content --- */
+.section {
+  padding: 0 16px; /* Horizontal padding for content sections */
+  margin-bottom: 24px;
+}
+
+.section-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 24px 0 16px 0;
+}
+
+/* --- Typography and Layout --- */
+.empty-state {
+  text-align: center;
+  padding: 50px 20px;
+  font-size: 1.1rem;
+  color: #acacac;
+}
+
+.page-footer {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 900;
+  color: #1f1f1f; /* Dark gray color for subtle KINO logo */
+  padding: 40px 0;
+}
+
