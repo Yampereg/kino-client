@@ -91,7 +91,6 @@
   bottom: calc(var(--modal-bottom-height) + env(safe-area-inset-bottom));
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  /* Fixed: Removed horizontal padding to stop scrollbar */
   padding: 0;
   box-sizing: border-box;
   color: white;
@@ -103,8 +102,8 @@
 	display: grid;
 	grid-template-columns: 130px 1fr;
 	gap: 24px;
-	/* FIXED: Align items to the bottom of the grid cell for the title to start lower */
-  align-items: end;
+  /* FIXED: Vertically center the whole row to align title block with poster */
+  align-items: center; 
 	margin-top: 0; 
 	max-width: 900px;
 	margin-left: auto;
@@ -112,7 +111,6 @@
 	position: relative;
 	z-index: 20;
 	min-width: 0;
-  /* FIXED: Re-added horizontal padding to contain content */
   padding: 0 24px;
 }
 
@@ -121,13 +119,15 @@
   display: flex; 
   flex-direction: column; 
   gap: 16px; 
-  align-items: flex-start;
+  /* FIXED: Align content to the start (left) for better flow next to poster on desktop */
+  align-items: flex-start; 
   min-width: 0;
-  /* REMOVED: No longer needed with align-items: end; on the parent grid */
-  /* padding-top: 160px; */
 }
 
-.modal-tags { display: flex; gap: 10px; flex-wrap: wrap; }
+.modal-tags { display: flex; gap: 10px; flex-wrap: wrap; 
+  /* FIXED: Align tags to the left on desktop */
+  justify-content: flex-start;
+}
 .modal-rating { font-size: 1.2rem; color: #e6d07a; }
 
 .genre-tag { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); padding: 8px 14px; border-radius: 20px; font-size: 0.95rem; color: #cfcfcf; }
@@ -139,10 +139,10 @@
   margin: 0; 
   font-weight: 800; 
   color: #ddd; 
+  /* FIXED: Align title text to the left on desktop */
   text-align: left; 
   overflow: hidden; 
   width: 100%;
-  /* FIXED: Ensure text wraps within the grid cell */
   overflow-wrap: break-word;
   word-break: break-word;
 }
@@ -161,7 +161,6 @@
 	overflow-wrap: break-word;
 	word-break: break-word;
 	margin-bottom: 20px;
-  /* FIXED: Re-added horizontal padding to contain text content */
   padding: 0 24px;
 }
 
@@ -173,7 +172,6 @@
 	scrollbar-width: none;
 	gap: 20px;
 	z-index: 50;
-  /* FIXED: Re-added horizontal padding for scrollable content */
 	padding: 0 24px;
 }
 
@@ -242,10 +240,12 @@
 	.actor-photo, .actor-more-circle { width: 50px; height: 50px; }
 	.actor-item { width: 76px; }
 	.modal-banner { height: 38vh; }
-  /* FIXED: Remove two-column grid in mobile, use flex column */
 	.modal-header { display: flex; flex-direction: column; margin-top: 0; margin-bottom: 20px; padding: 0 24px; }
 	.header-left, .header-right { width: 100%; align-items: center; text-align: center; }
   .header-right { padding-top: 0; }
+  /* FIXED: Re-center title and tags for mobile stack layout */
+  .modal-title { text-align: center; }
+  .modal-tags { justify-content: center; }
 }
 
 /* Bottom fixed bar (same dark bg) */
