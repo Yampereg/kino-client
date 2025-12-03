@@ -1,34 +1,27 @@
 .film-carousel-wrapper {
   position: relative;
   width: 100%;
-  padding: 10px 0 30px 0;
+  padding: 10px 0 20px 0;
 }
 
-.film-carousel-container {
-  display: flex;
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
-  padding: 0 calc(50vw - 102px);
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  gap: 0;
+.film-swiper {
+  width: 100%;
+  padding-bottom: 20px;
+  overflow: visible !important;
 }
 
-.film-carousel-container::-webkit-scrollbar {
-  display: none;
+.film-swiper-slide {
+  width: 180px;
+  height: 270px;
+  transition: transform 0.3s ease;
+  z-index: 1;
 }
 
 .film-carousel-item {
-  flex-shrink: 0;
-  width: 180px;
-  height: 270px;
-  margin: 0 12px;
-  scroll-snap-align: center;
+  width: 100%;
+  height: 100%;
   position: relative;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-  z-index: 1;
+  transition: all 0.3s ease;
 }
 
 .film-poster {
@@ -38,19 +31,21 @@
   object-fit: cover;
   background: #222;
   transition: all 0.3s ease;
-  transform: scale(0.9);
-  filter: brightness(0.6);
+  transform: scale(0.85);
+  filter: brightness(0.5) saturate(0.8);
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
+/* Active State handled by Swiper's isActive render prop passed to class */
 .film-carousel-item.active {
   z-index: 10;
 }
 
 .film-carousel-item.active .film-poster {
   transform: scale(1.1);
-  filter: brightness(1);
+  filter: brightness(1.05) saturate(1.1);
   box-shadow: 0 16px 32px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
 .missing-poster {
@@ -63,9 +58,9 @@
   justify-content: center;
   color: #555;
   font-weight: 600;
-  transform: scale(0.9);
-  filter: brightness(0.6);
-  transition: all 0.3s ease;
+  transform: scale(0.85);
+  filter: brightness(0.5);
+  transition: all 0.4s ease;
 }
 
 .film-carousel-item.active .missing-poster {
@@ -76,10 +71,8 @@
 .pagination-dots {
   display: flex;
   justify-content: center;
-  flex-wrap: wrap;
   gap: 8px;
-  margin-top: 24px;
-  padding: 0 20px;
+  margin-top: 10px;
 }
 
 .dot {
@@ -87,11 +80,4 @@
   height: 6px;
   border-radius: 50%;
   background-color: #444;
-  transition: all 0.3s ease;
-  flex-shrink: 0;
-}
-
-.dot.active-dot {
-  background-color: #fff;
-  transform: scale(1.2);
 }
