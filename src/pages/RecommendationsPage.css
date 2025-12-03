@@ -59,22 +59,24 @@ html, body {
   pointer-events: none;
 }
 
+/* This is the key scrolling container */
 .film-scroll-area {
   position: absolute;
   left: 0;
   right: 0;
   top: 0;
   bottom: 0;
-  /* Top padding positions the card correctly */
+  /* Top padding places the poster correctly */
   padding-top: calc(var(--banner-height) * var(--film-card-top-offset));
-  /* Large bottom padding ensures text clears the fixed buttons when scrolling */
-  padding-bottom: 200px;
+  /* Large Bottom padding ensures text scrolls CLEAR of the buttons */
+  padding-bottom: 220px; 
   display: flex;
   justify-content: center;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   z-index: 10;
   box-sizing: border-box;
+  pointer-events: auto; /* Ensures scroll works */
 }
 
 .film-card {
