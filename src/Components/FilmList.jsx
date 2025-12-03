@@ -1,38 +1,31 @@
 // src/Components/FilmList.jsx
 import React from "react";
-// Assumes 'films' prop is an array of film objects
-// with properties like 'title' and 'vote_average'
-
-const listItemStyle = {
-  display: 'flex',
-  alignItems: 'center',
-  marginBottom: '10px',
-  padding: '8px 0',
-  borderBottom: '1px solid #111',
-};
-
-const smallPosterStyle = {
-  width: '60px',
-  height: '90px',
-  borderRadius: '6px',
-  objectFit: 'cover',
-  marginRight: '12px',
-  background: '#333', /* Placeholder color */
-  flexShrink: 0,
-  textAlign: 'center',
-  lineHeight: '90px',
-  fontSize: '0.7rem',
-};
+import "./FilmList.css";
 
 export default function FilmList({ films }) {
+  const getPosterUrl = (path) => 
+    path ? `https://image.tmdb.org/t/p/w200${path}` : null;
+
   return (
-    <div>
-      {films.slice(0, 4).map((film, index) => (
-        <div key={index} style={listItemStyle}>
-          <div style={smallPosterStyle}>P</div>
-          <div>
-            <div style={{ fontWeight: 'bold' }}>{film.title || 'Unknown Title'}</div>
-            <div style={{ fontSize: '0.8rem', color: '#acacac' }}>
+    <div className="film-list-container">
+      {films.slice(0, 5).map((film, index) => (
+        <div key={index} className="film-list-item">
+          <div className="list-poster-wrapper">
+            {getPosterUrl(film.posterPath) ? (
+              <img 
+                src={getPosterUrl(film.posterPath)} 
+                alt={film.title || "Film Poster"} 
+                className="list-poster" 
+              />
+            ) : (
+              <div className="list-poster missing-poster-list">
+                P
+              </div>
+            )}
+          </div>
+          <div className="list-info">
+            <div className="list-title">{film.title || 'Unknown Title'}</div>
+            <div className="list-rating">
               ⭐ {film.vote_average ? film.vote_average.toFixed(1) : 'N/A'}
             </div>
           </div>
