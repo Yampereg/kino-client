@@ -3,8 +3,9 @@ import React from "react";
 import "./FilmList.css";
 
 export default function FilmList({ films }) {
+  // Use w200 or w300 for the list view for better performance
   const getPosterUrl = (path) => 
-    path ? `https://image.tmdb.org/t/p/w200${path}` : null;
+    path ? `https://image.tmdb.org/t/p/w200/${path}` : null;
 
   return (
     <div className="film-list-container">

@@ -4,7 +4,7 @@ import "./FilmCarousel.css";
 
 export default function FilmCarousel({ films }) {
   const getPosterUrl = (path) => 
-    path ? `https://image.tmdb.org/t/p/w500${path}` : null;
+    path ? `https://image.tmdb.org/t/p/w500/${path}` : null;
 
   return (
     <div className="film-carousel-container">
