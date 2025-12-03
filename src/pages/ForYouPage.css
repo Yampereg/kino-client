@@ -9,12 +9,7 @@
   flex-direction: column;
 }
 
-.content-scroll-area {
-  flex-grow: 1;
-  overflow-y: auto;
-  /* Adjust for bottom space/logo */
-  padding-bottom: 80px; 
-}
+
 
 /* --- Page Header (The 'Hi User' component) --- */
 .page-header {
@@ -77,3 +72,8 @@
   padding: 40px 0;
 }
 
+.content-scroll-area {
+  flex-grow: 1;
+  overflow-y: auto; /* This enables vertical scrolling */
+  padding-bottom: 80px;
+}

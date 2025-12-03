@@ -1,20 +1,29 @@
 /* src/Components/FilmCarousel.css */
 
+.film-carousel-wrapper {
+  overflow: hidden; /* Hide excess scrollbar on the wrapper */
+}
+
 .film-carousel-container {
   display: flex;
   overflow-x: scroll;
   -webkit-overflow-scrolling: touch;
-  /* Adjust padding so scroll starts at the edge of the section */
-  padding: 0 16px 16px 16px;
-  margin-left: -16px; 
+  /* Use padding and margin to center the third item (index 2) */
+  padding: 0 50vw; /* Wide padding to help center content */
+  margin-left: -50vw; /* Pull back to align content */
+  /* This value needs to be precisely tuned based on poster width/margin */
+  transform: translateX(calc(50% + 25px)); /* Initial transform to center the main item */
+  padding-bottom: 30px; /* Space for pagination */
+  scroll-snap-type: x mandatory;
 }
 
 .film-carousel-item {
   flex-shrink: 0;
-  margin-right: 16px;
-  /* Placeholder dimensions for poster: */
+  margin: 0 12px;
   width: 180px;
   height: 270px;
+  transition: all 0.3s ease-out;
+  scroll-snap-align: center;
 }
 
 .film-poster {
@@ -24,12 +33,53 @@
   object-fit: cover;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
   background: #333;
+  
+  /* Initial state: Dimmed, scaled down, and slightly rotated (simulating non-active) */
+  filter: brightness(0.6) blur(0.5px);
+  transform: scale(0.9);
 }
 
-.missing-poster {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #acacac;
-  font-size: 1rem;
+/* Specific styling for the visually centered item (index 2 in a 5-item array) */
+/* Since we can't reliably know which item is truly centered on scroll using pure CSS, 
+   we simulate the centered look on the third item (index 2) for initial load. 
+   A real library handles this dynamic styling. */
+.film-item-2 .film-poster {
+  filter: brightness(1) blur(0);
+  transform: scale(1.1); /* Slightly larger for the main focus */
+  box-shadow: 0 15px 40px rgba(255, 255, 255, 0.1), 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+/* Scrollbar hiding for a clean look */
+.film-carousel-container::-webkit-scrollbar {
+  display: none;
+}
+.film-carousel-container {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Pagination Dots */
+.pagination-dots {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #555;
+    transition: background-color 0.3s;
+}
+
+.dot.active-dot {
+    background-color: #fff;
+    width: 8px;
+    height: 8px;
 }
