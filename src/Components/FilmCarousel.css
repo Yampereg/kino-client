@@ -2,28 +2,38 @@
 
 .film-carousel-wrapper {
   overflow: hidden; 
+  position: relative;
 }
 
 .film-carousel-container {
   display: flex;
   overflow-x: scroll;
   -webkit-overflow-scrolling: touch;
-  
-  /* Resetting the padding for a simpler centering approach using scroll-snap */
   padding: 0 16px 30px 16px; 
   margin-left: -16px; 
-  
-  /* Ensure scroll-snap is still active */
   scroll-snap-type: x mandatory;
 }
 
-/* New element to visually align the scrollable track's start point to the center */
-.film-carousel-container::before,
+.film-carousel-container::-webkit-scrollbar {
+  display: none;
+}
+.film-carousel-container {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.film-carousel-container::before {
+  content: '';
+  flex-shrink: 0;
+  width: calc(50vw - 102px);
+  height: 1px;
+}
+
 .film-carousel-container::after {
   content: '';
   flex-shrink: 0;
-  width: calc(50vw - 90px); /* 50% of viewport width minus half the poster width (180px / 2 = 90px) */
-  height: 1px; /* Required for display */
+  width: calc(50vw - 102px); 
+  height: 1px;
 }
 
 .film-carousel-item {
@@ -32,7 +42,7 @@
   width: 180px;
   height: 270px;
   transition: all 0.3s ease-out;
-  scroll-snap-align: center; /* This ensures items snap directly to the center */
+  scroll-snap-align: center;
 }
 
 .film-poster {
@@ -42,30 +52,16 @@
   object-fit: cover;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
   background: #333;
-  
   filter: brightness(0.6) blur(0.5px);
   transform: scale(0.9);
 }
 
-/* Specific styling for the visually centered item (index 2) remains, 
-   but the centering relies on the scroll position. We'll rely on the 
-   scroll snapping to make the interaction look centered. */
 .film-item-2 .film-poster {
   filter: brightness(1) blur(0);
-  transform: scale(1); /* Let the natural scale handle sizing after centering fix */
+  transform: scale(1);
   box-shadow: 0 15px 40px rgba(255, 255, 255, 0.1), 0 0 10px rgba(255, 255, 255, 0.1);
 }
 
-/* Scrollbar hiding for a clean look */
-.film-carousel-container::-webkit-scrollbar {
-  display: none;
-}
-.film-carousel-container {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-/* Pagination Dots (No changes here) */
 .pagination-dots {
     position: absolute;
     bottom: 0;

@@ -3,19 +3,17 @@
   --poster-radius: 16px;
   --poster-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
   --text-muted: #ACACAC;
-
-  /* Tunable values */
   --banner-height: 75vh;
   --banner-min-height: 160px;
   --banner-blur: 2px;
   --banner-brightness: 0.95;
   --page-gray: #111111;
-  --bottom-actions-height: 150px; /* increased for enlarged buttons */
+  --bottom-actions-height: 150px;
   --film-card-top-offset: 0.18;
   --action-button-gap: 16px;
+  --topnav-height: 50px;
 }
 
-/* Prevent page scroll on mobile */
 html, body {
   margin: 0;
   padding: 0;
@@ -38,6 +36,7 @@ html, body {
   z-index: 0;
   filter: brightness(var(--banner-brightness)) blur(var(--banner-blur));
   pointer-events: none;
+  top: var(--topnav-height);
 }
 
 .background-fade {
@@ -48,9 +47,9 @@ html, body {
   background-repeat: no-repeat;
   z-index: 1;
   pointer-events: none;
+  top: var(--topnav-height);
 }
 
-/* Content stays above */
 .top-nav,
 .film-card,
 .action-buttons {
@@ -78,7 +77,6 @@ html, body {
   z-index: 2;
 }
 
-/* Page container */
 .recommendations-page {
   color: #ACACAC;
   position: relative;
@@ -88,6 +86,7 @@ html, body {
   flex-direction: column;
   margin: 0;
   padding: 0;
+  padding-top: var(--topnav-height);
   background-color: var(--page-gray);
   --banner-height: clamp(160px, 45vh, 75vh);
 }
@@ -97,7 +96,7 @@ html, body {
   left: 0;
   right: 0;
   top: calc(var(--banner-height) * var(--film-card-top-offset));
-  bottom: calc(var(--bottom-actions-height) + env(safe-area-inset-bottom)); /* stop scroll above buttons */
+  bottom: calc(var(--bottom-actions-height) + env(safe-area-inset-bottom));
   display: flex;
   justify-content: center;
   overflow-y: auto;
@@ -106,10 +105,8 @@ html, body {
   box-sizing: border-box;
   padding-left: 12px;
   padding-right: 12px;
-  /* remove padding-bottom */
 }
 
-/* Film card */
 .film-card {
   width: min(92vw, var(--page-max-width));
   display: flex;
@@ -119,7 +116,7 @@ html, body {
   gap: 12px;
   text-align: center;
   z-index: 6;
-  padding: 20px 0 40px 0;
+  padding: 20px 12px 40px 12px;
   box-sizing: border-box;
 }
 
@@ -145,7 +142,6 @@ html, body {
   flex-shrink: 0;
 }
 
-/* Title */
 .film-title {
   margin: 10px 0 2px 0;
   font-size: clamp(36px, 8vw, 70px);
@@ -154,13 +150,12 @@ html, body {
   letter-spacing: 0.35px;
   color: #ACACAC;
   text-shadow: 0 3px 22px rgba(0, 0, 0, 0.65);
-  max-width: 100%; 
-  white-space: normal; 
-  overflow-wrap: break-word; 
-  word-break: break-word; 
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
-/* Genres */
 .film-genres {
   display: flex;
   gap: 8px;
@@ -177,7 +172,6 @@ html, body {
   font-size: 0.8rem;
 }
 
-/* Overview - expands naturally, scroll handled by film-scroll-area */
 .film-overview {
   line-height: 1.4;
   font-size: 15px;
@@ -191,7 +185,6 @@ html, body {
   margin-bottom: 20px;
 }
 
-/* Buttons */
 .action-buttons {
   position: fixed;
   left: 0;
@@ -240,16 +233,14 @@ html, body {
 .icon-button:disabled,
 .skip-button:disabled { opacity: 0.55; cursor: not-allowed; }
 
-/* Desktop media query */
 @media (min-width: 768px) {
   .film-scroll-area {
     top: calc(var(--banner-height) * max(0.06, var(--film-card-top-offset)));
   }
 }
 
-/* Mobile media query for larger buttons */
 @media (max-width: 767px) {
   :root {
-    --bottom-actions-height: 150px; /* match enlarged icons */
+    --bottom-actions-height: 150px;
   }
 }

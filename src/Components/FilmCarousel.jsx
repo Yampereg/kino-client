@@ -1,4 +1,3 @@
-// src/Components/FilmCarousel.jsx
 import React from "react";
 import "./FilmCarousel.css";
 
@@ -6,12 +5,12 @@ export default function FilmCarousel({ films }) {
   const getPosterUrl = (path) => 
     path ? `https://image.tmdb.org/t/p/w500/${path}` : null;
 
-  // We only show a few films to maintain the 'centered card' look
   const carouselFilms = films.slice(0, 5);
 
   return (
     <div className="film-carousel-wrapper">
       <div className="film-carousel-container">
+        <span />
         {carouselFilms.map((film, index) => (
           <div 
             key={index} 
@@ -31,7 +30,7 @@ export default function FilmCarousel({ films }) {
             )}
           </div>
         ))}
-        {/* Simple pagination dots */}
+        <span />
         <div className="pagination-dots">
             {[...Array(carouselFilms.length)].map((_, i) => (
                 <span key={i} className={`dot ${i === 2 ? 'active-dot' : ''}`} />

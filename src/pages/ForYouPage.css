@@ -9,14 +9,17 @@
   flex-direction: column;
 }
 
-
+.content-scroll-area {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-bottom: 80px; 
+}
 
 /* --- Page Header (The 'Hi User' component) --- */
 .page-header {
   display: flex;
   flex-direction: column;
   padding: 24px 16px 10px 16px;
-  /* Subtle bottom border to separate header from content */
   border-bottom: 1px solid #111; 
 }
 
@@ -43,10 +46,9 @@
   margin-top: 4px;
 }
 
-
 /* --- Section Headers and Content --- */
 .section {
-  padding: 0 16px; /* Horizontal padding for content sections */
+  padding: 0 16px; 
   margin-bottom: 24px;
 }
 
@@ -68,12 +70,6 @@
   text-align: center;
   font-size: 2rem;
   font-weight: 900;
-  color: #1f1f1f; /* Dark gray color for subtle KINO logo */
+  color: #1f1f1f; 
   padding: 40px 0;
-}
-
-.content-scroll-area {
-  flex-grow: 1;
-  overflow-y: auto; /* This enables vertical scrolling */
-  padding-bottom: 80px;
 }
