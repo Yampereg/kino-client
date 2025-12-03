@@ -35,8 +35,7 @@ export default function FilmCarousel({ films }) {
       container.scrollLeft = scrollLeft;
     }
 
-    const centerPosition = scrollLeft + (window.innerWidth / 2);
-    const index = Math.floor(centerPosition / itemWidth) % films.length;
+    const index = Math.round(scrollLeft / itemWidth) % films.length;
     
     if (index !== activeIndex) {
       setActiveIndex(index);
@@ -70,8 +69,8 @@ export default function FilmCarousel({ films }) {
         ))}
       </div>
       <div className="pagination-dots">
-          {films.slice(0, 5).map((_, i) => (
-              <span key={i} className={`dot ${i === (activeIndex % 5) ? 'active-dot' : ''}`} />
+          {films.map((_, i) => (
+              <span key={i} className={`dot ${i === activeIndex ? 'active-dot' : ''}`} />
           ))}
       </div>
     </div>
