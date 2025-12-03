@@ -1,4 +1,3 @@
-/* FilmCarousel.css */
 .film-carousel-wrapper {
   position: relative;
   width: 100%;
@@ -10,7 +9,6 @@
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
-  /* Center alignment: 50vw - half item width (90px) - margin (12px) */
   padding: 0 calc(50vw - 102px);
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
@@ -29,7 +27,7 @@
   margin: 0 12px;
   scroll-snap-align: center;
   position: relative;
-  perspective: 1000px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
   z-index: 1;
 }
 
@@ -39,23 +37,20 @@
   border-radius: 12px;
   object-fit: cover;
   background: #222;
-  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-  /* Default state for non-active items */
-  transform: scale(0.85) translateY(10px);
-  filter: brightness(0.5) saturate(0.8);
+  transition: all 0.3s ease;
+  transform: scale(0.9);
+  filter: brightness(0.6);
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
-/* Active state (centered item) */
 .film-carousel-item.active {
   z-index: 10;
 }
 
 .film-carousel-item.active .film-poster {
-  transform: scale(1.1) translateY(0);
-  filter: brightness(1.05) saturate(1.1);
+  transform: scale(1.1);
+  filter: brightness(1);
   box-shadow: 0 16px 32px rgba(0, 0, 0, 0.6);
-  border: 1px solid rgba(255,255,255,0.1);
 }
 
 .missing-poster {
@@ -68,9 +63,9 @@
   justify-content: center;
   color: #555;
   font-weight: 600;
-  transform: scale(0.85);
-  filter: brightness(0.5);
-  transition: all 0.4s ease;
+  transform: scale(0.9);
+  filter: brightness(0.6);
+  transition: all 0.3s ease;
 }
 
 .film-carousel-item.active .missing-poster {

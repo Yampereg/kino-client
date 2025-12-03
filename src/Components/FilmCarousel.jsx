@@ -1,51 +1,59 @@
-/* FilmCarousel.jsx */
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useLayoutEffect, useState, useMemo } from "react";
 import "./FilmCarousel.css";
 
 export default function FilmCarousel({ films }) {
   const scrollRef = useRef(null);
-  const itemsRef = useRef([]);
   const [activeIndex, setActiveIndex] = useState(0);
+  
+  const displayFilms = useMemo(() => {
+    return films.length > 0 ? [...films, ...films, ...films] : [];
+  }, [films]);
 
   const getPosterUrl = (path) => 
     path ? `https://image.tmdb.org/t/p/w500/${path}` : null;
 
-  useEffect(() => {
-    const container = scrollRef.current;
-    if (!container || films.length === 0) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const index = Number(entry.target.dataset.index);
-            setActiveIndex(index);
-          }
-        });
-      },
-      {
-        root: container,
-        threshold: 0.5,
-        rootMargin: "0px -45% 0px -45%"
-      }
-    );
-
-    itemsRef.current.forEach((item) => {
-      if (item) observer.observe(item);
-    });
-
-    return () => observer.disconnect();
+  useLayoutEffect(() => {
+    if (scrollRef.current && films.length > 0) {
+      const singleSetWidth = films.length * 204;
+      scrollRef.current.scrollLeft = singleSetWidth;
+    }
   }, [films]);
+
+  const handleScroll = () => {
+    if (!scrollRef.current || films.length === 0) return;
+
+    const container = scrollRef.current;
+    let scrollLeft = container.scrollLeft;
+    const itemWidth = 204;
+    const singleSetWidth = films.length * itemWidth;
+
+    if (scrollLeft < singleSetWidth / 2) {
+      scrollLeft += singleSetWidth;
+      container.scrollLeft = scrollLeft;
+    } else if (scrollLeft >= singleSetWidth * 1.5) {
+      scrollLeft -= singleSetWidth;
+      container.scrollLeft = scrollLeft;
+    }
+
+    const centerPosition = scrollLeft + (window.innerWidth / 2);
+    const index = Math.floor(centerPosition / itemWidth) % films.length;
+    
+    if (index !== activeIndex) {
+      setActiveIndex(index);
+    }
+  };
 
   return (
     <div className="film-carousel-wrapper">
-      <div className="film-carousel-container" ref={scrollRef}>
-        {films.map((film, index) => (
+      <div 
+        className="film-carousel-container" 
+        ref={scrollRef}
+        onScroll={handleScroll}
+      >
+        {displayFilms.map((film, index) => (
           <div 
-            key={film.id || index} 
-            className={`film-carousel-item ${index === activeIndex ? 'active' : ''}`}
-            ref={el => itemsRef.current[index] = el}
-            data-index={index}
+            key={`${index}-${film.id}`} 
+            className={`film-carousel-item ${index % films.length === activeIndex ? 'active' : ''}`}
           >
             {getPosterUrl(film.posterPath) ? (
               <img 
