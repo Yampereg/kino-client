@@ -91,7 +91,7 @@
   bottom: calc(var(--modal-bottom-height) + env(safe-area-inset-bottom));
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  /* Removed padding: 0 24px; to fix horizontal scrollbar */
+  /* Fixed: Removed horizontal padding to stop scrollbar */
   padding: 0;
   box-sizing: border-box;
   color: white;
@@ -103,7 +103,8 @@
 	display: grid;
 	grid-template-columns: 130px 1fr;
 	gap: 24px;
-	align-items: start;
+	/* FIXED: Align items to the bottom of the grid cell for the title to start lower */
+  align-items: end;
 	margin-top: 0; 
 	max-width: 900px;
 	margin-left: auto;
@@ -111,7 +112,7 @@
 	position: relative;
 	z-index: 20;
 	min-width: 0;
-	/* ADDED: Apply horizontal padding to the header grid itself */
+  /* FIXED: Re-added horizontal padding to contain content */
   padding: 0 24px;
 }
 
@@ -122,8 +123,8 @@
   gap: 16px; 
   align-items: flex-start;
   min-width: 0;
-  /* ADDED: Use padding-top to push the title down, clearing the poster on the left column */
-  padding-top: 160px;
+  /* REMOVED: No longer needed with align-items: end; on the parent grid */
+  /* padding-top: 160px; */
 }
 
 .modal-tags { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -141,6 +142,9 @@
   text-align: left; 
   overflow: hidden; 
   width: 100%;
+  /* FIXED: Ensure text wraps within the grid cell */
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .modal-directors { color: #cfcfcf; font-size: 0.9rem; margin-top: 10px; text-align: center; max-width: 900px; position: relative; z-index: 50; }
@@ -157,7 +161,8 @@
 	overflow-wrap: break-word;
 	word-break: break-word;
 	margin-bottom: 20px;
-  padding: 0 24px; /* ADDED: Re-apply horizontal padding here for text content */
+  /* FIXED: Re-added horizontal padding to contain text content */
+  padding: 0 24px;
 }
 
 /* Actors */
@@ -168,7 +173,8 @@
 	scrollbar-width: none;
 	gap: 20px;
 	z-index: 50;
-	padding: 0 24px; /* ADDED: Apply horizontal padding here for scrollable content */
+  /* FIXED: Re-added horizontal padding for scrollable content */
+	padding: 0 24px;
 }
 
 .actors-section.centered {
@@ -226,7 +232,7 @@
 .close-button { position: absolute; top: 20px; right: 22px; font-size: 1.9rem; color: #fff; background: transparent; border: none; cursor: pointer; z-index: 30; }
 
 /* Credits */
-.modal-credits { margin-top: 24px; font-size: 0.95rem; color: #bcbcbc; padding: 0 24px; /* ADDED: Apply horizontal padding here */ }
+.modal-credits { margin-top: 24px; font-size: 0.95rem; color: #bcbcbc; padding: 0 24px; }
 
 .film-genres { margin-top: 8px; display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; }
 
@@ -236,9 +242,10 @@
 	.actor-photo, .actor-more-circle { width: 50px; height: 50px; }
 	.actor-item { width: 76px; }
 	.modal-banner { height: 38vh; }
-	.modal-header { flex-direction: column; margin-top: 0; margin-bottom: 20px; padding: 0 24px; /* ADDED: Apply padding for mobile view */ }
+  /* FIXED: Remove two-column grid in mobile, use flex column */
+	.modal-header { display: flex; flex-direction: column; margin-top: 0; margin-bottom: 20px; padding: 0 24px; }
 	.header-left, .header-right { width: 100%; align-items: center; text-align: center; }
-  .header-right { padding-top: 0; } /* ADDED: Remove top padding in mobile view as layout is stacked */
+  .header-right { padding-top: 0; }
 }
 
 /* Bottom fixed bar (same dark bg) */
