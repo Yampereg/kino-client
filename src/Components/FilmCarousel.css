@@ -9,11 +9,20 @@
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
-  padding: 10px calc(50% - 102px);
+  
+  /* Center alignment calculation:
+     50vw (half screen) - 102px (half item width including margins)
+     Item width is 180px + 12px + 12px margin = 204px total space per item.
+     Half of that space is 102px.
+  */
+  padding: 10px calc(50vw - 102px);
+  
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  gap: 24px;
+  
+  /* Important for seamless jumping */
+  scroll-behavior: auto; 
 }
 
 .film-carousel-container::-webkit-scrollbar {
@@ -24,6 +33,8 @@
   flex-shrink: 0;
   width: 180px;
   height: 270px;
+  /* 12px margin on each side = 24px gap total between items */
+  margin: 0 12px; 
   scroll-snap-align: center;
   position: relative;
   transition: transform 0.3s ease;
@@ -36,6 +47,15 @@
   object-fit: cover;
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5);
   background: #222;
+  /* Subtle dimming for all items; focus is handled by scroll-snap centering */
+  filter: brightness(0.85);
+  transition: filter 0.3s ease;
+}
+
+/* Optional: Highlight item on hover to simulate focus since we can't detect center w/o JS */
+.film-carousel-item:hover .film-poster {
+  filter: brightness(1.1);
+  transform: scale(1.02);
 }
 
 .missing-poster {
@@ -47,4 +67,6 @@
   align-items: center;
   justify-content: center;
   color: #555;
+  text-align: center;
+  padding: 10px;
 }

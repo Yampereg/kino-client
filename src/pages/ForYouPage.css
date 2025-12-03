@@ -8,8 +8,8 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  /* Increased padding to clear the TopNav visual area */
-  padding-top: 110px;
+  padding-top: 70px;
+  box-sizing: border-box;
 }
 
 .content-scroll-area {
@@ -24,7 +24,6 @@
   display: flex;
   flex-direction: column;
   padding: 0 16px 20px 16px;
-  /* Removed top margin to rely on page padding */
   margin-top: 0;
 }
 
