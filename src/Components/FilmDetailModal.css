@@ -84,17 +84,18 @@
 
 /* Scrollable content, same logic as main page */
 .modal-content {
-	position: absolute;
-	top: 120px; /* match header offset like main page */
-	left: 0;
-	right: 0;
-	bottom: calc(var(--modal-bottom-height) + env(safe-area-inset-bottom)); /* stop scroll above buttons */
-	overflow-y: auto;
-	-webkit-overflow-scrolling: touch;
-	padding: 0 24px;
-	box-sizing: border-box;
-	color: white;
-	z-index: 10;
+  position: absolute;
+  top: 120px;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--modal-bottom-height) + env(safe-area-inset-bottom));
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  /* Removed padding: 0 24px; to fix horizontal scrollbar */
+  padding: 0;
+  box-sizing: border-box;
+  color: white;
+  z-index: 10;
 }
 
 /* Header grid */
@@ -103,22 +104,26 @@
 	grid-template-columns: 130px 1fr;
 	gap: 24px;
 	align-items: start;
-	margin-top: 0; /* handled by modal-content top */
+	margin-top: 0; 
 	max-width: 900px;
 	margin-left: auto;
 	margin-right: auto;
 	position: relative;
 	z-index: 20;
 	min-width: 0;
+	/* ADDED: Apply horizontal padding to the header grid itself */
+  padding: 0 24px;
 }
 
 .header-left { display: flex; flex-direction: column; gap: 8px; }
 .header-right { 
-display: flex; 
-flex-direction: column; 
-gap: 16px; 
-align-items: flex-start;
-min-width: 0;
+  display: flex; 
+  flex-direction: column; 
+  gap: 16px; 
+  align-items: flex-start;
+  min-width: 0;
+  /* ADDED: Use padding-top to push the title down, clearing the poster on the left column */
+  padding-top: 160px;
 }
 
 .modal-tags { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -128,14 +133,14 @@ min-width: 0;
 
 .title-row { display: flex; align-items: center; gap: 12px; flex-wrap: nowrap; }
 .modal-title { 
-font-size: clamp(3rem, 5vw, 4.4rem); 
-line-height: 1; 
-margin: 0; 
-font-weight: 800; 
-color: #ddd; 
-text-align: left; 
-overflow: hidden; 
-width: 100%;
+  font-size: clamp(3rem, 5vw, 4.4rem); 
+  line-height: 1; 
+  margin: 0; 
+  font-weight: 800; 
+  color: #ddd; 
+  text-align: left; 
+  overflow: hidden; 
+  width: 100%;
 }
 
 .modal-directors { color: #cfcfcf; font-size: 0.9rem; margin-top: 10px; text-align: center; max-width: 900px; position: relative; z-index: 50; }
@@ -152,6 +157,7 @@ width: 100%;
 	overflow-wrap: break-word;
 	word-break: break-word;
 	margin-bottom: 20px;
+  padding: 0 24px; /* ADDED: Re-apply horizontal padding here for text content */
 }
 
 /* Actors */
@@ -162,6 +168,7 @@ width: 100%;
 	scrollbar-width: none;
 	gap: 20px;
 	z-index: 50;
+	padding: 0 24px; /* ADDED: Apply horizontal padding here for scrollable content */
 }
 
 .actors-section.centered {
@@ -219,7 +226,7 @@ width: 100%;
 .close-button { position: absolute; top: 20px; right: 22px; font-size: 1.9rem; color: #fff; background: transparent; border: none; cursor: pointer; z-index: 30; }
 
 /* Credits */
-.modal-credits { margin-top: 24px; font-size: 0.95rem; color: #bcbcbc; }
+.modal-credits { margin-top: 24px; font-size: 0.95rem; color: #bcbcbc; padding: 0 24px; /* ADDED: Apply horizontal padding here */ }
 
 .film-genres { margin-top: 8px; display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; }
 
@@ -229,8 +236,9 @@ width: 100%;
 	.actor-photo, .actor-more-circle { width: 50px; height: 50px; }
 	.actor-item { width: 76px; }
 	.modal-banner { height: 38vh; }
-	.modal-header { flex-direction: column; margin-top: 0; margin-bottom: 20px; }
+	.modal-header { flex-direction: column; margin-top: 0; margin-bottom: 20px; padding: 0 24px; /* ADDED: Apply padding for mobile view */ }
 	.header-left, .header-right { width: 100%; align-items: center; text-align: center; }
+  .header-right { padding-top: 0; } /* ADDED: Remove top padding in mobile view as layout is stacked */
 }
 
 /* Bottom fixed bar (same dark bg) */
