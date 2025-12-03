@@ -1,48 +1,32 @@
-/* src/Components/FilmCarousel.css */
-
 .film-carousel-wrapper {
-  overflow: hidden; 
+  overflow: hidden;
   position: relative;
+  width: 100%;
 }
 
 .film-carousel-container {
   display: flex;
-  overflow-x: scroll;
+  overflow-x: auto;
+  overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
-  padding: 0 16px 30px 16px; 
-  margin-left: -16px; 
+  padding: 10px calc(50% - 102px);
   scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  gap: 24px;
 }
 
 .film-carousel-container::-webkit-scrollbar {
   display: none;
 }
-.film-carousel-container {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.film-carousel-container::before {
-  content: '';
-  flex-shrink: 0;
-  width: calc(50vw - 102px);
-  height: 1px;
-}
-
-.film-carousel-container::after {
-  content: '';
-  flex-shrink: 0;
-  width: calc(50vw - 102px); 
-  height: 1px;
-}
 
 .film-carousel-item {
   flex-shrink: 0;
-  margin: 0 12px;
   width: 180px;
   height: 270px;
-  transition: all 0.3s ease-out;
   scroll-snap-align: center;
+  position: relative;
+  transition: transform 0.3s ease;
 }
 
 .film-poster {
@@ -50,39 +34,17 @@
   height: 100%;
   border-radius: 12px;
   object-fit: cover;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-  background: #333;
-  filter: brightness(0.6) blur(0.5px);
-  transform: scale(0.9);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5);
+  background: #222;
 }
 
-.film-item-2 .film-poster {
-  filter: brightness(1) blur(0);
-  transform: scale(1);
-  box-shadow: 0 15px 40px rgba(255, 255, 255, 0.1), 0 0 10px rgba(255, 255, 255, 0.1);
-}
-
-.pagination-dots {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 10px;
-}
-
-.dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background-color: #555;
-    transition: background-color 0.3s;
-}
-
-.dot.active-dot {
-    background-color: #fff;
-    width: 8px;
-    height: 8px;
+.missing-poster {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: #222;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
 }

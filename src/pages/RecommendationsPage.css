@@ -11,7 +11,7 @@
   --bottom-actions-height: 150px;
   --film-card-top-offset: 0.18;
   --action-button-gap: 16px;
-  --topnav-height: 50px;
+  --topnav-offset: 60px;
 }
 
 html, body {
@@ -36,7 +36,7 @@ html, body {
   z-index: 0;
   filter: brightness(var(--banner-brightness)) blur(var(--banner-blur));
   pointer-events: none;
-  top: var(--topnav-height);
+  top: 0;
 }
 
 .background-fade {
@@ -47,14 +47,13 @@ html, body {
   background-repeat: no-repeat;
   z-index: 1;
   pointer-events: none;
-  top: var(--topnav-height);
 }
 
 .top-nav,
 .film-card,
 .action-buttons {
   position: relative;
-  z-index: 2;
+  z-index: 100;
 }
 
 .poster-fade {
@@ -86,7 +85,6 @@ html, body {
   flex-direction: column;
   margin: 0;
   padding: 0;
-  padding-top: var(--topnav-height);
   background-color: var(--page-gray);
   --banner-height: clamp(160px, 45vh, 75vh);
 }
@@ -95,7 +93,7 @@ html, body {
   position: absolute;
   left: 0;
   right: 0;
-  top: calc(var(--banner-height) * var(--film-card-top-offset));
+  top: calc(var(--banner-height) * var(--film-card-top-offset) + var(--topnav-offset));
   bottom: calc(var(--bottom-actions-height) + env(safe-area-inset-bottom));
   display: flex;
   justify-content: center;
@@ -235,7 +233,7 @@ html, body {
 
 @media (min-width: 768px) {
   .film-scroll-area {
-    top: calc(var(--banner-height) * max(0.06, var(--film-card-top-offset)));
+    top: calc(var(--banner-height) * max(0.06, var(--film-card-top-offset)) + var(--topnav-offset));
   }
 }
 

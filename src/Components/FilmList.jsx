@@ -13,20 +13,16 @@ export default function FilmList({ films }) {
             {getPosterUrl(film.posterPath) ? (
               <img 
                 src={getPosterUrl(film.posterPath)} 
-                alt={film.title || "Film Poster"} 
+                alt={film.title} 
                 className="list-poster" 
               />
             ) : (
-              <div className="list-poster missing-poster-list">
-                P
-              </div>
+              <div className="missing-poster-list">?</div>
             )}
           </div>
           <div className="list-info">
-            <div className="list-title">{film.title || 'Unknown Title'}</div>
-            <div className="list-rating">
-              ⭐ {film.vote_average ? film.vote_average.toFixed(1) : 'N/A'}
-            </div>
+            <span className="list-title">{film.title}</span>
+            <span className="list-rating">★ {film.vote_average ? film.vote_average.toFixed(1) : '0.0'}</span>
           </div>
         </div>
       ))}
