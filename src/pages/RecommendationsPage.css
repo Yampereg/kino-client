@@ -69,7 +69,7 @@ html, body {
   right: 0;
   /* Start content below the banner offset */
   top: calc(var(--banner-height) * var(--film-card-top-offset));
-  /* Extend to bottom of screen to allow full scroll */
+  /* Extend to bottom of screen */
   bottom: 0;
   display: flex;
   justify-content: center;
@@ -79,8 +79,9 @@ html, body {
   box-sizing: border-box;
   padding-left: 12px;
   padding-right: 12px;
-  /* CRITICAL FIX: Padding at bottom ensures text scrolls ABOVE the buttons */
-  padding-bottom: calc(var(--bottom-actions-height) + 40px);
+  /* CRITICAL FIX: Huge bottom padding ensures text scrolls completely CLEAR of the buttons */
+  padding-bottom: calc(var(--bottom-actions-height) + 100px);
+  pointer-events: auto;
 }
 
 .film-card {
@@ -92,7 +93,6 @@ html, body {
   gap: 12px;
   text-align: center;
   z-index: 6;
-  /* Remove bottom padding here as it's handled by scroll-area */
   padding: 20px 12px 0 12px;
   box-sizing: border-box;
 }
@@ -186,13 +186,13 @@ html, body {
   justify-content: center;
   z-index: 22;
   padding-bottom: env(safe-area-inset-bottom);
-  /* Ensure buttons are clickable over the scroll area */
   pointer-events: auto; 
 }
 
-/* Ensure scroll area doesn't block button clicks */
-.film-scroll-area {
-  pointer-events: auto;
+.top-nav,
+.action-buttons {
+  position: relative;
+  z-index: 10;
 }
 
 .icon-button,
