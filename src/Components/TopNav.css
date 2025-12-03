@@ -14,7 +14,6 @@
   font-size: 1.1rem;
   font-weight: 500;
   pointer-events: auto;
-  box-shadow: none; /* Removed any shadows */
 }
 
 .nav-item {
@@ -25,11 +24,8 @@
 
 .nav-item.active {
   color: #fff;
-  font-weight: 700;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.5); /* Added text shadow for legibility over banners */
 }
 
 .nav-sep {
   color: #555;
-  margin: 0 4px;
 }
