@@ -1,24 +1,35 @@
 import React from "react";
-import "./FilmCard.css";
+// Styles are handled globally in RecommendationsPage.css, 
+// but we keep the import if you have specific card overrides
+import "./FilmCard.css"; 
 
 export default function FilmCard({ film, onOpenDetail }) {
-  const posterUrl = `https://image.tmdb.org/t/p/w500/${film.posterPath}`;
+  const posterUrl = film.posterPath 
+    ? `https://image.tmdb.org/t/p/w500/${film.posterPath}`
+    : null;
 
   return (
     <main className="film-card">
       <div className="poster-container">
-        <img
-          src={posterUrl}
-          alt={film.title}
-          className="film-card-poster"
-          draggable="false"
-          onClick={onOpenDetail}
-        />
+        {posterUrl ? (
+          <img
+            src={posterUrl}
+            alt={film.title}
+            className="film-card-poster"
+            draggable="false"
+            onClick={onOpenDetail}
+          />
+        ) : (
+          <div className="film-card-poster missing-poster-card">
+            {film.title}
+          </div>
+        )}
       </div>
 
-      <h1 className="film-title text-5xl font-bold mt-6 mb-6">
+      <h1 className="film-title">
         {film.title}
       </h1>
+
       <div className="film-genres">
         {(film.genres || []).slice(0, 4).map((g) => (
           <span key={g.id ?? g.name} className="genre-tag">
@@ -26,6 +37,7 @@ export default function FilmCard({ film, onOpenDetail }) {
           </span>
         ))}
       </div>
+
       {film.overview && <p className="film-overview">{film.overview}</p>}
     </main>
   );

@@ -15,15 +15,17 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
+  /* Reduced top padding slightly to bring Hi User closer to TopNav if desired, 
+     but keeping enough to clear the fixed header. */
+  padding-top: 70px; 
   padding-bottom: 40px;
   -webkit-overflow-scrolling: touch;
-  padding-top: 80px; 
 }
 
 .page-header {
   display: flex;
   flex-direction: column;
-  padding: 0 24px 10px 24px;
+  padding: 0 24px 20px 24px;
 }
 
 .page-header .greeting {
