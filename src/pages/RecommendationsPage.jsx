@@ -27,7 +27,7 @@ function HomeRecommendationsView({ film, token, handleInteraction, loadNextBatch
       <div className="film-scroll-area">
         <FilmCard film={film} onOpenDetail={() => setDetailFilm(film)} />
         
-        {/* HUGE Spacer to allow text to scroll completely above the buttons */}
+        {/* HUGE SPACER: Guarantees text clears the buttons by a wide margin */}
         <div className="bottom-scroll-spacer" />
       </div>
 

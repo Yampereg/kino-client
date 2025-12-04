@@ -58,18 +58,22 @@ html, body {
   flex-direction: column;
   align-items: center;
   
+  /* Top padding accounts for Nav */
   padding-top: calc(var(--header-height) + 20px);
   
-  /* CRITICAL: This + the spacer ensures text can scroll clear of buttons */
+  /* Reset bottom padding, we use the spacer now */
   padding-bottom: 0px; 
 }
 
-/* This is the empty space at the end of the scroll. 
-   180px ensures the text lifts WAY up above the buttons */
+/* HUGE SPACER: 
+   Increased to 350px. This effectively adds a large empty block 
+   at the end of your content list, forcing the text to scroll 
+   way up into the middle of the screen.
+*/
 .bottom-scroll-spacer {
   width: 100%;
   flex-shrink: 0;
-  height: 180px; 
+  height: 350px; 
 }
 
 /* Hide Scrollbar */
@@ -108,7 +112,7 @@ html, body {
   font-size: 2.2rem;
   font-weight: 800;
   line-height: 1.1;
-  color: #ACACAC; /* Restored Color */
+  color: #ACACAC; 
   text-shadow: 0 2px 10px rgba(0,0,0,0.5);
 }
 
@@ -120,7 +124,7 @@ html, body {
   margin-bottom: 16px;
 }
 
-/* Restored Original Genre Style */
+/* Original Genre Styles Restored */
 .genre-tag {
   color: #ADADAD;
   border: 1px solid #575757;
@@ -137,7 +141,6 @@ html, body {
   font-weight: 300;
   margin-top: 8px;
   text-align: center;
-  /* Max width keeps text from hitting edges too hard */
   max-width: 100%;
 }
 
