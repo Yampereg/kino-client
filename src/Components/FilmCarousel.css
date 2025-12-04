@@ -6,7 +6,7 @@
 
 .film-swiper {
   width: 100%;
-  padding-bottom: 20px;
+  padding-bottom: 30px; /* Space for the dots at bottom */
   overflow: visible !important;
 }
 
@@ -36,7 +36,7 @@
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
-/* Active State handled by Swiper's isActive render prop passed to class */
+/* Active State */
 .film-carousel-item.active {
   z-index: 10;
 }
@@ -68,16 +68,23 @@
   filter: brightness(1);
 }
 
-.pagination-dots {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 10px;
+/* --- SWIPER PAGINATION CUSTOMIZATION --- */
+/* Override default blue dots */
+.swiper-pagination-bullet {
+  background: #555 !important;
+  opacity: 0.6 !important;
+  width: 6px !important;
+  height: 6px !important;
+  transition: all 0.3s ease;
 }
 
-.dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: #444;
+.swiper-pagination-bullet-active {
+  background: #fff !important;
+  opacity: 1 !important;
+  transform: scale(1.2);
+}
+
+/* Position the pagination container */
+.swiper-pagination {
+  bottom: 0px !important; /* Force it to the bottom of the container */
 }

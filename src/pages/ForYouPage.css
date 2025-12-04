@@ -15,8 +15,8 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  /* CHANGED: Increased from 80px to 120px to fix the overlap */
-  padding-top: 120px; 
+  /* CHANGED: Reduced to 100px to move the header up a bit */
+  padding-top: 100px; 
   padding-bottom: 40px;
   -webkit-overflow-scrolling: touch;
 }
