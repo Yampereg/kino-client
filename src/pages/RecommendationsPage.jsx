@@ -8,7 +8,6 @@ import ForYouPage from "./ForYouPage.jsx";
 import "./RecommendationsPage.css";
 
 function HomeRecommendationsView({ film, token, handleInteraction, loadNextBatch, setDetailFilm }) {
-  // Safe Banner URL resolution
   const bannerUrl = film?.bannerPath
     ? `https://image.tmdb.org/t/p/original/${film.bannerPath}`
     : film?.backdropPath
@@ -19,21 +18,13 @@ function HomeRecommendationsView({ film, token, handleInteraction, loadNextBatch
 
   return (
     <div className="recommendations-page font-kino">
-      {/* Background Layer */}
       <div className="background-banner" style={{ backgroundImage: `url(${bannerUrl})` }} />
       <div className="background-fade" />
-
-      {/* Scrollable Content Layer */}
       <div className="film-scroll-area">
         <FilmCard film={film} onOpenDetail={() => setDetailFilm(film)} />
-        
-        {/* HUGE SPACER: Guarantees text clears the buttons by a wide margin */}
         <div className="bottom-scroll-spacer" />
       </div>
-
-      {/* Fixed UI Layer */}
       <div className="poster-fade" /> 
-
       <ActionButtons
         films={[film]}
         setFilms={handleInteraction}
@@ -67,6 +58,25 @@ export default function RecommendationsPage() {
     }
   }, [token]);
 
+  // Logic to load For You data (Extracted for re-use)
+  const loadForYouData = useCallback(async () => {
+    try {
+      const popular = await fetchRecommendations();
+      setPopularFilms(popular || []);
+      const recommendations = await fetchRecommendations();
+      setRecommendedFilms(recommendations || []);
+    } catch (err) {
+      console.error("Failed to fetch For You data", err);
+    }
+  }, []);
+
+  const handleRefresh = async () => {
+    setLoading(true);
+    await loadForYouData();
+    // Short artificial delay to make the refresh feel substantial
+    setTimeout(() => setLoading(false), 800);
+  };
+
   useEffect(() => {
     if (!token) {
         setError("Please log in to get recommendations.");
@@ -77,22 +87,17 @@ export default function RecommendationsPage() {
     const loadInitialData = async () => {
         try {
             await loadNextBatch();
-            const popular = await fetchRecommendations();
-            setPopularFilms(popular || []);
-            const recommendations = await fetchRecommendations();
-            setRecommendedFilms(recommendations || []);
+            await loadForYouData();
         } catch (err) {
             console.error("Failed to fetch initial data", err);
             setError("Could not load initial data.");
         } finally {
-            // Artificial delay to show off animation if data loads too fast
-            // Remove the setTimeout if you want instant load
             setTimeout(() => setLoading(false), 1200);
         }
     };
 
     loadInitialData();
-  }, [token, loadNextBatch]);
+  }, [token, loadNextBatch, loadForYouData]);
 
   const handleInteraction = (filmId) => {
     setFilms((prev) => {
@@ -108,7 +113,6 @@ export default function RecommendationsPage() {
 
   if (!token) return <div className="empty-state font-kino">Please log in to get recommendations.</div>;
   
-  // --- MODERN LOADING SCREEN ---
   if (loading) {
     return (
         <div className="loading-screen font-kino">
@@ -125,7 +129,8 @@ export default function RecommendationsPage() {
       return (
         <ForYouPage 
           popularFilms={popularFilms} 
-          recommendedFilms={recommendedFilms} 
+          recommendedFilms={recommendedFilms}
+          onRefresh={handleRefresh} // Pass the refresh handler
         />
       );
     }

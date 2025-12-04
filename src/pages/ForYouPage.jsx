@@ -4,16 +4,12 @@ import FilmCarousel from "../Components/FilmCarousel";
 import FilmList from "../Components/FilmList";
 import "./ForYouPage.css";
 
-export default function ForYouPage({ popularFilms, recommendedFilms }) {
+export default function ForYouPage({ popularFilms, recommendedFilms, onRefresh }) {
   return (
     <div className="for-you-page">
-      {/* FIX: PageHeader was here. 
-         It has been moved INSIDE content-scroll-area below. 
-      */}
-
       <div className="content-scroll-area">
-        {/* NOW IT IS HERE: This ensures it respects the padding-top */}
-        <PageHeader />
+        {/* Pass onRefresh down to the header */}
+        <PageHeader onRefresh={onRefresh} />
 
         <section className="section">
           <h2 className="section-title">Popular Now</h2>

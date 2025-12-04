@@ -15,7 +15,6 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  /* CHANGED: Reduced to 100px to move the header up a bit */
   padding-top: 100px; 
   padding-bottom: 40px;
   -webkit-overflow-scrolling: touch;
@@ -27,7 +26,15 @@
   padding: 0 24px 20px 24px;
 }
 
+/* Updated Layout to push button to the right */
 .page-header .greeting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* This pushes the group and button apart */
+  width: 100%;
+}
+
+.greeting-group {
   display: flex;
   align-items: center;
   gap: 16px;
@@ -65,6 +72,43 @@
   color: #888;
   margin-top: 4px;
   font-weight: 500;
+}
+
+/* --- Refresh Button Styles --- */
+.refresh-button {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+
+.refresh-button:active {
+  transform: scale(0.92);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.refresh-icon {
+  width: 24px;
+  height: 24px;
+  fill: #fff;
+  transition: opacity 0.3s;
+}
+
+/* Animation Class */
+.refresh-button.spinning .refresh-icon {
+  animation: spinIcon 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes spinIcon {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .section {
