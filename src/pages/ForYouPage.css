@@ -15,11 +15,8 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  /* Increased padding-top to 110px.
-     This pushes the "Hi User" header down so it starts 
-     clearly BELOW the TopNav. 
-  */
-  padding-top: 110px; 
+  /* CHANGED: Increased from 80px to 120px to fix the overlap */
+  padding-top: 120px; 
   padding-bottom: 40px;
   -webkit-overflow-scrolling: touch;
 }
@@ -27,7 +24,6 @@
 .page-header {
   display: flex;
   flex-direction: column;
-  /* Removed top padding here since the scroll area handles the offset */
   padding: 0 24px 20px 24px;
 }
 
