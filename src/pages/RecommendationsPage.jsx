@@ -7,9 +7,8 @@ import ActionButtons from "../Components/ActionButtons";
 import ForYouPage from "./ForYouPage.jsx";
 import "./RecommendationsPage.css";
 
-// --- Sub-Component: Home View ---
 function HomeRecommendationsView({ film, token, handleInteraction, loadNextBatch, setDetailFilm }) {
-  // Safe Banner URL resolution
+  // Logic to determine background image
   const bannerUrl = film?.bannerPath
     ? `https://image.tmdb.org/t/p/original/${film.bannerPath}`
     : film?.backdropPath
@@ -20,25 +19,20 @@ function HomeRecommendationsView({ film, token, handleInteraction, loadNextBatch
 
   return (
     <div className="recommendations-page font-kino">
-      {/* 1. Background Layer */}
+      {/* 1. Background Layer (Fixed) */}
       <div className="background-banner" style={{ backgroundImage: `url(${bannerUrl})` }} />
       <div className="background-fade" />
 
-      {/* 2. Scrollable Content Layer */}
+      {/* 2. Scrollable Layer (Full Screen) */}
       <div className="film-scroll-area">
-        <div className="scroll-content-wrapper">
-            <FilmCard 
-                film={film} 
-                onOpenDetail={() => setDetailFilm(film)} 
-            />
-        </div>
-        {/* Spacer is handled via CSS padding, but this div ensures strict boundary */}
-        <div className="scroll-spacer"></div>
+        <FilmCard film={film} onOpenDetail={() => setDetailFilm(film)} />
+        {/* Spacer to prevents content from colliding with fixed buttons */}
+        <div className="safe-area-spacer" />
       </div>
 
       {/* 3. Fixed UI Layer (Overlays) */}
-      <div className="poster-fade" /> {/* Gradient behind buttons */}
-      
+      <div className="poster-fade" /> 
+
       <ActionButtons
         films={[film]}
         setFilms={handleInteraction}
@@ -49,7 +43,6 @@ function HomeRecommendationsView({ film, token, handleInteraction, loadNextBatch
   );
 }
 
-// --- Main Container Component ---
 export default function RecommendationsPage() {
   const token = localStorage.getItem("token");
   const [activeView, setActiveView] = useState('home');
