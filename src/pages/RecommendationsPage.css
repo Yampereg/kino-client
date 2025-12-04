@@ -2,8 +2,9 @@
   --page-max-width: 480px;
   --poster-radius: 12px;
   --poster-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  --bottom-actions-height: 110px;
+  --bottom-actions-height: 120px; /* Increased to account for big buttons */
   --page-bg: #000000;
+  --header-height: 60px;
 }
 
 html, body {
@@ -47,26 +48,28 @@ html, body {
 /* --- Layer 2: Scrollable Content --- */
 .film-scroll-area {
   position: absolute;
-  inset: 0; /* Full screen */
+  inset: 0; 
   z-index: 10;
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   
-  /* Flexbox to center the card horizontally */
   display: flex;
   flex-direction: column;
   align-items: center;
   
-  /* Padding top to push content down from TopNav */
-  padding-top: 120px; 
+  /* MOVED CONTENT HIGHER: Reduced top padding */
+  padding-top: calc(var(--header-height) + 20px);
+  
+  /* CRITICAL: This pushes the scrollable area bottom up so text clears buttons */
+  padding-bottom: var(--bottom-actions-height);
 }
 
-/* This spacer guarantees the text scrolls ABOVE the fixed buttons */
-.safe-area-spacer {
+/* Spacer to guarantee scroll clearance */
+.bottom-scroll-spacer {
   width: 100%;
   flex-shrink: 0;
-  height: calc(var(--bottom-actions-height) + 40px);
+  height: 100px; /* Extra buffer space at the end of the scroll */
 }
 
 /* Hide Scrollbar */
@@ -82,7 +85,6 @@ html, body {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  /* Ensure it doesn't collapse */
   flex-shrink: 0; 
 }
 
@@ -98,7 +100,7 @@ html, body {
   border-radius: var(--poster-radius);
   box-shadow: var(--poster-shadow);
   object-fit: cover;
-  background: #222; /* Placeholder color while loading */
+  background: #222; 
 }
 
 .film-title {
@@ -135,6 +137,7 @@ html, body {
   font-weight: 400;
   margin-top: 8px;
   text-align: center;
+  padding-bottom: 20px; /* Small space after text */
 }
 
 /* --- Layer 3: Fixed UI Overlays --- */
@@ -143,8 +146,8 @@ html, body {
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 200px; 
-  background: linear-gradient(to top, #000 20%, transparent 100%);
+  height: 250px; /* Taller gradient to smooth the cutoff */
+  background: linear-gradient(to top, #000 30%, transparent 100%);
   z-index: 20;
   pointer-events: none;
 }
@@ -167,9 +170,10 @@ html, body {
   top: 0;
   left: 0;
   width: 100%;
+  height: var(--header-height);
   z-index: 100;
-  padding: 15px 0;
   display: flex;
+  align-items: center;
   justify-content: center;
   gap: 15px;
   background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);

@@ -1,5 +1,5 @@
 import React from "react";
-// Styles are handled in RecommendationsPage.css
+// Styles managed globally in RecommendationsPage.css to ensure layout consistency
 
 export default function FilmCard({ film, onOpenDetail }) {
   if (!film) return null;

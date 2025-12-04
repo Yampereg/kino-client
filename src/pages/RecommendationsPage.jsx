@@ -8,7 +8,7 @@ import ForYouPage from "./ForYouPage.jsx";
 import "./RecommendationsPage.css";
 
 function HomeRecommendationsView({ film, token, handleInteraction, loadNextBatch, setDetailFilm }) {
-  // Logic to determine background image
+  // Safe Banner URL resolution
   const bannerUrl = film?.bannerPath
     ? `https://image.tmdb.org/t/p/original/${film.bannerPath}`
     : film?.backdropPath
@@ -19,18 +19,18 @@ function HomeRecommendationsView({ film, token, handleInteraction, loadNextBatch
 
   return (
     <div className="recommendations-page font-kino">
-      {/* 1. Background Layer (Fixed) */}
+      {/* Background Layer */}
       <div className="background-banner" style={{ backgroundImage: `url(${bannerUrl})` }} />
       <div className="background-fade" />
 
-      {/* 2. Scrollable Layer (Full Screen) */}
+      {/* Scrollable Content Layer */}
       <div className="film-scroll-area">
         <FilmCard film={film} onOpenDetail={() => setDetailFilm(film)} />
-        {/* Spacer to prevents content from colliding with fixed buttons */}
-        <div className="safe-area-spacer" />
+        {/* Spacer ensures text pushes up above buttons at end of scroll */}
+        <div className="bottom-scroll-spacer" />
       </div>
 
-      {/* 3. Fixed UI Layer (Overlays) */}
+      {/* Fixed UI Layer */}
       <div className="poster-fade" /> 
 
       <ActionButtons
