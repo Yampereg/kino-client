@@ -26,12 +26,16 @@ html, body {
 }
 
 .recommendations-page {
+  color: #ACACAC;
   position: relative;
   height: 100vh;
   width: 100%;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
   background-color: var(--page-gray);
-  transform: none !important; /* Prevents fixed position issues */
 }
 
 .background-banner {
@@ -56,24 +60,23 @@ html, body {
   pointer-events: none;
 }
 
-/* Scroll Container: Fills screen, handles padding for content */
 .film-scroll-area {
   position: absolute;
-  inset: 0; /* top:0, bottom:0, left:0, right:0 */
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  z-index: 10;
-  box-sizing: border-box;
-  
-  /* Top padding positions the start of the card */
+  left: 0;
+  right: 0;
+  top: 0;
+  /* CRITICAL FIX: Stop the scroll container EXACTLY where the buttons begin */
+  bottom: calc(var(--bottom-actions-height) + env(safe-area-inset-bottom));
   padding-top: calc(var(--banner-height) * var(--film-card-top-offset));
-  
-  /* Bottom padding ensures text scrolls CLEAR of the buttons */
-  padding-bottom: calc(var(--bottom-actions-height) + 60px);
-  
   display: flex;
   justify-content: center;
-  pointer-events: auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  z-index: 6;
+  box-sizing: border-box;
+  padding-left: 12px;
+  padding-right: 12px;
+  padding-bottom: 20px; /* Internal padding for scrolling content */
 }
 
 .film-card {
@@ -84,10 +87,9 @@ html, body {
   justify-content: flex-start;
   gap: 12px;
   text-align: center;
-  /* Remove z-index here to let parent handle stacking */
+  z-index: 6;
   box-sizing: border-box;
-  /* Additional visual padding */
-  padding: 20px 12px 0 12px;
+  padding-top: 20px;
 }
 
 .poster-container {
@@ -148,7 +150,10 @@ html, body {
   font-weight: 300;
   color: #ADADAD;
   max-width: 900px;
-  /* Removed relative positioning to ensure flow */
+  position: relative;
+  z-index: 50;
+  overflow-wrap: break-word;
+  word-break: break-word;
   margin-bottom: 20px;
 }
 
@@ -161,29 +166,30 @@ html, body {
   background-position: bottom;
   background-repeat: no-repeat;
   background-size: 100% 100%;
-  z-index: 5; /* Behind content, above bg */
+  z-index: 1;
   pointer-events: none;
 }
 
-/* Fixed Buttons */
 .action-buttons {
-  position: fixed !important;
-  bottom: 0 !important;
+  position: fixed;
   left: 0;
   right: 0;
-  height: var(--bottom-actions-height);
-  z-index: 50; /* Above scroll area */
+  bottom: 0;
   display: flex;
+  gap: 12px;
+  height: var(--bottom-actions-height);
   justify-content: center;
   align-items: center;
+  z-index: 20;
   padding-bottom: env(safe-area-inset-bottom);
-  /* Ensure clicks pass through empty areas if needed, but buttons need events */
-  pointer-events: auto; 
+  pointer-events: auto;
 }
 
-.top-nav {
+.top-nav,
+.film-card,
+.action-buttons {
   position: relative;
-  z-index: 100;
+  z-index: 10;
 }
 
 .icon-button,

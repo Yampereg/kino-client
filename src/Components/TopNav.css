@@ -1,7 +1,7 @@
 .top-nav {
   background: transparent !important;
   background-color: transparent !important;
-  position: fixed !important;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
@@ -14,7 +14,6 @@
   font-size: 1.1rem;
   font-weight: 500;
   pointer-events: auto;
-  box-shadow: none !important;
 }
 
 .nav-item {
