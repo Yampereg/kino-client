@@ -26,7 +26,8 @@ function HomeRecommendationsView({ film, token, handleInteraction, loadNextBatch
       {/* Scrollable Content Layer */}
       <div className="film-scroll-area">
         <FilmCard film={film} onOpenDetail={() => setDetailFilm(film)} />
-        {/* Spacer ensures text pushes up above buttons at end of scroll */}
+        
+        {/* HUGE Spacer to allow text to scroll completely above the buttons */}
         <div className="bottom-scroll-spacer" />
       </div>
 

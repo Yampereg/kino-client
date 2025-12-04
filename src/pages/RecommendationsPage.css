@@ -2,7 +2,7 @@
   --page-max-width: 480px;
   --poster-radius: 12px;
   --poster-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  --bottom-actions-height: 120px; /* Increased to account for big buttons */
+  --bottom-actions-height: 120px; 
   --page-bg: #000000;
   --header-height: 60px;
 }
@@ -58,18 +58,18 @@ html, body {
   flex-direction: column;
   align-items: center;
   
-  /* MOVED CONTENT HIGHER: Reduced top padding */
   padding-top: calc(var(--header-height) + 20px);
   
-  /* CRITICAL: This pushes the scrollable area bottom up so text clears buttons */
-  padding-bottom: var(--bottom-actions-height);
+  /* CRITICAL: This + the spacer ensures text can scroll clear of buttons */
+  padding-bottom: 0px; 
 }
 
-/* Spacer to guarantee scroll clearance */
+/* This is the empty space at the end of the scroll. 
+   180px ensures the text lifts WAY up above the buttons */
 .bottom-scroll-spacer {
   width: 100%;
   flex-shrink: 0;
-  height: 100px; /* Extra buffer space at the end of the scroll */
+  height: 180px; 
 }
 
 /* Hide Scrollbar */
@@ -108,7 +108,7 @@ html, body {
   font-size: 2.2rem;
   font-weight: 800;
   line-height: 1.1;
-  color: #fff;
+  color: #ACACAC; /* Restored Color */
   text-shadow: 0 2px 10px rgba(0,0,0,0.5);
 }
 
@@ -120,24 +120,25 @@ html, body {
   margin-bottom: 16px;
 }
 
+/* Restored Original Genre Style */
 .genre-tag {
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #ddd;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  backdrop-filter: blur(4px);
+  color: #ADADAD;
+  border: 1px solid #575757;
+  padding: 0 9px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  background: transparent;
 }
 
 .film-overview {
-  font-size: 1rem;
-  line-height: 1.5;
-  color: #ccc;
-  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.4;
+  color: #ADADAD;
+  font-weight: 300;
   margin-top: 8px;
   text-align: center;
-  padding-bottom: 20px; /* Small space after text */
+  /* Max width keeps text from hitting edges too hard */
+  max-width: 100%;
 }
 
 /* --- Layer 3: Fixed UI Overlays --- */
@@ -146,7 +147,7 @@ html, body {
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 250px; /* Taller gradient to smooth the cutoff */
+  height: 250px; 
   background: linear-gradient(to top, #000 30%, transparent 100%);
   z-index: 20;
   pointer-events: none;
