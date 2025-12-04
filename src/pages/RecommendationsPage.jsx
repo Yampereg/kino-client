@@ -85,7 +85,9 @@ export default function RecommendationsPage() {
             console.error("Failed to fetch initial data", err);
             setError("Could not load initial data.");
         } finally {
-            setLoading(false);
+            // Artificial delay to show off animation if data loads too fast
+            // Remove the setTimeout if you want instant load
+            setTimeout(() => setLoading(false), 1200);
         }
     };
 
@@ -105,7 +107,18 @@ export default function RecommendationsPage() {
   const film = useMemo(() => films[0], [films]);
 
   if (!token) return <div className="empty-state font-kino">Please log in to get recommendations.</div>;
-  if (loading) return <div className="empty-state font-kino">Loading initial data...</div>;
+  
+  // --- MODERN LOADING SCREEN ---
+  if (loading) {
+    return (
+        <div className="loading-screen font-kino">
+            <div className="loader-content">
+                <div className="loader-ring"></div>
+                <div className="loader-logo">KINO</div>
+            </div>
+        </div>
+    );
+  }
 
   const renderContent = () => {
     if (activeView === 'forYou') {

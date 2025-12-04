@@ -5,6 +5,7 @@
   --bottom-actions-height: 120px; 
   --page-bg: #000000;
   --header-height: 60px;
+  --kino-red: #fff; /* Keeping white for clean aesthetic, or change to brand color */
 }
 
 html, body {
@@ -22,6 +23,56 @@ html, body {
   width: 100vw;
   overflow: hidden;
   background-color: var(--page-bg);
+}
+
+/* --- LOADING SCREEN STYLES --- */
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeOutBg 0.5s ease-out forwards;
+}
+
+.loader-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.loader-ring {
+  width: 60px;
+  height: 60px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-top: 2px solid #fff;
+  border-radius: 50%;
+  animation: spin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  margin-bottom: 20px;
+}
+
+.loader-logo {
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: 4px;
+  color: #fff;
+  opacity: 0;
+  animation: pulseLogo 2s ease-in-out infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pulseLogo {
+  0% { opacity: 0.3; transform: scale(0.95); letter-spacing: 4px; }
+  50% { opacity: 1; transform: scale(1); letter-spacing: 6px; }
+  100% { opacity: 0.3; transform: scale(0.95); letter-spacing: 4px; }
 }
 
 /* --- Layer 1: Background --- */
@@ -65,11 +116,7 @@ html, body {
   padding-bottom: 0px; 
 }
 
-/* HUGE SPACER: 
-   Increased to 350px. This effectively adds a large empty block 
-   at the end of your content list, forcing the text to scroll 
-   way up into the middle of the screen.
-*/
+/* HUGE SPACER: 350px */
 .bottom-scroll-spacer {
   width: 100%;
   flex-shrink: 0;
@@ -124,7 +171,7 @@ html, body {
   margin-bottom: 16px;
 }
 
-/* Original Genre Styles Restored */
+/* Original Genre Styles */
 .genre-tag {
   color: #ADADAD;
   border: 1px solid #575757;
