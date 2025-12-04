@@ -1,4 +1,6 @@
 import React from "react";
+// Assuming styles are loaded via RecommendationsPage.css based on your structure
+// If you have a specific FilmCard.css, keep the import, otherwise it relies on the parent CSS.
 import "./FilmCard.css"; 
 
 export default function FilmCard({ film, onOpenDetail }) {
