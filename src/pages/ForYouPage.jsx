@@ -10,10 +10,13 @@ export default function ForYouPage({ popularFilms, recommendedFilms }) {
   
   return (
     <div className="for-you-page">
-      <PageHeader />
-
+      {/* MOVED PageHeader inside content-scroll-area.
+        This allows it to be pushed down by the padding-top 
+        and scroll away with the rest of the content.
+      */}
       <div className="content-scroll-area">
-        
+        <PageHeader />
+
         <section className="section">
           <h2 className="section-title">Popular Now</h2>
           {/* Use props for data */}
