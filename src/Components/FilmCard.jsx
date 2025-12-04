@@ -1,12 +1,14 @@
 import React from "react";
-// Styling is handled globally in RecommendationsPage.css 
-// to ensure seamless scrolling integration.
+// Styling is fully handled by RecommendationsPage.css now
 
 export default function FilmCard({ film, onOpenDetail }) {
   if (!film) return null;
 
+  // Prefer poster, fallback to banner
   const posterUrl = film.posterPath 
     ? `https://image.tmdb.org/t/p/w500/${film.posterPath}`
+    : film.bannerPath 
+    ? `https://image.tmdb.org/t/p/original/${film.bannerPath}`
     : null;
 
   return (
@@ -20,8 +22,8 @@ export default function FilmCard({ film, onOpenDetail }) {
             onClick={onOpenDetail}
           />
         ) : (
-          <div className="film-card-poster placeholder">
-            {film.title}
+          <div className="film-card-poster" style={{display:'grid', placeItems:'center', background:'#333'}}>
+            <span>{film.title}</span>
           </div>
         )}
       </div>

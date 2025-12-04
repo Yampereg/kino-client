@@ -7,32 +7,37 @@ import ActionButtons from "../Components/ActionButtons";
 import ForYouPage from "./ForYouPage.jsx";
 import "./RecommendationsPage.css";
 
-// --- Sub-Component: Home View (Swiping Logic) ---
+// --- Sub-Component: Home View ---
 function HomeRecommendationsView({ film, token, handleInteraction, loadNextBatch, setDetailFilm }) {
-  const bannerUrl = film.bannerPath
+  // Safe Banner URL resolution
+  const bannerUrl = film?.bannerPath
     ? `https://image.tmdb.org/t/p/original/${film.bannerPath}`
-    : film.backdropPath
+    : film?.backdropPath
     ? `https://image.tmdb.org/t/p/original/${film.backdropPath}`
-    : `https://image.tmdb.org/t/p/w500/${film.posterPath}`;
+    : film?.posterPath
+    ? `https://image.tmdb.org/t/p/w500/${film.posterPath}`
+    : "";
 
   return (
     <div className="recommendations-page font-kino">
-      {/* Background Layer */}
+      {/* 1. Background Layer */}
       <div className="background-banner" style={{ backgroundImage: `url(${bannerUrl})` }} />
       <div className="background-fade" />
 
-      {/* Scrollable Content Layer */}
+      {/* 2. Scrollable Content Layer */}
       <div className="film-scroll-area">
-        <FilmCard 
-            film={film} 
-            onOpenDetail={() => setDetailFilm(film)} 
-        />
-        {/* Spacer to ensure text scrolls above fixed buttons */}
-        <div className="scroll-spacer" />
+        <div className="scroll-content-wrapper">
+            <FilmCard 
+                film={film} 
+                onOpenDetail={() => setDetailFilm(film)} 
+            />
+        </div>
+        {/* Spacer is handled via CSS padding, but this div ensures strict boundary */}
+        <div className="scroll-spacer"></div>
       </div>
 
-      {/* Fixed UI Layer */}
-      <div className="poster-fade" />
+      {/* 3. Fixed UI Layer (Overlays) */}
+      <div className="poster-fade" /> {/* Gradient behind buttons */}
       
       <ActionButtons
         films={[film]}

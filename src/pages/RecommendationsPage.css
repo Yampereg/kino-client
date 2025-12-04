@@ -1,22 +1,19 @@
 :root {
-  --page-max-width: 480px; /* Slightly wider for modern phones */
+  --page-max-width: 480px;
   --poster-radius: 12px;
   --poster-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   --text-muted: #b3b3b3;
-  --banner-height: 100vh;
-  --banner-opacity: 0.6;
-  --page-bg: #000000;
   --bottom-actions-height: 110px;
-  --film-card-top-padding: 15vh; /* Starts content lower */
+  --page-bg: #000000;
 }
 
 html, body {
   margin: 0;
   padding: 0;
   background: var(--page-bg);
-  overflow: hidden; /* Prevent body scroll, handle in app */
   height: 100%;
   width: 100%;
+  overflow: hidden; /* Prevents body scroll, we scroll inside .film-scroll-area */
 }
 
 .recommendations-page {
@@ -27,103 +24,101 @@ html, body {
   background-color: var(--page-bg);
 }
 
-/* --- Background Layers --- */
+/* --- Layer 1: Background --- */
 .background-banner {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
   z-index: 0;
-  opacity: var(--banner-opacity);
-  filter: blur(30px) brightness(0.6);
+  filter: blur(25px) brightness(0.5);
+  transform: scale(1.1); /* Removes blur edges */
   pointer-events: none;
 }
 
 .background-fade {
   position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.8) 80%, rgba(0,0,0,1) 100%);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.6) 60%, rgba(0,0,0,0.95) 90%);
   z-index: 1;
   pointer-events: none;
 }
 
-.poster-fade {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 40vh; /* Gradient behind buttons */
-  background: linear-gradient(to top, #000 0%, transparent 100%);
-  z-index: 20; /* Behind buttons, above scroll content */
-  pointer-events: none;
-}
-
-/* --- Scroll Container --- */
+/* --- Layer 2: Scroll Content --- */
 .film-scroll-area {
   position: absolute;
-  inset: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   z-index: 10;
+  overflow-y: scroll; 
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  
+  /* CRITICAL: Padding ensures text can scroll ABOVE the buttons */
+  padding-bottom: calc(var(--bottom-actions-height) + 50px);
+  padding-top: 100px; /* Space for Top Nav */
+  box-sizing: border-box;
+}
+
+/* Hide scrollbar */
+.film-scroll-area::-webkit-scrollbar { display: none; }
+.film-scroll-area { -ms-overflow-style: none; scrollbar-width: none; }
+
+.scroll-content-wrapper {
+  width: 100%;
+  max-width: var(--page-max-width);
+  margin: 0 auto; /* Center horizontally */
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: var(--film-card-top-padding);
-  box-sizing: border-box;
-  
-  /* Smooth scrolling */
-  -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
 }
 
-/* Hides scrollbar but allows scroll */
-.film-scroll-area::-webkit-scrollbar {
-  display: none;
-}
-.film-scroll-area {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+/* Spacer element to force scroll height if needed */
+.scroll-spacer {
+  height: 20px;
+  width: 100%;
 }
 
-/* --- Film Card Content --- */
+/* --- Film Card Styling (Inside Scroll Area) --- */
 .film-card {
   width: 100%;
-  max-width: var(--page-max-width);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   padding: 0 24px;
   box-sizing: border-box;
-  /* The layout logic: content stacks naturally */
-}
-
-/* Spacer is critical: it creates empty space at bottom of scroll 
-   so text can go ABOVE the fixed buttons */
-.scroll-spacer {
-  width: 100%;
-  flex-shrink: 0;
-  height: calc(var(--bottom-actions-height) + 60px); 
+  position: relative; /* Ensure it stacks correctly */
 }
 
 .poster-container {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
+  position: relative;
   z-index: 12;
 }
 
 .film-card-poster {
-  width: 65vw;
-  max-width: 260px;
+  width: 60vw;
+  max-width: 240px;
   aspect-ratio: 2/3;
   border-radius: var(--poster-radius);
   box-shadow: var(--poster-shadow);
   object-fit: cover;
+  background: #222;
 }
 
 .film-title {
-  margin: 0 0 12px 0;
-  font-size: 2.2rem;
+  margin: 0 0 10px 0;
+  font-size: 2rem;
   font-weight: 800;
   line-height: 1.1;
   color: #fff;
@@ -139,26 +134,38 @@ html, body {
 }
 
 .genre-tag {
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: #ddd;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 0.85rem;
+  padding: 5px 12px;
+  border-radius: 100px;
+  font-size: 0.8rem;
   backdrop-filter: blur(4px);
 }
 
 .film-overview {
-  font-size: 1rem;
-  line-height: 1.5;
+  font-size: 0.95rem;
+  line-height: 1.6;
   color: #ccc;
   font-weight: 400;
-  margin-top: 10px;
+  margin-top: 5px;
   text-align: center;
-  max-width: 95%;
+  /* Ensure text doesn't touch edges too much */
+  max-width: 100%; 
 }
 
-/* --- Fixed Controls --- */
+/* --- Layer 3: Overlays (Buttons/Nav) --- */
+.poster-fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 180px; 
+  background: linear-gradient(to top, #000 20%, transparent 100%);
+  z-index: 20; /* Behind buttons, above scroll content */
+  pointer-events: none;
+}
+
 .action-buttons {
   position: fixed !important;
   bottom: 0;
@@ -178,12 +185,12 @@ html, body {
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 60;
+  z-index: 100;
   padding: 15px 0;
   display: flex;
   justify-content: center;
   gap: 15px;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
+  background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 100%);
 }
 
 .nav-item {
