@@ -17,15 +17,23 @@ function HomeRecommendationsView({ film, token, handleInteraction, loadNextBatch
 
   return (
     <div className="recommendations-page font-kino">
+      {/* Background Layer */}
       <div className="background-banner" style={{ backgroundImage: `url(${bannerUrl})` }} />
-      <div className="background-fade" style={{ backgroundImage: `url('/backgroundfade.png')` }} />
+      <div className="background-fade" />
 
+      {/* Scrollable Content Layer */}
       <div className="film-scroll-area">
-        <FilmCard film={film} onOpenDetail={() => setDetailFilm(film)} />
+        <FilmCard 
+            film={film} 
+            onOpenDetail={() => setDetailFilm(film)} 
+        />
+        {/* Spacer to ensure text scrolls above fixed buttons */}
+        <div className="scroll-spacer" />
       </div>
 
-      <div className="poster-fade" style={{ backgroundImage: `url('/posterfade.png')` }} />
-
+      {/* Fixed UI Layer */}
+      <div className="poster-fade" />
+      
       <ActionButtons
         films={[film]}
         setFilms={handleInteraction}
@@ -43,13 +51,11 @@ export default function RecommendationsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Data state lifted to the parent component
-  const [films, setFilms] = useState([]); // Home/Swiping list
-  const [popularFilms, setPopularFilms] = useState([]); // ForYou Carousel
-  const [recommendedFilms, setRecommendedFilms] = useState([]); // ForYou List
+  const [films, setFilms] = useState([]); 
+  const [popularFilms, setPopularFilms] = useState([]); 
+  const [recommendedFilms, setRecommendedFilms] = useState([]); 
   const [detailFilm, setDetailFilm] = useState(null);
 
-  // Function to load the next batch for the HOME view
   const loadNextBatch = useCallback(async () => {
     setError("");
     try {
@@ -62,7 +68,6 @@ export default function RecommendationsPage() {
     }
   }, [token]);
 
-  // Function to load all initial data (runs once on mount)
   useEffect(() => {
     if (!token) {
         setError("Please log in to get recommendations.");
@@ -72,16 +77,11 @@ export default function RecommendationsPage() {
 
     const loadInitialData = async () => {
         try {
-            // 1. Home View Data (Initial batch for swiping)
             await loadNextBatch();
-
-            // 2. For You Page Data (Popular Now & Top Picks)
             const popular = await fetchRecommendations();
             setPopularFilms(popular || []);
-
             const recommendations = await fetchRecommendations();
             setRecommendedFilms(recommendations || []);
-
         } catch (err) {
             console.error("Failed to fetch initial data", err);
             setError("Could not load initial data.");
@@ -93,12 +93,10 @@ export default function RecommendationsPage() {
     loadInitialData();
   }, [token, loadNextBatch]);
 
-  // Handler for swiping action in Home view
   const handleInteraction = (filmId) => {
     setFilms((prev) => {
       const updated = prev.filter((f) => f.id !== filmId);
       if (updated.length === 0) {
-        // Automatically loads next batch if list is empty
         loadNextBatch();
       }
       return updated;
@@ -107,13 +105,8 @@ export default function RecommendationsPage() {
 
   const film = useMemo(() => films[0], [films]);
 
-  if (!token) {
-    return <div className="empty-state font-kino">Please log in to get recommendations.</div>;
-  }
-  
-  if (loading) {
-    return <div className="empty-state font-kino">Loading initial data...</div>;
-  }
+  if (!token) return <div className="empty-state font-kino">Please log in to get recommendations.</div>;
+  if (loading) return <div className="empty-state font-kino">Loading initial data...</div>;
 
   const renderContent = () => {
     if (activeView === 'forYou') {
@@ -125,7 +118,6 @@ export default function RecommendationsPage() {
       );
     }
 
-    // Default 'home' view rendering
     if (!film) {
       return <div className="empty-state font-kino">{error || "No more films!"}</div>;
     }

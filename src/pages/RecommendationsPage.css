@@ -1,39 +1,33 @@
 :root {
-  --page-max-width: 430px;
-  --poster-radius: 16px;
-  --poster-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
-  --text-muted: #ACACAC;
-  --banner-height: 75vh;
-  --banner-min-height: 160px;
-  --banner-blur: 2px;
-  --banner-brightness: 0.95;
-  --page-gray: #111111;
-  --bottom-actions-height: 100px;
-  --film-card-top-offset: 0.18;
+  --page-max-width: 480px; /* Slightly wider for modern phones */
+  --poster-radius: 12px;
+  --poster-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  --text-muted: #b3b3b3;
+  --banner-height: 100vh;
+  --banner-opacity: 0.6;
+  --page-bg: #000000;
+  --bottom-actions-height: 110px;
+  --film-card-top-padding: 15vh; /* Starts content lower */
 }
 
 html, body {
   margin: 0;
   padding: 0;
-  background: var(--page-gray);
-  overflow: hidden;
-  height: 100vh;
-  width: 100vw;
-  overscroll-behavior: none;
-  -webkit-overflow-scrolling: touch;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  background: var(--page-bg);
+  overflow: hidden; /* Prevent body scroll, handle in app */
+  height: 100%;
+  width: 100%;
 }
 
 .recommendations-page {
   position: relative;
-  height: 100vh;
+  height: 100%;
   width: 100%;
   overflow: hidden;
-  background-color: var(--page-gray);
-  transform: none !important;
+  background-color: var(--page-bg);
 }
 
+/* --- Background Layers --- */
 .background-banner {
   position: absolute;
   inset: 0;
@@ -41,123 +35,17 @@ html, body {
   background-size: cover;
   background-repeat: no-repeat;
   z-index: 0;
-  filter: brightness(var(--banner-brightness)) blur(var(--banner-blur));
+  opacity: var(--banner-opacity);
+  filter: blur(30px) brightness(0.6);
   pointer-events: none;
-  top: 0;
 }
 
 .background-fade {
   position: absolute;
   inset: 0;
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.8) 80%, rgba(0,0,0,1) 100%);
   z-index: 1;
   pointer-events: none;
-}
-
-/* Scroll Container */
-.film-scroll-area {
-  position: absolute;
-  inset: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  z-index: 10;
-  box-sizing: border-box;
-  
-  /* Flex settings to control vertical flow */
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start; /* Ensures content starts at top */
-  align-items: center;
-
-  /* Padding top for initial positioning */
-  padding-top: calc(var(--banner-height) * var(--film-card-top-offset));
-  
-  /* Reset bottom padding here, handled by film-card to prevent collapse */
-  padding-bottom: 0;
-  pointer-events: auto;
-}
-
-.film-card {
-  width: min(92vw, var(--page-max-width));
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 12px;
-  text-align: center;
-  box-sizing: border-box;
-  
-  /* Padding top for internal card spacing */
-  padding-top: 20px;
-  padding-left: 12px;
-  padding-right: 12px;
-
-  /* HUGE bottom padding to ensure text scrolls above the fixed buttons */
-  padding-bottom: calc(var(--bottom-actions-height) + 80px);
-}
-
-.poster-container {
-  position: relative;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  min-height: 300px;
-  margin-bottom: 36px;
-}
-
-.film-card-poster {
-  width: min(60vw, 270px);
-  max-width: 300px;
-  border-radius: var(--poster-radius);
-  object-fit: cover;
-  box-shadow: var(--poster-shadow);
-  background: #111;
-  user-select: none;
-  -webkit-user-drag: none;
-  flex-shrink: 0;
-}
-
-.film-title {
-  margin: 10px 0 2px 0;
-  font-size: clamp(36px, 8vw, 70px);
-  font-weight: 900;
-  line-height: 1.2;
-  letter-spacing: 0.35px;
-  color: #ACACAC;
-  text-shadow: 0 3px 22px rgba(0, 0, 0, 0.65);
-  max-width: 100%;
-  white-space: normal;
-  overflow-wrap: break-word;
-  word-break: break-word;
-}
-
-.film-genres {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  justify-content: center;
-  padding: 2px 0;
-}
-
-.genre-tag {
-  color: #ADADAD;
-  border: 1px solid #575757;
-  padding: 0 9px;
-  border-radius: 999px;
-  font-size: 0.8rem;
-}
-
-.film-overview {
-  line-height: 1.4;
-  font-size: 15px;
-  font-weight: 300;
-  color: #ADADAD;
-  max-width: 900px;
-  margin-bottom: 20px;
 }
 
 .poster-fade {
@@ -165,95 +53,146 @@ html, body {
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 100vh;
-  background-position: bottom;
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  z-index: 5;
+  height: 40vh; /* Gradient behind buttons */
+  background: linear-gradient(to top, #000 0%, transparent 100%);
+  z-index: 20; /* Behind buttons, above scroll content */
   pointer-events: none;
 }
 
-/* Fixed Buttons */
+/* --- Scroll Container --- */
+.film-scroll-area {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: var(--film-card-top-padding);
+  box-sizing: border-box;
+  
+  /* Smooth scrolling */
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Hides scrollbar but allows scroll */
+.film-scroll-area::-webkit-scrollbar {
+  display: none;
+}
+.film-scroll-area {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* --- Film Card Content --- */
+.film-card {
+  width: 100%;
+  max-width: var(--page-max-width);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 24px;
+  box-sizing: border-box;
+  /* The layout logic: content stacks naturally */
+}
+
+/* Spacer is critical: it creates empty space at bottom of scroll 
+   so text can go ABOVE the fixed buttons */
+.scroll-spacer {
+  width: 100%;
+  flex-shrink: 0;
+  height: calc(var(--bottom-actions-height) + 60px); 
+}
+
+.poster-container {
+  margin-bottom: 24px;
+  z-index: 12;
+}
+
+.film-card-poster {
+  width: 65vw;
+  max-width: 260px;
+  aspect-ratio: 2/3;
+  border-radius: var(--poster-radius);
+  box-shadow: var(--poster-shadow);
+  object-fit: cover;
+}
+
+.film-title {
+  margin: 0 0 12px 0;
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.film-genres {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.genre-tag {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ddd;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  backdrop-filter: blur(4px);
+}
+
+.film-overview {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #ccc;
+  font-weight: 400;
+  margin-top: 10px;
+  text-align: center;
+  max-width: 95%;
+}
+
+/* --- Fixed Controls --- */
 .action-buttons {
   position: fixed !important;
-  bottom: 0 !important;
+  bottom: 0;
   left: 0;
   right: 0;
   height: var(--bottom-actions-height);
-  z-index: 50;
+  z-index: 50; /* Topmost interactive layer */
   display: flex;
   justify-content: center;
   align-items: center;
   padding-bottom: env(safe-area-inset-bottom);
-  pointer-events: auto; 
+  pointer-events: auto;
 }
 
 .top-nav {
-  position: relative;
-  z-index: 100;
-  background: transparent;
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  padding: 15px 20px;
+  width: 100%;
+  z-index: 60;
+  padding: 15px 0;
   display: flex;
-  gap: 10px;
-  font-size: 1.1rem;
-  font-weight: 500;
+  justify-content: center;
+  gap: 15px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
 }
-
-.icon-button,
-.skip-button {
-  border: none;
-  color: #fff;
-  cursor: pointer;
-  transition: transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
-}
-
-.skip-button {
-  min-width: 120px;
-  height: 54px;
-  padding: 0 24px;
-  border-radius: 14px;
-  background: #2a2a2a;
-  font-size: 18px;
-  font-weight: 600;
-  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255,255,255,0.06);
-}
-
-.icon-button {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  background: #1f1f1f;
-  font-size: 30px;
-  display: grid;
-  place-items: center;
-  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255,255,255,0.06);
-}
-
-.icon-button:active,
-.skip-button:active { transform: scale(0.96); }
-.icon-button:disabled,
-.skip-button:disabled { opacity: 0.55; cursor: not-allowed; }
 
 .nav-item {
+  color: rgba(255,255,255,0.5);
+  font-weight: 600;
+  font-size: 1.1rem;
   cursor: pointer;
-  color: #888;
-  transition: color 0.1s ease;
 }
-
 .nav-item.active {
   color: #fff;
 }
-
-.nav-sep {
-  color: #555;
-}
-
-@media (min-width: 768px) {
-  .film-scroll-area {
-    padding-top: calc(var(--banner-height) * max(0.06, var(--film-card-top-offset)));
-  }
-}
+.nav-sep { color: rgba(255,255,255,0.2); }

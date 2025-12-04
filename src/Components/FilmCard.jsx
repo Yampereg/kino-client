@@ -1,26 +1,26 @@
 import React from "react";
-// Assuming styles are loaded via RecommendationsPage.css based on your structure
-// If you have a specific FilmCard.css, keep the import, otherwise it relies on the parent CSS.
-import "./FilmCard.css"; 
+// Styling is handled globally in RecommendationsPage.css 
+// to ensure seamless scrolling integration.
 
 export default function FilmCard({ film, onOpenDetail }) {
+  if (!film) return null;
+
   const posterUrl = film.posterPath 
     ? `https://image.tmdb.org/t/p/w500/${film.posterPath}`
     : null;
 
   return (
-    <main className="film-card">
+    <div className="film-card">
       <div className="poster-container">
         {posterUrl ? (
           <img
             src={posterUrl}
             alt={film.title}
             className="film-card-poster"
-            draggable="false"
             onClick={onOpenDetail}
           />
         ) : (
-          <div className="film-card-poster">
+          <div className="film-card-poster placeholder">
             {film.title}
           </div>
         )}
@@ -31,14 +31,18 @@ export default function FilmCard({ film, onOpenDetail }) {
       </h1>
 
       <div className="film-genres">
-        {(film.genres || []).slice(0, 4).map((g) => (
-          <span key={g.id ?? g.name} className="genre-tag">
+        {(film.genres || []).slice(0, 3).map((g) => (
+          <span key={g.id || g.name} className="genre-tag">
             {g.name}
           </span>
         ))}
       </div>
 
-      {film.overview && <p className="film-overview">{film.overview}</p>}
-    </main>
+      {film.overview && (
+        <p className="film-overview">
+          {film.overview}
+        </p>
+      )}
+    </div>
   );
 }
