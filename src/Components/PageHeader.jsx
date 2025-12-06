@@ -1,62 +1,66 @@
-import React, { useState } from "react";
-// import SettingsDrawer from "./SettingsDrawer"; // <-- Still commented out
-// Assuming you have a custom hook to get user data
-import { useAuth } from "../context/AuthContext"; 
+import React, { useState, useEffect, useCallback } from "react";
+import SettingsDrawer from "./SettingsDrawer";
+// Note: Assuming you are using local storage for username, 
+// as indicated by the useEffect hook in your provided code block.
 
 export default function PageHeader({ onRefresh }) {
   const [isSpinning, setIsSpinning] = useState(false);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false); // <-- Settings state re-added
-  
-  // Get username from context
-  const { userName } = useAuth(); 
-  
-  const greetingName = userName || 'User';
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [username, setUsername] = useState("User"); // Using useState/useEffect for username based on your provided code
+
+  useEffect(() => {
+    // Retrieve username from local storage
+    const storedName = localStorage.getItem("kino_username");
+    if (storedName) {
+      setUsername(storedName);
+    }
+  }, []);
 
   const handleRefreshClick = () => {
     setIsSpinning(true);
     if (onRefresh) onRefresh();
-    
-    // Stop spinning after animation (matches CSS duration)
+
     setTimeout(() => setIsSpinning(false), 1000);
   };
+  
+  // Use useCallback to memoize the onClose handler. 
+  // This prevents SettingsDrawer from re-rendering just because this function reference changes.
+  const handleCloseDrawer = useCallback(() => {
+    setIsDrawerOpen(false);
+  }, []);
 
   return (
     <>
       <div className="page-header">
         <div className="greeting">
-          {/* Left Side: Avatar & Text */}
           <div className="greeting-group">
             <div className="greeting-icon">
               <svg className="icon-svg" viewBox="0 0 24 24">
-                {/* Avatar Icon Path */}
                 <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
               </svg>
             </div>
             <div className="header-text">
-              {/* Displaying dynamic username */}
-              <span className="user-name">Hi {greetingName}</span>
+              <span className="user-name">Hi {username}</span>
               <span className="welcome-message">Welcome back to Kino</span>
             </div>
           </div>
 
-          {/* Right Side: Actions Group (Refresh and Settings) */}
-          <div className="header-actions" style={{ display: 'flex', gap: '10px' }}> 
-            {/* 1. Refresh Button */}
-            <button 
-              className={`refresh-button ${isSpinning ? "spinning" : ""}`} 
+          <div className="header-actions" style={{ display: 'flex', gap: '10px' }}>
+            {/* Refresh Button */}
+            <button
+              className={`refresh-button ${isSpinning ? "spinning" : ""}`}
               onClick={handleRefreshClick}
               aria-label="Refresh Recommendations"
             >
               <svg className="refresh-icon" viewBox="0 0 24 24">
-                {/* Refresh Icon Path */}
-                <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" />
               </svg>
             </button>
-            
-            {/* 2. Settings Button (RE-ADDED) */}
+
+            {/* Settings Button */}
             <button
               className="refresh-button"
-              onClick={() => setIsDrawerOpen(true)} // <-- Toggles state
+              onClick={() => setIsDrawerOpen(true)}
               aria-label="Open Settings"
             >
               <svg className="refresh-icon" viewBox="0 0 24 24">
@@ -68,11 +72,11 @@ export default function PageHeader({ onRefresh }) {
         </div>
       </div>
       
-      {/* SettingsDrawer component is intentionally omitted to isolate the cause */}
-      {/* <SettingsDrawer 
+      {/* SettingsDrawer component is now rendered */}
+      <SettingsDrawer 
         isOpen={isDrawerOpen} 
-        onClose={() => setIsDrawerOpen(false)} 
-      /> */}
+        onClose={handleCloseDrawer} // <-- Using the memoized handler
+      />
     </>
   );
 }
