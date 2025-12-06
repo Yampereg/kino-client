@@ -4,10 +4,10 @@ import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const [name, setName] = useState("");
+  const [name, setName] = useState(""); // <-- This is the name we want to save
   const [password, setPassword] = useState("");
-  
-  const { token, loginUser } = useAuth();
+  // Assuming useAuth now provides setUserName
+  const { token, setToken, setUserName } = useAuth(); 
   const navigate = useNavigate();
   const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
@@ -28,12 +28,12 @@ export default function Login() {
 
     if (res.ok) {
       const data = await res.json();
-      if (loginUser) {
-        loginUser(data.token, name);
-        navigate("/recommendations");
-      } else {
-        console.error("loginUser function missing from AuthContext");
+      setToken(data.token);
+      // CRITICAL ADDITION: Save the name used for login to the context
+      if (setUserName) { 
+          setUserName(name); 
       }
+      navigate("/recommendations");
     } else {
       alert("Login failed");
     }
