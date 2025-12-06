@@ -1,3 +1,4 @@
+/* RecommendationsPage.jsx */
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -48,7 +49,8 @@ function HomeRecommendationsView({ film, token, handleInteraction, loadNextBatch
 // --- Main Page Component ---
 export default function RecommendationsPage() {
   // 1. Auth & Navigation Hooks
-  const { token, setToken, userName, setUserName } = useAuth();
+  // FIXED: Destructure 'logout' and 'user' correctly from the new Context
+  const { token, user, logout } = useAuth();
   const navigate = useNavigate();
 
   // 2. UI State
@@ -95,14 +97,8 @@ export default function RecommendationsPage() {
 
   // --- LOGOUT LOGIC ---
   const handleLogout = () => {
-    // 1. Clear Context
-    setToken(null);
-    if (setUserName) setUserName(null);
-    
-    // 2. Clear Local Storage
-    localStorage.removeItem("token");
-    
-    // 3. Redirect
+    // FIXED: Use the context logout function
+    if (logout) logout();
     navigate("/login");
   };
 
@@ -111,8 +107,10 @@ export default function RecommendationsPage() {
   // Initial Load
   useEffect(() => {
     if (!token) {
-      setError("Please log in.");
-      setLoading(false);
+      // Allow a brief moment for context to settle, or redirect immediately
+      // If using memory-only auth, refreshing the page might clear token, 
+      // so this check sends them back to login.
+      navigate("/login");
       return;
     }
 
@@ -127,7 +125,7 @@ export default function RecommendationsPage() {
       }
     };
     loadInitialData();
-  }, [token, loadNextBatch, loadForYouData]);
+  }, [token, loadNextBatch, loadForYouData, navigate]);
 
   // Carousel Refresh Watcher (The "Mod 3" Rule)
   useEffect(() => {
@@ -201,7 +199,9 @@ export default function RecommendationsPage() {
   const currentFilm = useMemo(() => films[0], [films]);
 
   // --- RENDER ---
-  if (!token) return <div className="empty-state font-kino">Please log in.</div>;
+  // If token is missing, the useEffect above will redirect, 
+  // but we return null/empty here to prevent flash of content.
+  if (!token) return null; 
   
   if (loading) {
     return (
@@ -254,7 +254,7 @@ export default function RecommendationsPage() {
       <SettingsDrawer 
         isOpen={isDrawerOpen} 
         onClose={() => setIsDrawerOpen(false)}
-        userName={userName}
+        userName={user?.name} // Pass the name safely from the user object
         onLogout={handleLogout}
       />
 
