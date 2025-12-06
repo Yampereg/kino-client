@@ -147,7 +147,9 @@
   word-break: break-word;
 }
 
-.modal-directors { color: #cfcfcf; font-size: 0.9rem; margin-top: 10px; text-align: center; max-width: 900px; position: relative; z-index: 50; }
+.modal-directors { color: #cfcfcf; font-size: 0.9rem; margin-top: 20px; text-align: center; max-width: 900px; position: relative; z-index: 50; }
+
+
 
 /* Overview */
 .modal-overview {
