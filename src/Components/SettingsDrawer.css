@@ -1,0 +1,149 @@
+/* Container & Backdrop */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  justify-content: flex-end;
+  visibility: hidden;
+  transition: visibility 0.3s;
+}
+
+.drawer-overlay.open {
+  visibility: visible;
+}
+
+.drawer-backdrop {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.drawer-overlay.open .drawer-backdrop {
+  opacity: 1;
+}
+
+/* Panel Styling */
+.drawer-panel {
+  position: relative;
+  width: 320px;
+  height: 100%;
+  background-color: #111111; /* Matches Login bg */
+  border-left: 1px solid #222;
+  box-shadow: -5px 0 25px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.drawer-panel.open {
+  transform: translateX(0);
+}
+
+/* Header */
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  border-bottom: 1px solid #222;
+}
+
+.drawer-header h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #ACACAC;
+  margin: 0;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: #ACACAC;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: color 0.2s;
+}
+
+.close-btn:hover {
+  color: white;
+}
+
+.close-btn svg {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+/* Content */
+.drawer-content {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.settings-group {
+  background-color: #1a1a1a;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.settings-group h3 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ACACAC;
+  margin: 0 0 0.5rem 0;
+}
+
+.settings-group p {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Footer */
+.drawer-footer {
+  padding: 1.5rem;
+  border-top: 1px solid #222;
+}
+
+.logout-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 9999px; /* Full pill shape */
+  background-color: #1a1a1a;
+  color: #ACACAC;
+  border: 1px solid #333;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.logout-btn:hover {
+  background-color: rgba(127, 29, 29, 0.2); /* Dark red hint */
+  color: #f87171; /* Red text */
+  border-color: rgba(127, 29, 29, 0.5);
+}
+
+.logout-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
