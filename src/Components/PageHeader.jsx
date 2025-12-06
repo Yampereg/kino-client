@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react";
 import SettingsDrawer from "./SettingsDrawer";
-import { useAuth } from "../context/AuthContext"; // Assuming useAuth is available
+import { useAuth } from "../context/AuthContext";
 
 export default function PageHeader({ onRefresh }) {
-  const { user } = useAuth(); // Assume 'user' object contains 'name'
-  const username = user?.name || "User"; // Get name from auth context, default to "User"
+  const { user } = useAuth();
+  // FIXED: Correctly retrieve name from user object or use "User" fallback
+  const username = user && user.name ? user.name : "User"; 
 
   const [isSpinning, setIsSpinning] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  // Removed: [username, setUsername] useState and localStorage useEffect
 
   const handleRefreshClick = () => {
     setIsSpinning(true);
@@ -71,7 +71,7 @@ export default function PageHeader({ onRefresh }) {
       <SettingsDrawer
         isOpen={isDrawerOpen}
         onClose={handleCloseDrawer}
-        userName={username} // Passing the username as a prop
+        userName={username} // Passing the corrected username
       />
     </>
   );

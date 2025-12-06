@@ -12,6 +12,9 @@ export default function SettingsDrawer({ isOpen, onClose, userName, onLogout }) 
     }
   }, [isOpen]);
 
+  // Use the userName prop for the avatar and greeting
+  const displayedName = userName || "User";
+
   return (
     <>
       {/* Dark Overlay (Click to close) */}
@@ -30,11 +33,11 @@ export default function SettingsDrawer({ isOpen, onClose, userName, onLogout }) 
           </button>
           <div className="drawer-user-info">
             <div className="drawer-avatar">
-              {userName ? userName.charAt(0).toUpperCase() : "U"}
+              {displayedName.charAt(0).toUpperCase()}
             </div>
             <div className="drawer-greeting">
               <span className="greeting-label">Signed in as</span>
-              <span className="username-text">{userName || "User"}</span>
+              <span className="username-text">{displayedName}</span>
             </div>
           </div>
         </div>
