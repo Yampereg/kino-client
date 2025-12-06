@@ -3,7 +3,7 @@
   --poster-radius: 12px;
   --poster-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   --bottom-actions-height: 120px; 
-  --page-bg: #000000;
+  --page-bg: #111111;
   --header-height: 60px;
   --kino-red: #fff; /* Keeping white for clean aesthetic, or change to brand color */
 }
@@ -29,7 +29,7 @@ html, body {
 .loading-screen {
   position: fixed;
   inset: 0;
-  background: #000;
+  background: #111111;
   z-index: 9999;
   display: flex;
   align-items: center;
