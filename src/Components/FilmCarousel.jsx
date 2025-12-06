@@ -1,11 +1,11 @@
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination } from "swiper/modules"; // Import Pagination Module
+import { Pagination } from "swiper/modules";
 import "swiper/css";
-import "swiper/css/pagination"; // Import Pagination CSS
+import "swiper/css/pagination";
 import "./FilmCarousel.css";
 
-export default function FilmCarousel({ films }) {
+export default function FilmCarousel({ films, onFilmClick }) {
   const getPosterUrl = (path) => 
     path ? `https://image.tmdb.org/t/p/w500/${path}` : null;
 
@@ -14,8 +14,8 @@ export default function FilmCarousel({ films }) {
   return (
     <div className="film-carousel-wrapper">
       <Swiper
-        modules={[Pagination]} // Enable module
-        pagination={{ clickable: true, dynamicBullets: true }} // Config
+        modules={[Pagination]}
+        pagination={{ clickable: true, dynamicBullets: true }}
         spaceBetween={24}
         slidesPerView={'auto'}
         centeredSlides={true}
@@ -25,7 +25,11 @@ export default function FilmCarousel({ films }) {
         {films.map((film, index) => (
           <SwiperSlide key={`${index}-${film.id}`} className="film-swiper-slide">
             {({ isActive }) => (
-              <div className={`film-carousel-item ${isActive ? 'active' : ''}`}>
+              <div 
+                className={`film-carousel-item ${isActive ? 'active' : ''}`}
+                onClick={() => onFilmClick(film)} // <--- CLICK HANDLER ADDED
+                style={{ cursor: 'pointer' }}
+              >
                 {getPosterUrl(film.posterPath) ? (
                   <img 
                     src={getPosterUrl(film.posterPath)} 
@@ -42,7 +46,6 @@ export default function FilmCarousel({ films }) {
           </SwiperSlide>
         ))}
       </Swiper>
-      {/* Manual pagination div removed; Swiper handles it now */}
     </div>
   );
 }
