@@ -27,12 +27,13 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
       ? `https://image.tmdb.org/t/p/original/${p}`
       : posterUrl || bannerUrl || "";
 
+  // Logic: When "Skip" (loadNextBatch) is called, we also want to close the modal.
   const wrappedLoadNextBatch = async () => {
     if (loadNextBatch) await loadNextBatch();
     onClose();
   };
 
-  // build stars array from rating (out of 10 => convert to 5 scale)
+  // build stars array from rating
   const buildStars = (score) => {
     const stars = [];
     const ratingOutOfFive = (score || 0) / 2;
@@ -47,7 +48,6 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
     }
     return stars;
   };
-
 
   const stars = buildStars(film.voteAverage);
 
@@ -69,7 +69,6 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
         <div className="modal-content font-kino">
           <div className="modal-header">
             <div className="header-left">
-              {/* Poster now closes modal on click */}
               <img
                 src={posterUrl}
                 alt={film.title}
@@ -84,7 +83,6 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
                     : ""}
                 </span>
               </div>
-              {/* Stars under year/runtime */}
               <div className="poster-rating">
                 {stars.map((s, idx) => (
                   <img key={idx} src={s} alt="star" />
@@ -112,11 +110,7 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
 
           {/* Actors */}
           {actors.length > 0 && (
-            <div
-              className={`actors-section ${
-                visibleActors.length <= 3 ? "centered" : ""
-              }`}
-            >
+            <div className={`actors-section ${visibleActors.length <= 3 ? "centered" : ""}`}>
               <div className="actors-row">
                 {visibleActors.map((a) => (
                   <div className="actor-item" key={a.id}>
@@ -145,9 +139,7 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
           {/* Directors */}
           {directors && (
             <div className="modal-directors">
-              <strong>
-                {(film.directors || []).length > 1 ? "Directors" : "Director"}
-              </strong>
+              <strong>{(film.directors || []).length > 1 ? "Directors" : "Director"}</strong>
               &nbsp; · &nbsp; {directors}
             </div>
           )}
@@ -167,7 +159,7 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
               films={[film]}
               setFilms={setFilms}
               token={token}
-              loadNextBatch={wrappedLoadNextBatch}
+              loadNextBatch={wrappedLoadNextBatch} // Passes the logic to close modal on skip
             />
           </div>
         </div>
