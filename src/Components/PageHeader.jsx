@@ -7,7 +7,6 @@ export default function PageHeader({ onRefresh }) {
   const [username, setUsername] = useState("User");
 
   useEffect(() => {
-    // Retrieve username from local storage
     const storedName = localStorage.getItem("kino_username");
     if (storedName) {
       setUsername(storedName);
@@ -17,7 +16,6 @@ export default function PageHeader({ onRefresh }) {
   const handleRefreshClick = () => {
     setIsSpinning(true);
     if (onRefresh) onRefresh();
-
     setTimeout(() => setIsSpinning(false), 1000);
   };
 
@@ -40,6 +38,7 @@ export default function PageHeader({ onRefresh }) {
 
           {/* Right Side: Actions */}
           <div className="header-actions" style={{ display: 'flex', gap: '10px' }}>
+            {/* Refresh Button */}
             <button
               className={`refresh-button ${isSpinning ? "spinning" : ""}`}
               onClick={handleRefreshClick}
@@ -50,13 +49,14 @@ export default function PageHeader({ onRefresh }) {
               </svg>
             </button>
 
+            {/* Settings Button (Updated Icon) */}
             <button
               className="refresh-button"
               onClick={() => setIsDrawerOpen(true)}
               aria-label="Open Settings"
             >
               <svg className="refresh-icon" viewBox="0 0 24 24">
-                 <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0.43-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+                <path d="M21 13v-2a1 1 0 0 0-1-1h-1.42a8 8 0 0 0-1.28-3.09l1-1a1 1 0 0 0 0-1.42l-1.42-1.42a1 1 0 0 0-1.42 0l-1 1A8 8 0 0 0 11.42 3H10a1 1 0 0 0-1 1v2a8 8 0 0 0-3.09 1.28l-1-1a1 1 0 0 0-1.42 0L2.07 7.7a1 1 0 0 0 0 1.42l1 1A8 8 0 0 0 1.79 13.2H3a1 1 0 0 0 1 1v2a8 8 0 0 0 1.28 3.09l-1 1a1 1 0 0 0 0 1.42l1.42 1.42a1 1 0 0 0 1.42 0l1-1a8 8 0 0 0 3.09 1.28v1a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-1.42a8 8 0 0 0 3.09-1.28l1 1a1 1 0 0 0 1.42 0l1.42-1.42a1 1 0 0 0 0-1.42l-1-1A8 8 0 0 0 19.58 13.2H21a1 1 0 0 0 0-2zm-9 3a4 4 0 1 1 4-4 4 4 0 0 1-4 4z"/>
               </svg>
             </button>
           </div>

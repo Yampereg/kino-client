@@ -4,7 +4,7 @@
   inset: 0;
   z-index: 9999;
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start; /* Aligns drawer to the left */
   visibility: hidden;
   transition: visibility 0.3s;
 }
@@ -31,12 +31,12 @@
   position: relative;
   width: 320px;
   height: 100%;
-  background-color: #111111; /* Matches Login bg */
-  border-left: 1px solid #222;
-  box-shadow: -5px 0 25px rgba(0, 0, 0, 0.5);
+  background-color: #111111;
+  border-right: 1px solid #222; /* Border is now on the right side */
+  box-shadow: 5px 0 25px rgba(0, 0, 0, 0.5); /* Shadow projected to the right */
   display: flex;
   flex-direction: column;
-  transform: translateX(100%);
+  transform: translateX(-100%); /* Starts hidden to the left */
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -123,7 +123,7 @@
   justify-content: center;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
-  border-radius: 9999px; /* Full pill shape */
+  border-radius: 9999px;
   background-color: #1a1a1a;
   color: #ACACAC;
   border: 1px solid #333;
@@ -133,8 +133,8 @@
 }
 
 .logout-btn:hover {
-  background-color: rgba(127, 29, 29, 0.2); /* Dark red hint */
-  color: #f87171; /* Red text */
+  background-color: rgba(127, 29, 29, 0.2);
+  color: #f87171;
   border-color: rgba(127, 29, 29, 0.5);
 }
 
