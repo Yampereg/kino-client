@@ -27,6 +27,10 @@ export default function Login() {
 
     if (res.ok) {
       const data = await res.json();
+      
+      // Save username to local storage for display
+      localStorage.setItem("kino_username", name);
+      
       setToken(data.token);
       navigate("/recommendations");
     } else {

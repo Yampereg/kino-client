@@ -1,15 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SettingsDrawer from "./SettingsDrawer";
 
 export default function PageHeader({ onRefresh }) {
   const [isSpinning, setIsSpinning] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [username, setUsername] = useState("User");
+
+  useEffect(() => {
+    // Retrieve username from local storage
+    const storedName = localStorage.getItem("kino_username");
+    if (storedName) {
+      setUsername(storedName);
+    }
+  }, []);
 
   const handleRefreshClick = () => {
     setIsSpinning(true);
     if (onRefresh) onRefresh();
 
-    // Stop spinning after animation (matches CSS duration)
     setTimeout(() => setIsSpinning(false), 1000);
   };
 
@@ -25,14 +33,13 @@ export default function PageHeader({ onRefresh }) {
               </svg>
             </div>
             <div className="header-text">
-              <span className="user-name">Hi User</span>
+              <span className="user-name">Hi {username}</span>
               <span className="welcome-message">Welcome back to Kino</span>
             </div>
           </div>
 
           {/* Right Side: Actions */}
           <div className="header-actions" style={{ display: 'flex', gap: '10px' }}>
-            {/* Refresh Button */}
             <button
               className={`refresh-button ${isSpinning ? "spinning" : ""}`}
               onClick={handleRefreshClick}
@@ -43,9 +50,8 @@ export default function PageHeader({ onRefresh }) {
               </svg>
             </button>
 
-            {/* Settings Button */}
             <button
-              className="refresh-button" // Reusing same class for consistent circle/hover style
+              className="refresh-button"
               onClick={() => setIsDrawerOpen(true)}
               aria-label="Open Settings"
             >
