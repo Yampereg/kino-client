@@ -1,13 +1,19 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import { fetchNextFilms, fetchRecommendations, fetchPopular } from "../api/filmService";
+
+// Component Imports
 import FilmDetailModal from "../Components/FilmDetailModal";
 import TopNav from "../Components/TopNav.jsx";
 import FilmCard from "../Components/FilmCard";
 import ActionButtons from "../Components/ActionButtons";
 import ForYouPage from "./ForYouPage.jsx";
+import NavigationDrawer from "../Components/NavigationDrawer";
+
 import "./RecommendationsPage.css";
 
-// --- Sub-component for Home View ---
+// --- Sub-component: Home View (Swipe Stack) ---
 function HomeRecommendationsView({ film, token, handleInteraction, loadNextBatch, setDetailFilm }) {
   const bannerUrl = film?.bannerPath
     ? `https://image.tmdb.org/t/p/original/${film.bannerPath}`
@@ -21,11 +27,14 @@ function HomeRecommendationsView({ film, token, handleInteraction, loadNextBatch
     <div className="recommendations-page font-kino">
       <div className="background-banner" style={{ backgroundImage: `url(${bannerUrl})` }} />
       <div className="background-fade" />
+      
       <div className="film-scroll-area">
         <FilmCard film={film} onOpenDetail={() => setDetailFilm(film)} />
         <div className="bottom-scroll-spacer" />
       </div>
-      <div className="poster-fade" />
+      
+      <div className="poster-fade" /> 
+      
       <ActionButtons
         films={[film]}
         setFilms={handleInteraction}
@@ -38,22 +47,29 @@ function HomeRecommendationsView({ film, token, handleInteraction, loadNextBatch
 
 // --- Main Page Component ---
 export default function RecommendationsPage() {
-  const token = localStorage.getItem("token");
-  const [activeView, setActiveView] = useState('home');
+  // 1. Auth & Navigation Hooks
+  const { token, setToken, userName, setUserName } = useAuth();
+  const navigate = useNavigate();
+
+  // 2. UI State
+  const [activeView, setActiveView] = useState('home'); // 'home' | 'forYou'
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const [films, setFilms] = useState([]); 
+  // 3. Data State
+  const [films, setFilms] = useState([]); // Home (Swipe) Stack
   const [popularFilms, setPopularFilms] = useState([]); 
-  const [recommendedFilms, setRecommendedFilms] = useState([]); 
-  
+  const [recommendedFilms, setRecommendedFilms] = useState([]); // Carousel Data
+
+  // 4. Modal State
   const [detailFilm, setDetailFilm] = useState(null);
-  const [modalSource, setModalSource] = useState(null); 
-  
-  // Track interactions specifically for the carousel
+  const [modalSource, setModalSource] = useState(null); // 'home' | 'carousel'
+
+  // 5. Logic State
   const [carouselActionCount, setCarouselActionCount] = useState(0); 
 
-  // --- 1. Fetchers ---
+  // --- FETCHERS ---
   const loadNextBatch = useCallback(async () => {
     setError("");
     try {
@@ -77,13 +93,29 @@ export default function RecommendationsPage() {
     }
   }, []);
 
-  // --- 2. Initial Load ---
+  // --- LOGOUT LOGIC ---
+  const handleLogout = () => {
+    // 1. Clear Context
+    setToken(null);
+    if (setUserName) setUserName(null);
+    
+    // 2. Clear Local Storage
+    localStorage.removeItem("token");
+    
+    // 3. Redirect
+    navigate("/login");
+  };
+
+  // --- EFFECTS ---
+
+  // Initial Load
   useEffect(() => {
     if (!token) {
       setError("Please log in.");
       setLoading(false);
       return;
     }
+
     const loadInitialData = async () => {
       try {
         await loadNextBatch();
@@ -97,25 +129,22 @@ export default function RecommendationsPage() {
     loadInitialData();
   }, [token, loadNextBatch, loadForYouData]);
 
-  // --- 3. The "Magic" Refresher Effect ---
-  // This watches the count. When it hits 3, it refreshes automatically.
+  // Carousel Refresh Watcher (The "Mod 3" Rule)
   useEffect(() => {
     if (carouselActionCount > 0 && carouselActionCount % 3 === 0) {
       console.log(`Hit ${carouselActionCount} interactions. Refreshing Carousel...`);
       setLoading(true);
       
       loadForYouData().then(() => {
-        // We reset count so the next 3 trigger again
-        setCarouselActionCount(0);
+        setCarouselActionCount(0); // Reset after fetch
         setTimeout(() => setLoading(false), 800);
       });
     }
   }, [carouselActionCount, loadForYouData]);
 
+  // --- INTERACTION HANDLERS ---
 
-  // --- 4. Interaction Handlers ---
-
-  // Handle Home/Swipe interactions
+  // 1. Home / Swipe View Handler
   const handleHomeInteraction = (filmIdOrUpdateFn) => {
     setFilms((prev) => {
       let updated;
@@ -124,20 +153,23 @@ export default function RecommendationsPage() {
       } else {
         updated = prev.filter((f) => f.id !== filmIdOrUpdateFn);
       }
-      if (updated.length === 0) loadNextBatch();
+      
+      if (updated.length === 0) {
+        loadNextBatch();
+      }
       return updated;
     });
   };
 
-  // Handle Carousel/Modal interactions
+  // 2. Carousel / Modal Handler
   const handleCarouselListUpdate = (idOrUpdateFn) => {
-    // A. Close the modal immediately (User feedback)
+    // Close Modal Immediately
     setDetailFilm(null);
 
-    // B. Increment the interaction counter
+    // Increment Counter
     setCarouselActionCount(prev => prev + 1);
 
-    // C. Update the list immediately (Remove the film)
+    // Update Visual List Immediately
     setRecommendedFilms((prevList) => {
       if (typeof idOrUpdateFn === 'function') {
         return idOrUpdateFn(prevList);
@@ -147,6 +179,7 @@ export default function RecommendationsPage() {
     });
   };
 
+  // --- MODAL OPENERS ---
   const openDetailFromHome = (film) => {
     setDetailFilm(film);
     setModalSource('home');
@@ -157,6 +190,7 @@ export default function RecommendationsPage() {
     setModalSource('carousel');
   };
 
+  // --- MANUAL REFRESH ---
   const handleRefresh = async () => {
     setLoading(true);
     await loadForYouData();
@@ -166,7 +200,9 @@ export default function RecommendationsPage() {
 
   const currentFilm = useMemo(() => films[0], [films]);
 
+  // --- RENDER ---
   if (!token) return <div className="empty-state font-kino">Please log in.</div>;
+  
   if (loading) {
     return (
       <div className="loading-screen font-kino">
@@ -190,7 +226,9 @@ export default function RecommendationsPage() {
       );
     }
 
-    if (!currentFilm) return <div className="empty-state font-kino">{error || "No more films!"}</div>;
+    if (!currentFilm) {
+      return <div className="empty-state font-kino">{error || "No more films!"}</div>;
+    }
 
     return (
       <HomeRecommendationsView 
@@ -205,15 +243,31 @@ export default function RecommendationsPage() {
 
   return (
     <>
-      <TopNav activeView={activeView} onViewChange={setActiveView} />
+      {/* Top Navigation with Menu Trigger */}
+      <TopNav 
+        activeView={activeView} 
+        onViewChange={setActiveView} 
+        onMenuClick={() => setIsDrawerOpen(true)}
+      />
+      
+      {/* Side Drawer */}
+      <NavigationDrawer 
+        isOpen={isDrawerOpen} 
+        onClose={() => setIsDrawerOpen(false)}
+        userName={userName}
+        onLogout={handleLogout}
+      />
+
+      {/* Main Content Area */}
       {renderContent()}
 
+      {/* Detail Modal */}
       {detailFilm && (
         <FilmDetailModal
           film={detailFilm}
           onClose={() => setDetailFilm(null)}
           token={token}
-          // Pass the specific handler based on source
+          // Dynamic Props based on Source
           films={modalSource === 'home' ? films : recommendedFilms}
           setFilms={modalSource === 'home' ? handleHomeInteraction : handleCarouselListUpdate}
           loadNextBatch={modalSource === 'home' ? loadNextBatch : null} 
