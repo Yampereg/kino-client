@@ -6,8 +6,8 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  // Assuming useAuth provides a function like loginUser(token, username) or an updated setToken
-  const { token, loginUser } = useAuth(); 
+  
+  const { token, loginUser } = useAuth();
   const navigate = useNavigate();
   const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
@@ -28,12 +28,12 @@ export default function Login() {
 
     if (res.ok) {
       const data = await res.json();
-
-      // **FIXED:** Pass token and username to the AuthContext function.
-      // Removed: localStorage.setItem("kino_username", name);
-      loginUser(data.token, name); // Use a context function to set token and user/name state
-      
-      navigate("/recommendations");
+      if (loginUser) {
+        loginUser(data.token, name);
+        navigate("/recommendations");
+      } else {
+        console.error("loginUser function missing from AuthContext");
+      }
     } else {
       alert("Login failed");
     }
