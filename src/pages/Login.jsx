@@ -4,10 +4,11 @@ import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const [name, setName] = useState(""); // <-- This is the name we want to save
+  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  // Assuming useAuth now provides setUserName
-  const { token, setToken, setUserName } = useAuth(); 
+  
+  // FIXED: Destructure 'loginUser' instead of 'setToken'
+  const { token, loginUser } = useAuth(); 
   const navigate = useNavigate();
   const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
@@ -20,22 +21,31 @@ export default function Login() {
   async function handleSubmit(e) {
     e.preventDefault();
 
-    const res = await fetch(`${apiBaseUrl}/api/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, password }),
-    });
+    try {
+      const res = await fetch(`${apiBaseUrl}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, password }),
+      });
 
-    if (res.ok) {
-      const data = await res.json();
-      setToken(data.token);
-      // CRITICAL ADDITION: Save the name used for login to the context
-      if (setUserName) { 
-          setUserName(name); 
+      if (res.ok) {
+        const data = await res.json();
+        
+        // FIXED: Call loginUser. 
+        // If this crashes, it means AuthContext is not providing this function.
+        if (typeof loginUser === 'function') {
+          loginUser(data.token, name);
+          navigate("/recommendations");
+        } else {
+          console.error("Critical Error: 'loginUser' function is missing from AuthContext!");
+          alert("Login error: Context mismatch. Please refresh.");
+        }
+      } else {
+        alert("Login failed");
       }
-      navigate("/recommendations");
-    } else {
-      alert("Login failed");
+    } catch (error) {
+      console.error("Login request failed", error);
+      alert("An error occurred during login.");
     }
   }
 
@@ -96,13 +106,8 @@ export default function Login() {
           </div>
         </div>
 
-        <div
-          className="text-right text-xs font-normal mb-6 w-4/5"
-          style={{ color: "#ACACAC" }}
-        >
-          <button type="button" className="text-[#ACACAC]">
-            Forgot password?
-          </button>
+        <div className="text-right text-xs font-normal mb-6 w-4/5" style={{ color: "#ACACAC" }}>
+          <button type="button" className="text-[#ACACAC]">Forgot password?</button>
         </div>
 
         <button
@@ -113,10 +118,7 @@ export default function Login() {
           Log in
         </button>
 
-        <div
-          className="text-center mt-4 text-sm font-extralight w-4/5"
-          style={{ color: "#ACACAC" }}
-        >
+        <div className="text-center mt-4 text-sm font-extralight w-4/5" style={{ color: "#ACACAC" }}>
           Don’t have an account? {""}
           <Link to="/signup" className="font-semibold underline" style={{ color: "#ACACAC" }}>
             Sign Up!

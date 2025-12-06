@@ -1,4 +1,3 @@
-/* src/context/AuthContext.js */
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext();
@@ -42,13 +41,12 @@ export function AuthProvider({ children }) {
   const logout = () => {
     setToken(null);
     setUser(null);
-    // LocalStorage cleaning is handled by the useEffects above
   };
 
   const value = {
     token,
     user,
-    loginUser,
+    loginUser, // <--- This MUST be here for Login.jsx to work
     logout
   };
 
