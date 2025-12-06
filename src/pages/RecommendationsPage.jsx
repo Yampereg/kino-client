@@ -9,7 +9,7 @@ import TopNav from "../Components/TopNav.jsx";
 import FilmCard from "../Components/FilmCard";
 import ActionButtons from "../Components/ActionButtons";
 import ForYouPage from "./ForYouPage.jsx";
-import NavigationDrawer from "../Components/NavigationDrawer";
+import SettingsDrawer from "../Components/SettingsDrawer.jsx";
 
 import "./RecommendationsPage.css";
 
@@ -251,7 +251,7 @@ export default function RecommendationsPage() {
       />
       
       {/* Side Drawer */}
-      <NavigationDrawer 
+      <SettingsDrawer 
         isOpen={isDrawerOpen} 
         onClose={() => setIsDrawerOpen(false)}
         userName={userName}
