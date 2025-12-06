@@ -1,20 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react";
 import SettingsDrawer from "./SettingsDrawer";
-// Note: Assuming you are using local storage for username, 
-// as indicated by the useEffect hook in your provided code block.
+import { useAuth } from "../context/AuthContext"; // Assuming useAuth is available
 
 export default function PageHeader({ onRefresh }) {
+  const { user } = useAuth(); // Assume 'user' object contains 'name'
+  const username = user?.name || "User"; // Get name from auth context, default to "User"
+
   const [isSpinning, setIsSpinning] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [username, setUsername] = useState("User");
-
-  useEffect(() => {
-    // Retrieve username from local storage
-    const storedName = localStorage.getItem("kino_username");
-    if (storedName) {
-      setUsername(storedName);
-    }
-  }, []);
+  // Removed: [username, setUsername] useState and localStorage useEffect
 
   const handleRefreshClick = () => {
     setIsSpinning(true);
@@ -22,7 +16,7 @@ export default function PageHeader({ onRefresh }) {
 
     setTimeout(() => setIsSpinning(false), 1000);
   };
-  
+
   // Memoize the onClose handler for stability in the child component
   const handleCloseDrawer = useCallback(() => {
     setIsDrawerOpen(false);
@@ -72,11 +66,12 @@ export default function PageHeader({ onRefresh }) {
           </div>
         </div>
       </div>
-      
+
       {/* SettingsDrawer component is correctly rendered here */}
-      <SettingsDrawer 
-        isOpen={isDrawerOpen} 
-        onClose={handleCloseDrawer} 
+      <SettingsDrawer
+        isOpen={isDrawerOpen}
+        onClose={handleCloseDrawer}
+        userName={username} // Passing the username as a prop
       />
     </>
   );

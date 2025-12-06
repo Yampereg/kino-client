@@ -66,3 +66,19 @@
   color: #FFC107;
   font-size: 1rem;
 }
+
+.film-list-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px; /* Add some space between items */
+}
+
+.list-number {
+  font-size: 3em; /* Make the number big */
+  font-weight: bold;
+  color: #333; /* Dark color for visibility */
+  margin-right: 15px; /* Space between the number and the poster */
+  min-width: 50px; /* Ensure space for double-digit numbers */
+  text-align: right;
+}

@@ -3,19 +3,20 @@ import React from "react";
 import "./FilmList.css";
 
 export default function FilmList({ films }) {
-  const getPosterUrl = (path) => 
+  const getPosterUrl = (path) =>
     path ? `https://image.tmdb.org/t/p/w200/${path}` : null;
 
   return (
     <div className="film-list-container">
       {films.map((film, index) => (
         <div key={film.id || index} className="film-list-item">
+          <span className="list-number">{index + 1}</span>
           <div className="list-poster-wrapper">
             {getPosterUrl(film.posterPath) ? (
-              <img 
-                src={getPosterUrl(film.posterPath)} 
-                alt={film.title} 
-                className="list-poster" 
+              <img
+                src={getPosterUrl(film.posterPath)}
+                alt={film.title}
+                className="list-poster"
               />
             ) : (
               <div className="missing-poster-list"></div>

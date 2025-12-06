@@ -1,3 +1,4 @@
+/* SettingsDrawer.jsx */
 import React, { useEffect } from "react";
 import "./SettingsDrawer.css";
 
@@ -14,14 +15,14 @@ export default function SettingsDrawer({ isOpen, onClose, userName, onLogout }) 
   return (
     <>
       {/* Dark Overlay (Click to close) */}
-      <div 
-        className={`drawer-overlay ${isOpen ? "open" : ""}`} 
-        onClick={onClose} 
+      <div
+        className={`drawer-overlay ${isOpen ? "open" : ""}`}
+        onClick={onClose}
       />
 
       {/* Drawer Panel */}
       <div className={`drawer-panel ${isOpen ? "open" : ""}`}>
-        
+
         {/* Header Section */}
         <div className="drawer-header">
           <button className="drawer-close-btn" onClick={onClose}>
