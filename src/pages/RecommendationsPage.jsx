@@ -7,7 +7,7 @@ import ActionButtons from "../Components/ActionButtons";
 import ForYouPage from "./ForYouPage.jsx";
 import "./RecommendationsPage.css";
 
-// ... (HomeRecommendationsView component remains the same) ...
+// --- Sub-component for Home View ---
 function HomeRecommendationsView({ film, token, handleInteraction, loadNextBatch, setDetailFilm }) {
   const bannerUrl = film?.bannerPath
     ? `https://image.tmdb.org/t/p/original/${film.bannerPath}`
@@ -36,6 +36,7 @@ function HomeRecommendationsView({ film, token, handleInteraction, loadNextBatch
   );
 }
 
+// --- Main Page Component ---
 export default function RecommendationsPage() {
   const token = localStorage.getItem("token");
   const [activeView, setActiveView] = useState('home');
@@ -95,6 +96,8 @@ export default function RecommendationsPage() {
   }, [token, loadNextBatch, loadForYouData]);
 
   // --- 3. Interaction Handlers ---
+
+  // Handle interactions from the Home Swipe View
   const handleHomeInteraction = (filmIdOrUpdateFn) => {
     setFilms((prev) => {
       let updated;
@@ -103,27 +106,54 @@ export default function RecommendationsPage() {
       } else {
         updated = prev.filter((f) => f.id !== filmIdOrUpdateFn);
       }
-      if (updated.length === 0) loadNextBatch();
+      
+      if (updated.length === 0) {
+        loadNextBatch();
+      }
       return updated;
     });
   };
 
-  const handleCarouselListUpdate = async (updateFn) => {
+  // Handle interactions from the Carousel (via Modal)
+  const handleCarouselListUpdate = (idOrUpdateFn) => {
+    // 1. Close the modal immediately
+    setDetailFilm(null);
+
+    // 2. Update the list visually
     setRecommendedFilms((prevList) => {
-      const updatedList = updateFn(prevList);
+      let updatedList;
+      
+      // Handle both functional updates and direct ID filtering
+      if (typeof idOrUpdateFn === 'function') {
+        updatedList = idOrUpdateFn(prevList);
+      } else {
+        updatedList = prevList.filter(f => f.id !== idOrUpdateFn);
+      }
+
+      // 3. Logic: If an item was actually removed
       if (updatedList.length < prevList.length) {
         const newCount = carouselActionCount + 1;
-        setCarouselActionCount(newCount);
-        setDetailFilm(null); // Close modal
+        console.log(`Carousel Interaction: ${newCount}/3`);
         
+        // Update count state
+        setCarouselActionCount(newCount);
+
+        // 4. Check if we reached the threshold to refresh
         if (newCount >= 3) {
+          console.log("Threshold reached. Refreshing carousel...");
           setLoading(true);
+          
+          // Fetch new data
           loadForYouData().then(() => {
-            setCarouselActionCount(0);
-            setTimeout(() => setLoading(false), 500);
+            setCarouselActionCount(0); // Reset count
+            setTimeout(() => setLoading(false), 600);
           });
+          
+          // Return empty temporarily while loading (optional, or keep old list until load finishes)
+          return updatedList; 
         }
       }
+      
       return updatedList;
     });
   };
@@ -133,9 +163,7 @@ export default function RecommendationsPage() {
     setModalSource('home');
   };
 
-  // !!! THIS FUNCTION MUST BE PASSED DOWN !!!
   const openDetailFromCarousel = (film) => {
-    console.log("Opening detail for:", film.title); // Debug log
     setDetailFilm(film);
     setModalSource('carousel');
   };
@@ -168,7 +196,6 @@ export default function RecommendationsPage() {
           popularFilms={popularFilms} 
           recommendedFilms={recommendedFilms}
           onRefresh={handleRefresh}
-          // PASSING THE PROP HERE IS CRITICAL
           onFilmClick={openDetailFromCarousel} 
         />
       );
@@ -197,8 +224,11 @@ export default function RecommendationsPage() {
           film={detailFilm}
           onClose={() => setDetailFilm(null)}
           token={token}
+          // Pass the specific handler based on where the modal was opened from
           films={modalSource === 'home' ? films : recommendedFilms}
           setFilms={modalSource === 'home' ? handleHomeInteraction : handleCarouselListUpdate}
+          
+          // If in carousel, we don't need to loadNextBatch on interaction, we just close
           loadNextBatch={modalSource === 'home' ? loadNextBatch : null} 
         />
       )}

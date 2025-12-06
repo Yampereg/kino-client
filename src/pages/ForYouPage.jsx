@@ -4,21 +4,21 @@ import FilmCarousel from "../Components/FilmCarousel";
 import FilmList from "../Components/FilmList";
 import "./ForYouPage.css";
 
-// 1. Accept onFilmClick here
+// It receives 'onFilmClick' from RecommendationsPage and passes it to FilmCarousel
 export default function ForYouPage({ popularFilms, recommendedFilms, onRefresh, onFilmClick }) {
-  console.log("ForYouPage received onFilmClick:", !!onFilmClick); // Debug log
-
   return (
     <div className="for-you-page">
       <div className="content-scroll-area">
+        {/* Header handles the refresh pull */}
         <PageHeader onRefresh={onRefresh} />
 
         <section className="section">
           <h2 className="section-title">Top Picks For You</h2>
-          {/* 2. Pass it down here */}
+          
+          {/* THE CAROUSEL */}
           <FilmCarousel 
-            films={recommendedFilms} 
-            onFilmClick={onFilmClick} 
+             films={recommendedFilms} 
+             onFilmClick={onFilmClick} // <--- Passing the "Open Modal" signal down
           />
         </section>
 
