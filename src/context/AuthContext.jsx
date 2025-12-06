@@ -1,5 +1,5 @@
 /* src/context/AuthContext.js */
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext();
 
@@ -8,10 +8,32 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }) {
-  // Initialize state from memory only (No localStorage)
-  const [token, setToken] = useState(null);
-  const [user, setUser] = useState(null);
+  // 1. Initialize State from Local Storage
+  const [token, setToken] = useState(() => localStorage.getItem("token") || null);
+  const [user, setUser] = useState(() => {
+    const savedName = localStorage.getItem("kino_username");
+    return savedName ? { name: savedName } : null;
+  });
 
+  // 2. Sync Token changes to Local Storage
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("token", token);
+    } else {
+      localStorage.removeItem("token");
+    }
+  }, [token]);
+
+  // 3. Sync User changes to Local Storage
+  useEffect(() => {
+    if (user && user.name) {
+      localStorage.setItem("kino_username", user.name);
+    } else {
+      localStorage.removeItem("kino_username");
+    }
+  }, [user]);
+
+  // 4. Action Functions
   const loginUser = (newToken, newName) => {
     setToken(newToken);
     setUser({ name: newName });
@@ -20,6 +42,7 @@ export function AuthProvider({ children }) {
   const logout = () => {
     setToken(null);
     setUser(null);
+    // LocalStorage cleaning is handled by the useEffects above
   };
 
   const value = {
