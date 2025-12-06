@@ -1,8 +1,8 @@
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination } from "swiper/modules";
+import { Pagination } from "swiper/modules"; 
 import "swiper/css";
-import "swiper/css/pagination";
+import "swiper/css/pagination"; 
 import "./FilmCarousel.css";
 
 export default function FilmCarousel({ films, onFilmClick }) {
@@ -14,28 +14,25 @@ export default function FilmCarousel({ films, onFilmClick }) {
   return (
     <div className="film-carousel-wrapper">
       <Swiper
-        modules={[Pagination]}
-        pagination={{ clickable: true, dynamicBullets: true }}
+        modules={[Pagination]} 
+        pagination={{ clickable: true, dynamicBullets: true }} 
         spaceBetween={24}
         slidesPerView={'auto'}
         centeredSlides={true}
         loop={true}
         className="film-swiper"
       >
-        {films.map((film, index) => (
-          <SwiperSlide key={`${index}-${film.id}`} className="film-swiper-slide">
+        {films.map((film) => (
+          // CRITICAL FIX: Use film.id as key, NOT index. 
+          // This allows React to correctly remove specific slides when data changes.
+          <SwiperSlide key={film.id} className="film-swiper-slide">
             {({ isActive }) => (
               <div 
                 className={`film-carousel-item ${isActive ? 'active' : ''}`}
                 onClick={() => {
-                   console.log("Carousel Clicked!", film.title); // Debug log
-                   if (onFilmClick) {
-                       onFilmClick(film);
-                   } else {
-                       console.error("onFilmClick prop is missing in FilmCarousel!");
-                   }
+                  if (onFilmClick) onFilmClick(film);
                 }}
-                style={{ cursor: 'pointer' }} // Force pointer cursor
+                style={{ cursor: onFilmClick ? 'pointer' : 'default' }}
               >
                 {getPosterUrl(film.posterPath) ? (
                   <img 
