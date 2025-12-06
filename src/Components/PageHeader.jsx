@@ -7,6 +7,7 @@ export default function PageHeader({ onRefresh }) {
   const [username, setUsername] = useState("User");
 
   useEffect(() => {
+    // Retrieve username from local storage
     const storedName = localStorage.getItem("kino_username");
     if (storedName) {
       setUsername(storedName);
@@ -16,6 +17,7 @@ export default function PageHeader({ onRefresh }) {
   const handleRefreshClick = () => {
     setIsSpinning(true);
     if (onRefresh) onRefresh();
+
     setTimeout(() => setIsSpinning(false), 1000);
   };
 
@@ -56,8 +58,8 @@ export default function PageHeader({ onRefresh }) {
               aria-label="Open Settings"
             >
               <svg className="refresh-icon" viewBox="0 0 24 24">
-                 {/* Fixed, clean SVG path for Gear Icon */}
-                 <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.5.5 0 0 0 .12-.61l-1.92-3.32a.5.5 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.5.5 0 0 0-.48-.41h-3.84a.5.5 0 0 0-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.5.5 0 0 0-.59.22L2.74 8.87a.5.5 0 0 0 .12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.5.5 0 0 0-.12.61l1.92 3.32a.5.5 0 0 0 .59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54a.5.5 0 0 0 .48.41h3.84a.5.5 0 0 0 .47-.41l.36-2.54c.59-.24 1.13-.57 1.62-.94l2.39.96a.5.5 0 0 0 .59-.22l1.92-3.32a.5.5 0 0 0-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+                {/* Corrected path for Settings/Gear icon */}
+                <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.39-1.06-.73-1.69-.97l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.5.44l-.38 2.65c-.63.24-1.17.58-1.69.97l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.12.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.39 1.06.73 1.69.97l.38 2.65c.04.26.25.44.5.44h4c.25 0 .46-.18.5-.44l.38-2.65c.63-.24 1.17-.58 1.69-.97l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>
               </svg>
             </button>
           </div>
