@@ -3,6 +3,7 @@ import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { fetchNextFilms, fetchRecommendations, fetchPopular } from "../api/filmService";
+import { motion, useMotionValue, useTransform, AnimatePresence } from "framer-motion"; // Import Framer Motion
 
 // Component Imports
 import FilmDetailModal from "../Components/FilmDetailModal";
@@ -15,29 +16,104 @@ import SettingsDrawer from "../Components/SettingsDrawer.jsx";
 import "./RecommendationsPage.css";
 
 // --- Sub-component: Home View (Swipe Stack) ---
-function HomeRecommendationsView({ film, token, handleInteraction, loadNextBatch, setDetailFilm }) {
-  const bannerUrl = film?.bannerPath
-    ? `https://image.tmdb.org/t/p/original/${film.bannerPath}`
-    : film?.backdropPath
-    ? `https://image.tmdb.org/t/p/original/${film.backdropPath}`
-    : film?.posterPath
-    ? `https://image.tmdb.org/t/p/w500/${film.posterPath}`
+function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatch, setDetailFilm }) {
+  // We grab the top two films to create the "Stack" effect
+  const currentFilm = films[0];
+  const nextFilm = films[1];
+
+  // Motion values for the active card
+  const x = useMotionValue(0);
+  const rotate = useTransform(x, [-200, 200], [-15, 15]); // Rotate slightly on drag
+  const opacity = useTransform(x, [-200, -100, 0, 100, 200], [0, 1, 1, 1, 0]); // Fade out on extreme swipe
+
+  // Background Banner Logic (Show current film's banner)
+  const activeFilm = currentFilm || nextFilm;
+  const bannerUrl = activeFilm?.bannerPath
+    ? `https://image.tmdb.org/t/p/original/${activeFilm.bannerPath}`
+    : activeFilm?.backdropPath
+    ? `https://image.tmdb.org/t/p/original/${activeFilm.backdropPath}`
+    : activeFilm?.posterPath
+    ? `https://image.tmdb.org/t/p/w500/${activeFilm.posterPath}`
     : "";
+
+  const handleDragEnd = (event, info) => {
+    const threshold = 100; // Pixel distance to trigger swipe
+    if (info.offset.x > threshold) {
+      // Swipe Right (Like)
+      handleInteraction(currentFilm.id); 
+    } else if (info.offset.x < -threshold) {
+      // Swipe Left (Dislike)
+      handleInteraction(currentFilm.id); 
+    }
+  };
 
   return (
     <div className="recommendations-page font-kino">
       <div className="background-banner" style={{ backgroundImage: `url(${bannerUrl})` }} />
       <div className="background-fade" />
       
-      <div className="film-scroll-area">
-        <FilmCard film={film} onOpenDetail={() => setDetailFilm(film)} />
+      {/* We change this area to a relative container to stack the cards.
+         The 'next' card sits behind, and the 'current' card sits on top with drag handlers.
+      */}
+      <div className="film-scroll-area" style={{ position: 'relative', overflow: 'hidden' }}>
+        
+        {/* 1. Background Card (Next Film) - Peeking */}
+        {nextFilm && (
+          <div 
+            style={{ 
+              position: 'absolute', 
+              top: 0, 
+              left: 0, 
+              width: '100%', 
+              height: '100%', 
+              transform: 'scale(0.95) translateY(10px)', // Slightly smaller and lower
+              opacity: 0.7, 
+              zIndex: 0,
+              pointerEvents: 'none' // Prevent interaction with back card
+            }}
+          >
+            <FilmCard film={nextFilm} />
+          </div>
+        )}
+
+        {/* 2. Foreground Card (Current Film) - Swipeable */}
+        <AnimatePresence>
+          {currentFilm ? (
+            <motion.div
+              key={currentFilm.id || 'current'}
+              style={{ 
+                position: 'absolute', 
+                top: 0, 
+                left: 0, 
+                width: '100%', 
+                height: '100%', 
+                zIndex: 1,
+                x, 
+                rotate,
+                opacity,
+                cursor: 'grab'
+              }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }} // Snap back if not swiped far enough
+              onDragEnd={handleDragEnd}
+              whileTap={{ cursor: 'grabbing' }}
+              // Exit animation when it is removed from the list
+              exit={{ x: x.get() < 0 ? -500 : 500, opacity: 0, transition: { duration: 0.3 } }}
+            >
+              <FilmCard film={currentFilm} onOpenDetail={() => setDetailFilm(currentFilm)} />
+            </motion.div>
+          ) : (
+             <div className="empty-state">No more films!</div>
+          )}
+        </AnimatePresence>
+        
         <div className="bottom-scroll-spacer" />
       </div>
       
       <div className="poster-fade" /> 
       
       <ActionButtons
-        films={[film]}
+        films={films} // Pass full list so buttons know what to act on
         setFilms={handleInteraction}
         token={token}
         loadNextBatch={loadNextBatch}
@@ -48,35 +124,28 @@ function HomeRecommendationsView({ film, token, handleInteraction, loadNextBatch
 
 // --- Main Page Component ---
 export default function RecommendationsPage() {
-  // 1. Auth & Navigation Hooks
-  // FIXED: Destructure 'logout' and 'user' correctly from the new Context
   const { token, user, logout } = useAuth();
   const navigate = useNavigate();
 
-  // 2. UI State
-  const [activeView, setActiveView] = useState('home'); // 'home' | 'forYou'
+  const [activeView, setActiveView] = useState('home'); 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // 3. Data State
-  const [films, setFilms] = useState([]); // Home (Swipe) Stack
+  const [films, setFilms] = useState([]); 
   const [popularFilms, setPopularFilms] = useState([]); 
-  const [recommendedFilms, setRecommendedFilms] = useState([]); // Carousel Data
+  const [recommendedFilms, setRecommendedFilms] = useState([]); 
 
-  // 4. Modal State
   const [detailFilm, setDetailFilm] = useState(null);
-  const [modalSource, setModalSource] = useState(null); // 'home' | 'carousel'
-
-  // 5. Logic State
+  const [modalSource, setModalSource] = useState(null); 
   const [carouselActionCount, setCarouselActionCount] = useState(0); 
 
-  // --- FETCHERS ---
   const loadNextBatch = useCallback(async () => {
     setError("");
     try {
       const nextFilms = await fetchNextFilms(token);
-      const safe = Array.isArray(nextFilms) ? nextFilms.slice(0, 3) : [];
+      // Fetch more than 1 so we can stack them
+      const safe = Array.isArray(nextFilms) ? nextFilms : [];
       setFilms(safe);
     } catch (err) {
       console.error("Failed to fetch films", err);
@@ -95,25 +164,16 @@ export default function RecommendationsPage() {
     }
   }, []);
 
-  // --- LOGOUT LOGIC ---
   const handleLogout = () => {
-    // FIXED: Use the context logout function
     if (logout) logout();
     navigate("/login");
   };
 
-  // --- EFFECTS ---
-
-  // Initial Load
   useEffect(() => {
     if (!token) {
-      // Allow a brief moment for context to settle, or redirect immediately
-      // If using memory-only auth, refreshing the page might clear token, 
-      // so this check sends them back to login.
       navigate("/login");
       return;
     }
-
     const loadInitialData = async () => {
       try {
         await loadNextBatch();
@@ -127,47 +187,38 @@ export default function RecommendationsPage() {
     loadInitialData();
   }, [token, loadNextBatch, loadForYouData, navigate]);
 
-  // Carousel Refresh Watcher (The "Mod 3" Rule)
   useEffect(() => {
     if (carouselActionCount > 0 && carouselActionCount % 3 === 0) {
-      console.log(`Hit ${carouselActionCount} interactions. Refreshing Carousel...`);
       setLoading(true);
-      
       loadForYouData().then(() => {
-        setCarouselActionCount(0); // Reset after fetch
+        setCarouselActionCount(0); 
         setTimeout(() => setLoading(false), 800);
       });
     }
   }, [carouselActionCount, loadForYouData]);
 
-  // --- INTERACTION HANDLERS ---
-
-  // 1. Home / Swipe View Handler
+  // Updated to handle both ID removal and direct State function updates
   const handleHomeInteraction = (filmIdOrUpdateFn) => {
     setFilms((prev) => {
       let updated;
       if (typeof filmIdOrUpdateFn === "function") {
         updated = filmIdOrUpdateFn(prev);
       } else {
+        // Standard behavior: Remove the ID (Swiped away)
         updated = prev.filter((f) => f.id !== filmIdOrUpdateFn);
       }
       
-      if (updated.length === 0) {
+      // Pre-fetch next batch if running low (e.g., less than 2 cards left)
+      if (updated.length < 2) {
         loadNextBatch();
       }
       return updated;
     });
   };
 
-  // 2. Carousel / Modal Handler
   const handleCarouselListUpdate = (idOrUpdateFn) => {
-    // Close Modal Immediately
     setDetailFilm(null);
-
-    // Increment Counter
     setCarouselActionCount(prev => prev + 1);
-
-    // Update Visual List Immediately
     setRecommendedFilms((prevList) => {
       if (typeof idOrUpdateFn === 'function') {
         return idOrUpdateFn(prevList);
@@ -177,7 +228,6 @@ export default function RecommendationsPage() {
     });
   };
 
-  // --- MODAL OPENERS ---
   const openDetailFromHome = (film) => {
     setDetailFilm(film);
     setModalSource('home');
@@ -188,7 +238,6 @@ export default function RecommendationsPage() {
     setModalSource('carousel');
   };
 
-  // --- MANUAL REFRESH ---
   const handleRefresh = async () => {
     setLoading(true);
     await loadForYouData();
@@ -196,11 +245,6 @@ export default function RecommendationsPage() {
     setTimeout(() => setLoading(false), 800);
   };
 
-  const currentFilm = useMemo(() => films[0], [films]);
-
-  // --- RENDER ---
-  // If token is missing, the useEffect above will redirect, 
-  // but we return null/empty here to prevent flash of content.
   if (!token) return null; 
   
   if (loading) {
@@ -226,13 +270,10 @@ export default function RecommendationsPage() {
       );
     }
 
-    if (!currentFilm) {
-      return <div className="empty-state font-kino">{error || "No more films!"}</div>;
-    }
-
+    // Pass the ENTIRE films array to the view now
     return (
       <HomeRecommendationsView 
-        film={currentFilm} 
+        films={films} 
         token={token} 
         loadNextBatch={loadNextBatch} 
         handleInteraction={handleHomeInteraction} 
@@ -243,31 +284,26 @@ export default function RecommendationsPage() {
 
   return (
     <>
-      {/* Top Navigation with Menu Trigger */}
       <TopNav 
         activeView={activeView} 
         onViewChange={setActiveView} 
         onMenuClick={() => setIsDrawerOpen(true)}
       />
       
-      {/* Side Drawer */}
       <SettingsDrawer 
         isOpen={isDrawerOpen} 
         onClose={() => setIsDrawerOpen(false)}
-        userName={user?.name} // Pass the name safely from the user object
+        userName={user?.name} 
         onLogout={handleLogout}
       />
 
-      {/* Main Content Area */}
       {renderContent()}
 
-      {/* Detail Modal */}
       {detailFilm && (
         <FilmDetailModal
           film={detailFilm}
           onClose={() => setDetailFilm(null)}
           token={token}
-          // Dynamic Props based on Source
           films={modalSource === 'home' ? films : recommendedFilms}
           setFilms={modalSource === 'home' ? handleHomeInteraction : handleCarouselListUpdate}
           loadNextBatch={modalSource === 'home' ? loadNextBatch : null} 
