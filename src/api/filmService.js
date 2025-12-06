@@ -36,6 +36,10 @@ export function fetchRecommendations() {
   return apiFetch("/api/films/recommendations");
 }
 
+export function fetchPopular() {
+  return apiFetch("/api/films/popular");
+}
+
 export function fetchNextFilms() {
   return apiFetch("/api/films/next");
 }

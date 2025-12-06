@@ -12,12 +12,12 @@ export default function ForYouPage({ popularFilms, recommendedFilms, onRefresh }
         <PageHeader onRefresh={onRefresh} />
 
         <section className="section">
-          <h2 className="section-title">Popular Now</h2>
+          <h2 className="section-title">Top Picks For You</h2>
           <FilmCarousel films={popularFilms} />
         </section>
 
         <section className="section">
-          <h2 className="section-title">Top Picks For U</h2>
+          <h2 className="section-title">Popular Now</h2>
           <FilmList films={recommendedFilms} />
         </section>
         

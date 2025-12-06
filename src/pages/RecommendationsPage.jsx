@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { fetchNextFilms, fetchRecommendations } from "../api/filmService";
+import { fetchNextFilms, fetchRecommendations, fetchPopular} from "../api/filmService";
 import FilmDetailModal from "../Components/FilmDetailModal";
 import TopNav from "../Components/TopNav.jsx";
 import FilmCard from "../Components/FilmCard";
@@ -61,7 +61,7 @@ export default function RecommendationsPage() {
   // Logic to load For You data (Extracted for re-use)
   const loadForYouData = useCallback(async () => {
     try {
-      const popular = await fetchRecommendations();
+      const popular = await fetchPopular();
       setPopularFilms(popular || []);
       const recommendations = await fetchRecommendations();
       setRecommendedFilms(recommendations || []);
