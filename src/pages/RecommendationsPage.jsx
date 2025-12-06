@@ -7,7 +7,7 @@ import ActionButtons from "../Components/ActionButtons";
 import ForYouPage from "./ForYouPage.jsx";
 import "./RecommendationsPage.css";
 
-// --- Sub-component for Home View ---
+// ... (HomeRecommendationsView component remains the same) ...
 function HomeRecommendationsView({ film, token, handleInteraction, loadNextBatch, setDetailFilm }) {
   const bannerUrl = film?.bannerPath
     ? `https://image.tmdb.org/t/p/original/${film.bannerPath}`
@@ -36,22 +36,21 @@ function HomeRecommendationsView({ film, token, handleInteraction, loadNextBatch
   );
 }
 
-// --- Main Page Component ---
 export default function RecommendationsPage() {
   const token = localStorage.getItem("token");
   const [activeView, setActiveView] = useState('home');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const [films, setFilms] = useState([]); // Home/Swipe films
-  const [popularFilms, setPopularFilms] = useState([]);
-  const [recommendedFilms, setRecommendedFilms] = useState([]); // Carousel films
+  const [films, setFilms] = useState([]); 
+  const [popularFilms, setPopularFilms] = useState([]); 
+  const [recommendedFilms, setRecommendedFilms] = useState([]); 
   
   const [detailFilm, setDetailFilm] = useState(null);
-  const [modalSource, setModalSource] = useState(null); // 'home' or 'carousel'
-  const [carouselActionCount, setCarouselActionCount] = useState(0); // Track carousel interactions
+  const [modalSource, setModalSource] = useState(null); 
+  const [carouselActionCount, setCarouselActionCount] = useState(0); 
 
-  // 1. Fetchers
+  // --- 1. Fetchers ---
   const loadNextBatch = useCallback(async () => {
     setError("");
     try {
@@ -75,10 +74,10 @@ export default function RecommendationsPage() {
     }
   }, []);
 
-  // 2. Initial Load
+  // --- 2. Initial Load ---
   useEffect(() => {
     if (!token) {
-      setError("Please log in to get recommendations.");
+      setError("Please log in.");
       setLoading(false);
       return;
     }
@@ -87,7 +86,7 @@ export default function RecommendationsPage() {
         await loadNextBatch();
         await loadForYouData();
       } catch (err) {
-        setError("Could not load initial data.");
+        setError("Could not load data.");
       } finally {
         setTimeout(() => setLoading(false), 1200);
       }
@@ -95,9 +94,8 @@ export default function RecommendationsPage() {
     loadInitialData();
   }, [token, loadNextBatch, loadForYouData]);
 
-  // 3. Home/Swipe Interaction Logic
+  // --- 3. Interaction Handlers ---
   const handleHomeInteraction = (filmIdOrUpdateFn) => {
-    // Check if it's a direct ID (from ActionButtons click) or a state update function (from Modal)
     setFilms((prev) => {
       let updated;
       if (typeof filmIdOrUpdateFn === "function") {
@@ -105,32 +103,20 @@ export default function RecommendationsPage() {
       } else {
         updated = prev.filter((f) => f.id !== filmIdOrUpdateFn);
       }
-      
-      if (updated.length === 0) {
-        loadNextBatch();
-      }
+      if (updated.length === 0) loadNextBatch();
       return updated;
     });
   };
 
-  // 4. Carousel Interaction Logic (The "Magic" Wrapper)
-  // This acts as a "setFilms" replacement for the Modal when opened from the Carousel
   const handleCarouselListUpdate = async (updateFn) => {
     setRecommendedFilms((prevList) => {
       const updatedList = updateFn(prevList);
-      
-      // If the list got smaller, an item was removed (Like/Dislike)
       if (updatedList.length < prevList.length) {
         const newCount = carouselActionCount + 1;
         setCarouselActionCount(newCount);
-        console.log(`Carousel Interaction: ${newCount}/3`);
-
-        // Close modal immediately
-        setDetailFilm(null);
-
-        // Check if we need to refresh (After 3 interactions)
+        setDetailFilm(null); // Close modal
+        
         if (newCount >= 3) {
-          console.log("Refetching Carousel...");
           setLoading(true);
           loadForYouData().then(() => {
             setCarouselActionCount(0);
@@ -142,22 +128,22 @@ export default function RecommendationsPage() {
     });
   };
 
-  // 5. Handlers for Opening Modal
   const openDetailFromHome = (film) => {
     setDetailFilm(film);
     setModalSource('home');
   };
 
+  // !!! THIS FUNCTION MUST BE PASSED DOWN !!!
   const openDetailFromCarousel = (film) => {
+    console.log("Opening detail for:", film.title); // Debug log
     setDetailFilm(film);
     setModalSource('carousel');
   };
 
-  // 6. Refresh Handler for Pull-to-refresh
   const handleRefresh = async () => {
     setLoading(true);
     await loadForYouData();
-    setCarouselActionCount(0); // Reset count on manual refresh
+    setCarouselActionCount(0);
     setTimeout(() => setLoading(false), 800);
   };
 
@@ -175,7 +161,6 @@ export default function RecommendationsPage() {
     );
   }
 
-  // 7. Render Logic
   const renderContent = () => {
     if (activeView === 'forYou') {
       return (
@@ -183,21 +168,20 @@ export default function RecommendationsPage() {
           popularFilms={popularFilms} 
           recommendedFilms={recommendedFilms}
           onRefresh={handleRefresh}
-          onFilmClick={openDetailFromCarousel} // Pass handler
+          // PASSING THE PROP HERE IS CRITICAL
+          onFilmClick={openDetailFromCarousel} 
         />
       );
     }
 
-    if (!currentFilm) {
-      return <div className="empty-state font-kino">{error || "No more films!"}</div>;
-    }
+    if (!currentFilm) return <div className="empty-state font-kino">{error || "No more films!"}</div>;
 
     return (
       <HomeRecommendationsView 
         film={currentFilm} 
         token={token} 
         loadNextBatch={loadNextBatch} 
-        handleInteraction={handleHomeInteraction} // Use Home logic
+        handleInteraction={handleHomeInteraction} 
         setDetailFilm={openDetailFromHome} 
       />
     );
@@ -213,10 +197,9 @@ export default function RecommendationsPage() {
           film={detailFilm}
           onClose={() => setDetailFilm(null)}
           token={token}
-          // DYNAMIC PROPS BASED ON SOURCE
           films={modalSource === 'home' ? films : recommendedFilms}
           setFilms={modalSource === 'home' ? handleHomeInteraction : handleCarouselListUpdate}
-          loadNextBatch={modalSource === 'home' ? loadNextBatch : () => {}} // No auto-load next batch for carousel
+          loadNextBatch={modalSource === 'home' ? loadNextBatch : null} 
         />
       )}
     </>

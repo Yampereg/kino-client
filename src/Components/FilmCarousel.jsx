@@ -27,11 +27,15 @@ export default function FilmCarousel({ films, onFilmClick }) {
             {({ isActive }) => (
               <div 
                 className={`film-carousel-item ${isActive ? 'active' : ''}`}
-                // FIX: Safety check. Only call onFilmClick if it exists.
                 onClick={() => {
-                    if (onFilmClick) onFilmClick(film);
+                   console.log("Carousel Clicked!", film.title); // Debug log
+                   if (onFilmClick) {
+                       onFilmClick(film);
+                   } else {
+                       console.error("onFilmClick prop is missing in FilmCarousel!");
+                   }
                 }}
-                style={{ cursor: onFilmClick ? 'pointer' : 'default' }}
+                style={{ cursor: 'pointer' }} // Force pointer cursor
               >
                 {getPosterUrl(film.posterPath) ? (
                   <img 

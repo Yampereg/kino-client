@@ -4,16 +4,22 @@ import FilmCarousel from "../Components/FilmCarousel";
 import FilmList from "../Components/FilmList";
 import "./ForYouPage.css";
 
-export default function ForYouPage({ popularFilms, recommendedFilms, onRefresh }) {
+// 1. Accept onFilmClick here
+export default function ForYouPage({ popularFilms, recommendedFilms, onRefresh, onFilmClick }) {
+  console.log("ForYouPage received onFilmClick:", !!onFilmClick); // Debug log
+
   return (
     <div className="for-you-page">
       <div className="content-scroll-area">
-        {/* Pass onRefresh down to the header */}
         <PageHeader onRefresh={onRefresh} />
 
         <section className="section">
           <h2 className="section-title">Top Picks For You</h2>
-          <FilmCarousel films={recommendedFilms} />
+          {/* 2. Pass it down here */}
+          <FilmCarousel 
+            films={recommendedFilms} 
+            onFilmClick={onFilmClick} 
+          />
         </section>
 
         <section className="section">
