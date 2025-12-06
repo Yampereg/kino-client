@@ -49,6 +49,8 @@ export default function RecommendationsPage() {
   
   const [detailFilm, setDetailFilm] = useState(null);
   const [modalSource, setModalSource] = useState(null); 
+  
+  // Track interactions specifically for the carousel
   const [carouselActionCount, setCarouselActionCount] = useState(0); 
 
   // --- 1. Fetchers ---
@@ -95,9 +97,25 @@ export default function RecommendationsPage() {
     loadInitialData();
   }, [token, loadNextBatch, loadForYouData]);
 
-  // --- 3. Interaction Handlers ---
+  // --- 3. The "Magic" Refresher Effect ---
+  // This watches the count. When it hits 3, it refreshes automatically.
+  useEffect(() => {
+    if (carouselActionCount > 0 && carouselActionCount % 3 === 0) {
+      console.log(`Hit ${carouselActionCount} interactions. Refreshing Carousel...`);
+      setLoading(true);
+      
+      loadForYouData().then(() => {
+        // We reset count so the next 3 trigger again
+        setCarouselActionCount(0);
+        setTimeout(() => setLoading(false), 800);
+      });
+    }
+  }, [carouselActionCount, loadForYouData]);
 
-  // Handle interactions from the Home Swipe View
+
+  // --- 4. Interaction Handlers ---
+
+  // Handle Home/Swipe interactions
   const handleHomeInteraction = (filmIdOrUpdateFn) => {
     setFilms((prev) => {
       let updated;
@@ -106,55 +124,26 @@ export default function RecommendationsPage() {
       } else {
         updated = prev.filter((f) => f.id !== filmIdOrUpdateFn);
       }
-      
-      if (updated.length === 0) {
-        loadNextBatch();
-      }
+      if (updated.length === 0) loadNextBatch();
       return updated;
     });
   };
 
-  // Handle interactions from the Carousel (via Modal)
+  // Handle Carousel/Modal interactions
   const handleCarouselListUpdate = (idOrUpdateFn) => {
-    // 1. Close the modal immediately
+    // A. Close the modal immediately (User feedback)
     setDetailFilm(null);
 
-    // 2. Update the list visually
+    // B. Increment the interaction counter
+    setCarouselActionCount(prev => prev + 1);
+
+    // C. Update the list immediately (Remove the film)
     setRecommendedFilms((prevList) => {
-      let updatedList;
-      
-      // Handle both functional updates and direct ID filtering
       if (typeof idOrUpdateFn === 'function') {
-        updatedList = idOrUpdateFn(prevList);
+        return idOrUpdateFn(prevList);
       } else {
-        updatedList = prevList.filter(f => f.id !== idOrUpdateFn);
+        return prevList.filter(f => f.id !== idOrUpdateFn);
       }
-
-      // 3. Logic: If an item was actually removed
-      if (updatedList.length < prevList.length) {
-        const newCount = carouselActionCount + 1;
-        console.log(`Carousel Interaction: ${newCount}/3`);
-        
-        // Update count state
-        setCarouselActionCount(newCount);
-
-        // 4. Check if we reached the threshold to refresh
-        if (newCount >= 3) {
-          console.log("Threshold reached. Refreshing carousel...");
-          setLoading(true);
-          
-          // Fetch new data
-          loadForYouData().then(() => {
-            setCarouselActionCount(0); // Reset count
-            setTimeout(() => setLoading(false), 600);
-          });
-          
-          // Return empty temporarily while loading (optional, or keep old list until load finishes)
-          return updatedList; 
-        }
-      }
-      
-      return updatedList;
     });
   };
 
@@ -224,11 +213,9 @@ export default function RecommendationsPage() {
           film={detailFilm}
           onClose={() => setDetailFilm(null)}
           token={token}
-          // Pass the specific handler based on where the modal was opened from
+          // Pass the specific handler based on source
           films={modalSource === 'home' ? films : recommendedFilms}
           setFilms={modalSource === 'home' ? handleHomeInteraction : handleCarouselListUpdate}
-          
-          // If in carousel, we don't need to loadNextBatch on interaction, we just close
           loadNextBatch={modalSource === 'home' ? loadNextBatch : null} 
         />
       )}
