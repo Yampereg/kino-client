@@ -1,66 +1,57 @@
-import React from 'react';
+import React, { useEffect } from "react";
+import "./SettingsDrawer.css";
 
-// Assuming you have a custom hook for authentication
-// Replace this with your actual auth hook if different
-const useAuth = () => ({
-    logout: () => {
-        console.log("Logging out...");
-        // Implement your actual logout logic here (e.g., clearing tokens, redirecting)
+export default function SettingsDrawer({ isOpen, onClose, userName, onLogout }) {
+  // Prevent background scrolling when drawer is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
     }
-}); 
-
-export default function SettingsDrawer({ isOpen, onClose }) {
-  const { logout } = useAuth();
-  
-  // Handle the click on the logout button
-  const handleLogout = () => {
-    // 1. Close the drawer immediately
-    onClose(); 
-    // 2. Execute logout function
-    logout();
-  };
+  }, [isOpen]);
 
   return (
     <>
-      {/* 1. Backdrop/Overlay: Fades in and closes the drawer when clicked */}
+      {/* Dark Overlay (Click to close) */}
       <div 
-        className={`drawer-backdrop ${isOpen ? 'open' : ''}`} 
-        onClick={onClose}
+        className={`drawer-overlay ${isOpen ? "open" : ""}`} 
+        onClick={onClose} 
       />
 
-      {/* 2. Drawer Content: Slides in from the right */}
-      <div className={`settings-drawer ${isOpen ? 'open' : ''} dark-theme`}>
+      {/* Drawer Panel */}
+      <div className={`drawer-panel ${isOpen ? "open" : ""}`}>
         
+        {/* Header Section */}
         <div className="drawer-header">
-          <h3>Settings</h3>
-          {/* Close button (using simple text for 'no icons' requirement) */}
-          <button 
-            className="drawer-close-btn" 
-            onClick={onClose}
-            aria-label="Close Settings"
-          >
-            Close
+          <button className="drawer-close-btn" onClick={onClose}>
+            ✕
           </button>
-        </div>
-
-        <div className="drawer-body">
-          <p>User preferences and options go here.</p>
-          
-          {/* Example setting item */}
-          <div className="setting-item">
-             <span>Dark Mode</span>
-             <input type="checkbox" defaultChecked />
+          <div className="drawer-user-info">
+            <div className="drawer-avatar">
+              {userName ? userName.charAt(0).toUpperCase() : "U"}
+            </div>
+            <div className="drawer-greeting">
+              <span className="greeting-label">Signed in as</span>
+              <span className="username-text">{userName || "User"}</span>
+            </div>
           </div>
-          
         </div>
 
+        {/* Navigation Links (Expandable for future) */}
+        <div className="drawer-body">
+          <div className="nav-item active">Home</div>
+          <div className="nav-item">Profile</div>
+          <div className="nav-item">Settings</div>
+        </div>
+
+        {/* Footer / Logout */}
         <div className="drawer-footer">
-          <button 
-            className="logout-button" 
-            onClick={handleLogout}
-          >
-            Logout
+          <button className="logout-btn" onClick={onLogout}>
+            <img src="/logout-icon.svg" alt="" className="btn-icon" /> {/* Optional icon */}
+            <span>Log Out</span>
           </button>
+          <div className="app-version">Kino v1.0</div>
         </div>
       </div>
     </>
