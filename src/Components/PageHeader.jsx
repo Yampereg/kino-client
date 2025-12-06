@@ -1,11 +1,12 @@
-import React, { useState } from "react";
-import SettingsDrawer from "./SettingsDrawer"; // <-- Still needs to be imported
+import React, { useState, useCallback } from "react";
+import SettingsDrawer from "./SettingsDrawer";
 // Assuming you have a custom hook to get user data
 import { useAuth } from "../context/AuthContext"; 
 
 export default function PageHeader({ onRefresh }) {
   const [isSpinning, setIsSpinning] = useState(false);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false); // <-- Settings state re-added
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  
   // Get username from context
   const { userName } = useAuth(); 
   
@@ -18,6 +19,11 @@ export default function PageHeader({ onRefresh }) {
     // Stop spinning after animation (matches CSS duration)
     setTimeout(() => setIsSpinning(false), 1000);
   };
+  
+  // Use useCallback to memoize the onClose handler, preventing potential re-renders in SettingsDrawer
+  const handleCloseDrawer = useCallback(() => {
+    setIsDrawerOpen(false);
+  }, []);
 
   return (
     <>
@@ -50,7 +56,7 @@ export default function PageHeader({ onRefresh }) {
               </svg>
             </button>
 
-            {/* 2. Settings Button (RE-ADDED) */}
+            {/* 2. Settings Button */}
             <button
               className="refresh-button"
               onClick={() => setIsDrawerOpen(true)}
@@ -64,10 +70,10 @@ export default function PageHeader({ onRefresh }) {
         </div>
       </div>
       
-      {/* Settings Drawer component needs to be rendered */}
+      {/* Pass the memoized handler to prevent re-renders in SettingsDrawer */}
       <SettingsDrawer 
         isOpen={isDrawerOpen} 
-        onClose={() => setIsDrawerOpen(false)} 
+        onClose={handleCloseDrawer} 
       />
     </>
   );
