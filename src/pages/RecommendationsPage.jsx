@@ -7,8 +7,6 @@ import { motion, useMotionValue, useTransform, AnimatePresence } from "framer-mo
 
 import FilmDetailModal from "../Components/FilmDetailModal";
 import TopNav from "../Components/TopNav.jsx";
-// Note: We are manually rendering the poster/info to split the swipe behavior, 
-// ensuring only the poster swipes while text remains static.
 import ActionButtons from "../Components/ActionButtons";
 import ForYouPage from "./ForYouPage.jsx";
 import SettingsDrawer from "../Components/SettingsDrawer.jsx";
@@ -16,7 +14,6 @@ import SettingsDrawer from "../Components/SettingsDrawer.jsx";
 import "./RecommendationsPage.css";
 
 // --- ISOLATED COMPONENT: Swipeable Poster ---
-// This component owns its own motion state. This guarantees x resets to 0 for every new film.
 const SwipeablePoster = ({ film, onSwipe, onOpenDetail }) => {
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-10, 10]); 
@@ -55,10 +52,10 @@ const SwipeablePoster = ({ film, onSwipe, onOpenDetail }) => {
       dragElastic={0.6}
       onDragEnd={onDragEnd}
       whileTap={{ cursor: 'grabbing' }}
-      // Enter: pop in slightly
-      initial={{ scale: 0.95, opacity: 0 }}
+      // Enter: Instant appearance to cover the background seamlessly
+      initial={{ scale: 1, opacity: 1 }}
       animate={{ scale: 1, opacity: 1 }}
-      // Exit: fly out
+      // Exit: Fly out animation
       exit={{
         x: x.get() < 0 ? -500 : 500,
         opacity: 0,
@@ -80,7 +77,6 @@ const SwipeablePoster = ({ film, onSwipe, onOpenDetail }) => {
             <div className="film-card-poster bg-gray-800" />
           )}
         </div>
-        {/* Intentionally NOT rendering text here */}
       </div>
     </motion.div>
   );
@@ -97,10 +93,8 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
     const filmId = currentFilm.id;
     const type = direction === "right" ? "like" : "dislike";
 
-    // 1. Optimistic UI update (Remove card immediately)
-    handleInteraction(filmId); 
+    handleInteraction(filmId); // Optimistic UI update
 
-    // 2. Fire API call
     try {
       await sendInteraction(token, filmId, type);
     } catch (err) {
@@ -108,7 +102,6 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
     }
   };
 
-  // Background Banner
   const activeFilm = currentFilm || nextFilm;
   const bannerUrl = activeFilm?.bannerPath
     ? `https://image.tmdb.org/t/p/original/${activeFilm.bannerPath}`
@@ -125,18 +118,22 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
       <div className="background-banner" style={{ backgroundImage: `url(${bannerUrl})` }} />
       <div className="background-fade" />
       
-      {/* 1. SWIPE AREA (Posters Only) - Flex Grow pushes it to take available space */}
-      <div style={{ flex: 1, position: 'relative', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden', paddingBottom: '20px' }}>
+      {/* 1. SWIPE AREA (Posters Only) */}
+      {/* Added larger paddingBottom to lift the visual stack higher as requested */}
+      <div style={{ flex: 1, position: 'relative', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden', paddingBottom: '100px' }}>
         
         {/* Next Film (Back Card) */}
         {nextFilm && (
-          <div 
+          <motion.div 
+            key={nextFilm.id} // Re-mounts when film changes to trigger animation
+            initial={{ opacity: 0 }} // Start invisible
+            animate={{ opacity: 0.6 }} // Fade in gently
+            transition={{ duration: 0.3, delay: 0.1 }} // Small delay prevents the "flash" of x+2
             style={{ 
               position: 'absolute',
               width: '100%', height: '100%',
               zIndex: 5,
               transform: 'scale(0.92) translateY(15px)',
-              opacity: 0.6,
               display: 'flex', justifyContent: 'center', alignItems: 'center',
               pointerEvents: 'none'
             }}
@@ -148,7 +145,7 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
                    )}
                 </div>
              </div>
-          </div>
+          </motion.div>
         )}
 
         {/* Current Film (Front Swipeable Poster) */}
@@ -170,7 +167,7 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
       </div>
 
       {/* 2. STATIC INFO AREA (Text Only) */}
-      {/* This stays still while the poster swipes above it */}
+      {/* Pushed up by the bottom padding in flex container, stays above buttons */}
       <div style={{ padding: '0 24px 10px 24px', zIndex: 15, textAlign: 'center', minHeight: '120px' }}>
         {currentFilm && (
           <motion.div 
@@ -205,8 +202,8 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
         )}
       </div>
       
-      {/* 3. BUTTONS (Anchored Bottom) */}
-      <div style={{ flexShrink: 0, zIndex: 20, paddingBottom: '20px' }}>
+      {/* 3. BUTTONS */}
+      <div style={{ flexShrink: 0, zIndex: 20, paddingBottom: '30px' }}>
         <ActionButtons
           films={films}
           setFilms={handleInteraction}
