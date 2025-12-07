@@ -160,22 +160,21 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
         </AnimatePresence>
       </div>
 
-      {/* 2. SCROLLABLE TEXT AREA (Fills remaining space) */}
+      {/* 2. SCROLLABLE TEXT AREA */}
+      {/* marginBottom: 15px lifts the scroll box away from the buttons */}
       <div 
         className="info-scroll-container"
         style={{ 
-          flex: '1 1 auto',        // Grow and shrink to fill space
-          minHeight: 0,            // CRITICAL: prevents overflow from pushing parent
-          overflowY: 'auto',       // Enables scroll
+          flex: '1 1 auto',        
+          minHeight: 0,           
+          overflowY: 'scroll',     // Force scroll behavior
           padding: '0 24px', 
+          marginBottom: '15px',    // GAP ABOVE BUTTONS
           zIndex: 15, 
           textAlign: 'center', 
           display: 'flex', 
           flexDirection: 'column', 
-          alignItems: 'center',
-          // Optional: Fade effect at bottom
-          maskImage: 'linear-gradient(to bottom, black 90%, transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to bottom, black 90%, transparent 100%)'
+          alignItems: 'center'
       }}>
         {currentFilm && (
           <motion.div 
@@ -198,7 +197,8 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
                <p className="film-overview" style={{ 
                  fontSize: '0.9rem', 
                  opacity: 0.8, 
-                 paddingBottom: '20px' 
+                 // Ensure last line isn't cut off by margin/border
+                 paddingBottom: '10px' 
                }}>
                  {currentFilm.overview}
                </p>
@@ -217,20 +217,17 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
         />
       </div>
 
-      {/* Custom Scrollbar Styles injected directly */}
+      {/* Style for visible scrollbar */}
       <style>{`
         .info-scroll-container::-webkit-scrollbar {
-          width: 4px; /* Thin scrollbar */
+          width: 4px;
         }
         .info-scroll-container::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.05); 
+          background: rgba(255, 255, 255, 0.02);
         }
         .info-scroll-container::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.3); 
+          background: rgba(255, 255, 255, 0.4); 
           border-radius: 4px;
-        }
-        .info-scroll-container::-webkit-scrollbar-thumb:hover {
-          background: rgba(255, 255, 255, 0.5); 
         }
       `}</style>
     </div>
