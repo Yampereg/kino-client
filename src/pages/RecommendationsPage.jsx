@@ -89,9 +89,7 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
     if (!currentFilm) return;
     const filmId = currentFilm.id;
     const type = direction === "right" ? "like" : "dislike";
-
     handleInteraction(filmId);
-
     try {
       await sendInteraction(token, filmId, type);
     } catch (err) {
@@ -111,14 +109,12 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
     : null;
 
   return (
-    // FIX 1: height: 100dvh ensures it fits mobile screens perfectly without browser bar overlap
     <div className="recommendations-page font-kino" style={{ display: 'flex', flexDirection: 'column', height: '100dvh', overflow: 'hidden' }}>
       <div className="background-banner" style={{ backgroundImage: `url(${bannerUrl})` }} />
       <div className="background-fade" />
       
-      {/* 1. POSTER AREA (Fixed at top) */}
-      {/* flex-shrink: 0 ensures this area never gets squished. Height 50% leaves room for text. */}
-      <div style={{ height: '50%', position: 'relative', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', flexShrink: 0 }}>
+      {/* 1. POSTER AREA (Fixed 55% height) */}
+      <div style={{ flex: '0 0 55%', position: 'relative', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         
         {/* Next Film (Back Card) */}
         {nextFilm && (
@@ -164,21 +160,22 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
         </AnimatePresence>
       </div>
 
-      {/* 2. SCROLLABLE TEXT AREA (The Middle) */}
-      {/* flex: 1 takes all remaining space. min-height: 0 is CRITICAL for nested flex scrolling. */}
-      <div style={{ 
-        flex: 1, 
-        minHeight: 0, 
-        overflowY: 'auto', 
-        padding: '10px 24px', 
-        zIndex: 15, 
-        textAlign: 'center', 
-        display: 'flex', 
-        flexDirection: 'column', 
-        alignItems: 'center',
-        // Mask creates a smooth fade at the bottom of the text scroll area
-        maskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)',
-        WebkitMaskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)'
+      {/* 2. SCROLLABLE TEXT AREA (Fills remaining space) */}
+      <div 
+        className="info-scroll-container"
+        style={{ 
+          flex: '1 1 auto',        // Grow and shrink to fill space
+          minHeight: 0,            // CRITICAL: prevents overflow from pushing parent
+          overflowY: 'auto',       // Enables scroll
+          padding: '0 24px', 
+          zIndex: 15, 
+          textAlign: 'center', 
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'center',
+          // Optional: Fade effect at bottom
+          maskImage: 'linear-gradient(to bottom, black 90%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, black 90%, transparent 100%)'
       }}>
         {currentFilm && (
           <motion.div 
@@ -187,7 +184,7 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <h1 className="film-title" style={{ fontSize: '1.8rem', marginBottom: '8px' }}>
+            <h1 className="film-title" style={{ fontSize: '1.8rem', marginBottom: '8px', marginTop: '10px' }}>
               {currentFilm.title}
             </h1>
             <div className="film-genres" style={{ justifyContent: 'center', marginBottom: '12px' }}>
@@ -201,7 +198,7 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
                <p className="film-overview" style={{ 
                  fontSize: '0.9rem', 
                  opacity: 0.8, 
-                 paddingBottom: '20px' // Extra padding at bottom of text
+                 paddingBottom: '20px' 
                }}>
                  {currentFilm.overview}
                </p>
@@ -211,8 +208,7 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
       </div>
       
       {/* 3. ACTION BUTTONS (Fixed at Bottom) */}
-      {/* flex-shrink: 0 ensures buttons stay fixed size and pinned to bottom */}
-      <div style={{ flexShrink: 0, zIndex: 20, paddingBottom: '30px', background: 'transparent' }}>
+      <div style={{ flex: '0 0 auto', zIndex: 20, paddingBottom: '30px', background: 'transparent' }}>
         <ActionButtons
           films={films}
           setFilms={handleInteraction}
@@ -220,6 +216,23 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
           loadNextBatch={loadNextBatch}
         />
       </div>
+
+      {/* Custom Scrollbar Styles injected directly */}
+      <style>{`
+        .info-scroll-container::-webkit-scrollbar {
+          width: 4px; /* Thin scrollbar */
+        }
+        .info-scroll-container::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.05); 
+        }
+        .info-scroll-container::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.3); 
+          border-radius: 4px;
+        }
+        .info-scroll-container::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.5); 
+        }
+      `}</style>
     </div>
   );
 }
