@@ -1,8 +1,7 @@
-/* RecommendationsPage.jsx */
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { fetchNextFilms, fetchRecommendations, fetchPopular, sendInteraction } from "../api/filmService";
+import { fetchNextFilms, fetchPopular, fetchRecommendations, sendInteraction } from "../api/filmService";
 import { motion, useMotionValue, useTransform, AnimatePresence } from "framer-motion";
 
 import FilmDetailModal from "../Components/FilmDetailModal";
@@ -38,15 +37,8 @@ const SwipeablePoster = ({ film, onSwipe, onOpenDetail }) => {
 
   return (
     <motion.div
-      style={{
-        position: 'absolute',
-        top: 0, left: 0, 
-        width: '100%', height: '100%',
-        zIndex: 10,
-        x, rotate, opacity,
-        cursor: 'grab',
-        display: 'flex', justifyContent: 'center', alignItems: 'center'
-      }}
+      className="swipeable-poster-wrapper"
+      style={{ x, rotate, opacity }}
       drag="x"
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.6}
@@ -69,7 +61,6 @@ const SwipeablePoster = ({ film, onSwipe, onOpenDetail }) => {
               alt={film.title} 
               className="film-card-poster" 
               onClick={onOpenDetail}
-              style={{ boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}
             />
           ) : (
             <div className="film-card-poster bg-gray-800" />
@@ -109,39 +100,20 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
     : null;
 
   return (
-    // FIX: Using CSS Grid for strict vertical layout
-    // Row 1: 55% (Poster)
-    // Row 2: 1fr (Text - Takes remaining space)
-    // Row 3: auto (Buttons - Fixed size)
-    <div className="recommendations-page font-kino" 
-         style={{ 
-           display: 'grid', 
-           gridTemplateRows: '55% 1fr auto', 
-           height: '100dvh', 
-           overflow: 'hidden' 
-         }}>
-         
+    <div className="recommendations-container font-kino">
       <div className="background-banner" style={{ backgroundImage: `url(${bannerUrl})` }} />
       <div className="background-fade" />
       
-      {/* 1. POSTER AREA (Row 1) */}
-      <div style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        
-        {/* Next Film */}
+      {/* --- GRID ROW 1: POSTER AREA --- */}
+      <div className="rec-poster-area">
+        {/* Next Film (Underneath) */}
         {nextFilm && (
           <motion.div 
             key={nextFilm.id} 
             initial={{ opacity: 0 }} 
             animate={{ opacity: 0.6 }} 
             transition={{ duration: 0.3, delay: 0.1 }}
-            style={{ 
-              position: 'absolute',
-              width: '100%', height: '100%',
-              zIndex: 5,
-              transform: 'scale(0.95)', 
-              display: 'flex', justifyContent: 'center', alignItems: 'center',
-              pointerEvents: 'none'
-            }}
+            className="next-film-layer"
           >
              <div className="film-card" style={{ padding: 0, background: 'transparent', boxShadow: 'none' }}>
                 <div className="poster-container" style={{ marginBottom: 0 }}>
@@ -153,7 +125,7 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
           </motion.div>
         )}
 
-        {/* Current Film */}
+        {/* Current Film (Interactive) */}
         <AnimatePresence mode="popLayout">
           {currentFilm ? (
             <SwipeablePoster 
@@ -171,46 +143,30 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
         </AnimatePresence>
       </div>
 
-      {/* 2. SCROLLABLE TEXT AREA (Row 2) */}
-      <div 
-        className="info-scroll-container"
-        style={{ 
-          minHeight: 0,            // Allows grid item to shrink if needed
-          overflowY: 'scroll',     // FORCE scrollbar to appear
-          padding: '0 24px', 
-          
-          // KEY FIX: Pushes text block UP away from buttons
-          marginBottom: '20px',    
-          
-          zIndex: 15, 
-          textAlign: 'center', 
-          display: 'flex', 
-          flexDirection: 'column', 
-          alignItems: 'center'
-      }}>
+      {/* --- GRID ROW 2: SCROLLABLE INFO AREA --- */}
+      <div className="rec-info-area">
         {currentFilm && (
           <motion.div 
             key={currentFilm.id}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
+            className="info-content-wrapper"
           >
-            <h1 className="film-title" style={{ fontSize: '1.8rem', marginBottom: '8px', marginTop: '10px' }}>
+            <h1 className="film-title">
               {currentFilm.title}
             </h1>
-            <div className="film-genres" style={{ justifyContent: 'center', marginBottom: '12px' }}>
+            
+            <div className="film-genres">
               {(currentFilm.genres || []).slice(0, 3).map((g) => (
                 <span key={g.id || g.name} className="genre-tag">
                   {g.name}
                 </span>
               ))}
             </div>
+
             {currentFilm.overview && (
-               <p className="film-overview" style={{ 
-                 fontSize: '0.9rem', 
-                 opacity: 0.8, 
-                 paddingBottom: '20px' // Padding inside the scroll area
-               }}>
+               <p className="film-overview">
                  {currentFilm.overview}
                </p>
             )}
@@ -218,8 +174,8 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
         )}
       </div>
       
-      {/* 3. ACTION BUTTONS (Row 3) */}
-      <div style={{ zIndex: 20, paddingBottom: '30px', background: 'transparent' }}>
+      {/* --- GRID ROW 3: ACTION BUTTONS --- */}
+      <div className="rec-actions-area">
         <ActionButtons
           films={films}
           setFilms={handleInteraction}
@@ -227,22 +183,6 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
           loadNextBatch={loadNextBatch}
         />
       </div>
-
-      {/* Styles to keep scrollbar strictly visible and styled */}
-      <style>{`
-        .info-scroll-container::-webkit-scrollbar {
-          width: 5px;
-          display: block; /* Strict visibility */
-        }
-        .info-scroll-container::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.05);
-          margin-bottom: 5px; /* Keeps track away from bottom edge */
-        }
-        .info-scroll-container::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.4); 
-          border-radius: 4px;
-        }
-      `}</style>
     </div>
   );
 }

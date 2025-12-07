@@ -2,10 +2,8 @@
   --page-max-width: 480px;
   --poster-radius: 12px;
   --poster-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  --bottom-actions-height: 120px; 
   --page-bg: #111111;
   --header-height: 60px;
-  --kino-red: #fff; /* Keeping white for clean aesthetic, or change to brand color */
 }
 
 html, body {
@@ -17,65 +15,151 @@ html, body {
   overflow: hidden; 
 }
 
-.recommendations-page {
-  position: relative;
-  height: 100vh;
+/* --- MAIN GRID LAYOUT --- */
+.recommendations-container {
+  display: grid;
   width: 100vw;
+  height: 100dvh;
   overflow: hidden;
   background-color: var(--page-bg);
-}
-
-/* --- LOADING SCREEN STYLES --- */
-.loading-screen {
-  position: fixed;
-  inset: 0;
-  background: #111111;
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: fadeOutBg 0.5s ease-out forwards;
-}
-
-.loader-content {
+  /* Row 1: 55% height (Poster)
+    Row 2: 1fr (Takes remaining space for text)
+    Row 3: auto (Buttons wrap content)
+  */
+  grid-template-rows: 55% minmax(0, 1fr) auto;
+  grid-template-columns: 1fr;
   position: relative;
+}
+
+/* --- Row 1: Poster Area --- */
+.rec-poster-area {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.swipeable-poster-wrapper {
+  position: absolute;
+  top: 0; left: 0; 
+  width: 100%; height: 100%;
+  z-index: 10;
+  cursor: grab;
+  display: flex; 
+  justify-content: center; 
+  align-items: center;
+}
+
+.next-film-layer {
+  position: absolute;
+  width: 100%; height: 100%;
+  z-index: 5;
+  transform: scale(0.95);
+  display: flex; 
+  justify-content: center; 
+  align-items: center;
+  pointer-events: none;
+}
+
+/* --- Row 2: Scrollable Info Area --- */
+.rec-info-area {
+  width: 100%;
+  /* Important: min-height 0 prevents grid blowout */
+  min-height: 0; 
+  overflow-y: auto; 
+  padding: 0 24px;
+  z-index: 15;
   display: flex;
   flex-direction: column;
   align-items: center;
+  /* Scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
+}
+
+.info-content-wrapper {
+  width: 100%;
+  max-width: var(--page-max-width);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  /* Add padding bottom so text isn't flush with the cut-off point */
+  padding-bottom: 20px;
+}
+
+.rec-info-area::-webkit-scrollbar {
+  width: 4px;
+}
+.rec-info-area::-webkit-scrollbar-track {
+  background: transparent;
+}
+.rec-info-area::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+/* --- Row 3: Action Buttons --- */
+.rec-actions-area {
+  width: 100%;
+  z-index: 20;
+  padding-bottom: 30px; /* Space from bottom edge */
+  padding-top: 10px;
+  display: flex;
   justify-content: center;
+  background: transparent; /* Or gradient if desired */
 }
 
-.loader-ring {
-  width: 60px;
-  height: 60px;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  border-top: 2px solid #fff;
-  border-radius: 50%;
-  animation: spin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-  margin-bottom: 20px;
+/* --- TYPOGRAPHY & ELEMENTS --- */
+.film-card-poster {
+  width: 60vw;
+  max-width: 250px;
+  aspect-ratio: 2/3;
+  border-radius: var(--poster-radius);
+  box-shadow: var(--poster-shadow);
+  object-fit: cover;
+  background: #222; 
 }
 
-.loader-logo {
-  font-size: 1.5rem;
-  font-weight: 900;
-  letter-spacing: 4px;
-  color: #fff;
-  opacity: 0;
-  animation: pulseLogo 2s ease-in-out infinite;
+.film-title {
+  margin: 10px 0 8px 0;
+  font-size: 1.8rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: #ACACAC; 
+  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.film-genres {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
-@keyframes pulseLogo {
-  0% { opacity: 0.3; transform: scale(0.95); letter-spacing: 4px; }
-  50% { opacity: 1; transform: scale(1); letter-spacing: 6px; }
-  100% { opacity: 0.3; transform: scale(0.95); letter-spacing: 4px; }
+.genre-tag {
+  color: #ADADAD;
+  border: 1px solid #575757;
+  padding: 0 9px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  background: transparent;
 }
 
-/* --- Layer 1: Background --- */
+.film-overview {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #ADADAD;
+  font-weight: 300;
+  margin-top: 5px;
+  max-width: 100%;
+}
+
+/* --- BACKGROUNDS --- */
 .background-banner {
   position: absolute;
   inset: 0;
@@ -96,147 +180,44 @@ html, body {
   pointer-events: none;
 }
 
-/* --- Layer 2: Scrollable Content --- */
-.film-scroll-area {
-  position: absolute;
-  inset: 0; 
-  z-index: 10;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  
+/* --- LOADING & EMPTY STATES --- */
+.empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
-  
-  /* Top padding accounts for Nav */
-  padding-top: calc(var(--header-height) + 20px);
-  
-  /* Reset bottom padding, we use the spacer now */
-  padding-bottom: 0px; 
-}
-
-/* HUGE SPACER: 350px */
-.bottom-scroll-spacer {
-  width: 100%;
-  flex-shrink: 0;
-  height: 350px; 
-}
-
-/* Hide Scrollbar */
-.film-scroll-area::-webkit-scrollbar { display: none; }
-.film-scroll-area { -ms-overflow-style: none; scrollbar-width: none; }
-
-/* --- Film Card Styles --- */
-.film-card {
-  width: min(100%, var(--page-max-width));
-  padding: 0 24px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  flex-shrink: 0; 
-}
-
-.poster-container {
-  margin-bottom: 24px;
-  z-index: 12;
-}
-
-.film-card-poster {
-  width: 60vw;
-  max-width: 250px;
-  aspect-ratio: 2/3;
-  border-radius: var(--poster-radius);
-  box-shadow: var(--poster-shadow);
-  object-fit: cover;
-  background: #222; 
-}
-
-.film-title {
-  margin: 0 0 12px 0;
-  font-size: 2.2rem;
-  font-weight: 800;
-  line-height: 1.1;
-  color: #ACACAC; 
-  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-}
-
-.film-genres {
-  display: flex;
-  flex-wrap: wrap;
   justify-content: center;
-  gap: 8px;
-  margin-bottom: 16px;
+  color: #fff;
+  height: 100%;
 }
 
-/* Original Genre Styles */
-.genre-tag {
-  color: #ADADAD;
-  border: 1px solid #575757;
-  padding: 0 9px;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  background: transparent;
-}
-
-.film-overview {
-  font-size: 15px;
-  line-height: 1.4;
-  color: #ADADAD;
-  font-weight: 300;
-  margin-top: 8px;
-  text-align: center;
-  max-width: 100%;
-}
-
-/* --- Layer 3: Fixed UI Overlays --- */
-.poster-fade {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 250px; 
-  background: linear-gradient(to top, #000 30%, transparent 100%);
-  z-index: 20;
-  pointer-events: none;
-}
-
-.action-buttons {
-  position: fixed !important;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: var(--bottom-actions-height);
-  z-index: 50; 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-.top-nav {
+.loading-screen {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: var(--header-height);
-  z-index: 100;
+  inset: 0;
+  background: #111111;
+  z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 15px;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
 }
 
-.nav-item {
-  color: rgba(255,255,255,0.5);
-  font-weight: 600;
-  font-size: 1.1rem;
-  cursor: pointer;
+.loader-ring {
+  width: 60px;
+  height: 60px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-top: 2px solid #fff;
+  border-radius: 50%;
+  animation: spin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  margin-bottom: 20px;
 }
-.nav-item.active {
+
+.loader-logo {
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: 4px;
   color: #fff;
 }
-.nav-sep { color: rgba(255,255,255,0.2); }
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
