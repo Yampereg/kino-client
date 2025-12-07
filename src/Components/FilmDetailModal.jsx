@@ -2,6 +2,42 @@ import React, { useState } from "react";
 import "./FilmDetailModal.css";
 import ActionButtons from "../Components/ActionButtons";
 
+// --- Custom Star Icons (SVG) ---
+const StarIcon = ({ type }) => {
+  const color = "#FFD700"; // Gold color
+  const emptyColor = "#555"; // Dark gray for empty part
+
+  if (type === "full") {
+    return (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill={color} stroke="none">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+      </svg>
+    );
+  } else if (type === "half") {
+    return (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <defs>
+          <linearGradient id="halfGrad">
+            <stop offset="50%" stopColor={color} />
+            <stop offset="50%" stopColor={emptyColor} />
+          </linearGradient>
+        </defs>
+        <path 
+          fill="url(#halfGrad)" 
+          d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" 
+        />
+      </svg>
+    );
+  } else {
+    // Empty
+    return (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill={emptyColor} stroke="none">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+      </svg>
+    );
+  }
+};
+
 export default function FilmDetailModal({ film, onClose, films, setFilms, token, loadNextBatch }) {
   if (!film) return null;
 
@@ -16,7 +52,6 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
   const directors = (film.directors || []).map((d) => d.name).join(" · ");
   const actors = (film.actors || []).sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
 
-  // state for expanded actors
   const [expandedActors, setExpandedActors] = useState(false);
 
   const visibleActors = expandedActors ? actors : actors.slice(0, 4);
@@ -27,46 +62,46 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
       ? `https://image.tmdb.org/t/p/original/${p}`
       : posterUrl || bannerUrl || "";
 
-  // Logic: When "Skip" (loadNextBatch) is called, we also want to close the modal.
   const wrappedLoadNextBatch = async () => {
     if (loadNextBatch) await loadNextBatch();
     onClose();
   };
 
-  // build stars array from rating
-  const buildStars = (score) => {
-    const stars = [];
+  // Generate array of star types based on score
+  const getStarTypes = (score) => {
+    const types = [];
     const ratingOutOfFive = (score || 0) / 2;
     for (let i = 1; i <= 5; i++) {
       if (ratingOutOfFive >= i) {
-        stars.push("/fullstar.png");
+        types.push("full");
       } else if (ratingOutOfFive >= i - 0.5) {
-        stars.push("/halfstar.png");
+        types.push("half");
       } else {
-        stars.push("/emptystar.png");
+        types.push("empty");
       }
     }
-    return stars;
+    return types;
   };
 
-  const stars = buildStars(film.voteAverage);
+  const starTypes = getStarTypes(film.voteAverage);
 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-container" onClick={(e) => e.stopPropagation()}>
         
-        {/* Background Layers (Absolute) */}
+        {/* Background Layers */}
         <div
           className="modal-banner"
           style={{ backgroundImage: `url(${bannerUrl})` }}
         />
         <div className="banner-fade" />
         
+        {/* Close Button - High Z-Index to ensure clickability */}
         <button className="close-button" onClick={onClose} aria-label="Close">
           ✕
         </button>
 
-        {/* ROW 1: Scrollable content Area */}
+        {/* ROW 1: Scrollable Content */}
         <div className="modal-scroll-area font-kino">
           <div className="modal-header">
             <div className="header-left">
@@ -84,9 +119,11 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
                     : ""}
                 </span>
               </div>
+              
+              {/* Custom SVG Stars */}
               <div className="poster-rating">
-                {stars.map((s, idx) => (
-                  <img key={idx} src={s} alt="star" />
+                {starTypes.map((type, idx) => (
+                  <StarIcon key={idx} type={type} />
                 ))}
               </div>
             </div>
@@ -154,12 +191,13 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
             )}
           </div>
           
-          {/* Spacer to ensure last element isn't touching the buttons */}
+          {/* Spacer */}
           <div style={{ height: '30px' }} />
         </div>
 
-        {/* ROW 2: Sticky bottom action bar (Outside scroll area) */}
+        {/* ROW 2: Sticky Bottom Actions with Smooth Gradient */}
         <div className="modal-bottom-container">
+          <div className="bottom-gradient-overlay" />
           <ActionButtons
             films={[film]}
             setFilms={setFilms}
