@@ -53,8 +53,8 @@ const SwipeablePoster = ({ film, onSwipe, onOpenDetail }) => {
         transition: { duration: 0.2 }
       }}
     >
-      <div className="film-card" style={{ padding: 0, background: 'transparent', boxShadow: 'none' }}>
-        <div className="poster-container" style={{ marginBottom: 0 }}>
+      <div className="film-card" style={{ padding: 0, background: 'transparent', boxShadow: 'none', height: '100%' }}>
+        <div className="poster-container" style={{ marginBottom: 0, height: '100%' }}>
           {posterUrl ? (
             <img 
               src={posterUrl} 
@@ -106,7 +106,7 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
       
       {/* --- GRID ROW 1: POSTER AREA --- */}
       <div className="rec-poster-area">
-        {/* Next Film (Underneath) */}
+        {/* Next Film (Layered Underneath) */}
         {nextFilm && (
           <motion.div 
             key={nextFilm.id} 
@@ -115,8 +115,8 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
             transition={{ duration: 0.3, delay: 0.1 }}
             className="next-film-layer"
           >
-             <div className="film-card" style={{ padding: 0, background: 'transparent', boxShadow: 'none' }}>
-                <div className="poster-container" style={{ marginBottom: 0 }}>
+             <div className="film-card" style={{ padding: 0, background: 'transparent', boxShadow: 'none', height: '100%' }}>
+                <div className="poster-container" style={{ marginBottom: 0, height: '100%' }}>
                    {getPosterUrl(nextFilm) && (
                       <img src={getPosterUrl(nextFilm)} alt="" className="film-card-poster" />
                    )}
