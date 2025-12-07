@@ -2,15 +2,16 @@ import React, { useState } from "react";
 import "./FilmDetailModal.css";
 import ActionButtons from "../Components/ActionButtons";
 
-// --- Custom Star Components ---
-// 1. The Base SVG geometry (Shared)
+// --- STAR COMPONENTS ---
+
+// Shared SVG Geometry
 const StarSvg = ({ fill }) => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill={fill} stroke="none" style={{ display: 'block' }}>
+  <svg width="20" height="20" viewBox="0 0 24 24" fill={fill} stroke="none" style={{ display: 'block' }}>
     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
   </svg>
 );
 
-// 2. The Logic Component
+// Star Logic
 const StarIcon = ({ type }) => {
   const gold = "#FFD700";
   const gray = "#555";
@@ -21,12 +22,12 @@ const StarIcon = ({ type }) => {
   
   if (type === "half") {
     return (
-      <div style={{ position: "relative", width: "18px", height: "18px", display: "inline-block" }}>
-        {/* Background Gray Star */}
+      <div style={{ position: "relative", width: "20px", height: "20px", display: "inline-block" }}>
+        {/* Layer 1: Gray Background Star */}
         <div style={{ position: "absolute", inset: 0 }}>
           <StarSvg fill={gray} />
         </div>
-        {/* Foreground Gold Star (Clipped to 50%) */}
+        {/* Layer 2: Gold Foreground Star (Clipped to 50%) */}
         <div style={{ position: "absolute", top: 0, left: 0, width: "50%", height: "100%", overflow: "hidden" }}>
           <StarSvg fill={gold} />
         </div>
@@ -34,7 +35,7 @@ const StarIcon = ({ type }) => {
     );
   }
 
-  // Empty
+  // Empty Star
   return <StarSvg fill={gray} />;
 };
 
@@ -67,14 +68,16 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
     onClose();
   };
 
-  // Star Calculation Logic
+  // --- LOGIC: Calculate Full, Half, Empty stars ---
   const getStarTypes = (score) => {
     const types = [];
     const ratingOutOfFive = (score || 0) / 2;
+    
     for (let i = 1; i <= 5; i++) {
       if (ratingOutOfFive >= i) {
         types.push("full");
       } else if (ratingOutOfFive >= i - 0.5) {
+        // If the rating is 3.7, at i=4, 3.7 >= 3.5 is true -> Half Star
         types.push("half");
       } else {
         types.push("empty");
@@ -97,13 +100,9 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
         <div className="banner-fade" />
         
         {/* CLOSE BUTTON */}
-        {/* Added z-index 1000 and padding to ensure it catches clicks */}
         <button 
             className="close-button" 
-            onClick={(e) => {
-                e.stopPropagation();
-                onClose();
-            }} 
+            onClick={onClose} 
             aria-label="Close"
         >
           ✕
