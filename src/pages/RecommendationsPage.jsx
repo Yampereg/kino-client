@@ -113,10 +113,10 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
       <div className="background-banner" style={{ backgroundImage: `url(${bannerUrl})` }} />
       <div className="background-fade" />
       
-      {/* 1. POSTER AREA (Fixed 55% height) */}
+      {/* 1. POSTER AREA (Fixed 55%) */}
       <div style={{ flex: '0 0 55%', position: 'relative', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         
-        {/* Next Film (Back Card) */}
+        {/* Next Film */}
         {nextFilm && (
           <motion.div 
             key={nextFilm.id} 
@@ -142,7 +142,7 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
           </motion.div>
         )}
 
-        {/* Current Film (Front Poster) */}
+        {/* Current Film */}
         <AnimatePresence mode="popLayout">
           {currentFilm ? (
             <SwipeablePoster 
@@ -161,15 +161,17 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
       </div>
 
       {/* 2. SCROLLABLE TEXT AREA */}
-      {/* marginBottom: 15px lifts the scroll box away from the buttons */}
       <div 
         className="info-scroll-container"
         style={{ 
-          flex: '1 1 auto',        
-          minHeight: 0,           
-          overflowY: 'scroll',     // Force scroll behavior
+          flex: '1',               // Grow to fill remaining space
+          minHeight: 0,            // Prevent overflow blowout
+          overflowY: 'auto',       // Enable scroll
           padding: '0 24px', 
-          marginBottom: '15px',    // GAP ABOVE BUTTONS
+          
+          // KEY FIX: Physical margin ensures scroll box ends ABOVE buttons
+          marginBottom: '10px',     
+          
           zIndex: 15, 
           textAlign: 'center', 
           display: 'flex', 
@@ -197,8 +199,8 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
                <p className="film-overview" style={{ 
                  fontSize: '0.9rem', 
                  opacity: 0.8, 
-                 // Ensure last line isn't cut off by margin/border
-                 paddingBottom: '10px' 
+                 // KEY FIX: Padding inside scroll so text doesn't hit the bottom edge
+                 paddingBottom: '20px' 
                }}>
                  {currentFilm.overview}
                </p>
@@ -217,13 +219,15 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
         />
       </div>
 
-      {/* Style for visible scrollbar */}
+      {/* Visible Scrollbar Styles */}
       <style>{`
+        /* Force scrollbar to be visible even on mobile */
         .info-scroll-container::-webkit-scrollbar {
-          width: 4px;
+          width: 5px;
+          display: block; /* Force display */
         }
         .info-scroll-container::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.02);
+          background: rgba(255, 255, 255, 0.05); /* Slight track bg */
         }
         .info-scroll-container::-webkit-scrollbar-thumb {
           background: rgba(255, 255, 255, 0.4); 
