@@ -119,21 +119,22 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
       <div className="background-fade" />
       
       {/* 1. SWIPE AREA (Posters Only) */}
-      {/* Added larger paddingBottom to lift the visual stack higher as requested */}
-      <div style={{ flex: 1, position: 'relative', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden', paddingBottom: '100px' }}>
+      <div style={{ flex: 1, position: 'relative', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}>
         
         {/* Next Film (Back Card) */}
         {nextFilm && (
           <motion.div 
-            key={nextFilm.id} // Re-mounts when film changes to trigger animation
-            initial={{ opacity: 0 }} // Start invisible
-            animate={{ opacity: 0.6 }} // Fade in gently
-            transition={{ duration: 0.3, delay: 0.1 }} // Small delay prevents the "flash" of x+2
+            key={nextFilm.id} 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 0.6 }} 
+            transition={{ duration: 0.3, delay: 0.1 }}
             style={{ 
               position: 'absolute',
               width: '100%', height: '100%',
               zIndex: 5,
-              transform: 'scale(0.92) translateY(15px)',
+              // FIX 1: Perfectly centered behind front card. 
+              // scale(0.95) ensures it is smaller and fully hidden by the scale(1) front card.
+              transform: 'scale(0.95)', 
               display: 'flex', justifyContent: 'center', alignItems: 'center',
               pointerEvents: 'none'
             }}
@@ -167,8 +168,8 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
       </div>
 
       {/* 2. STATIC INFO AREA (Text Only) */}
-      {/* Pushed up by the bottom padding in flex container, stays above buttons */}
-      <div style={{ padding: '0 24px 10px 24px', zIndex: 15, textAlign: 'center', minHeight: '120px' }}>
+      {/* FIX 2: Removed large padding above. This sits naturally right below the centered posters */}
+      <div style={{ padding: '0 24px', zIndex: 15, textAlign: 'center', minHeight: '100px', flexShrink: 0 }}>
         {currentFilm && (
           <motion.div 
             key={currentFilm.id}
@@ -179,7 +180,7 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
             <h1 className="film-title" style={{ fontSize: '1.8rem', marginBottom: '8px' }}>
               {currentFilm.title}
             </h1>
-            <div className="film-genres" style={{ justifyContent: 'center', marginBottom: '10px' }}>
+            <div className="film-genres" style={{ justifyContent: 'center', marginBottom: '8px' }}>
               {(currentFilm.genres || []).slice(0, 3).map((g) => (
                 <span key={g.id || g.name} className="genre-tag">
                   {g.name}
@@ -203,6 +204,7 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
       </div>
       
       {/* 3. BUTTONS */}
+      {/* Sits at the bottom with standard padding */}
       <div style={{ flexShrink: 0, zIndex: 20, paddingBottom: '30px' }}>
         <ActionButtons
           films={films}
