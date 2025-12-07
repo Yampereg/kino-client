@@ -53,8 +53,8 @@ const SwipeablePoster = ({ film, onSwipe, onOpenDetail }) => {
         transition: { duration: 0.2 }
       }}
     >
-      <div className="film-card" style={{ padding: 0, background: 'transparent', boxShadow: 'none', height: '100%' }}>
-        <div className="poster-container" style={{ marginBottom: 0, height: '100%' }}>
+      <div className="film-card-poster-container">
+        <div className="poster-inner">
           {posterUrl ? (
             <img 
               src={posterUrl} 
@@ -115,8 +115,8 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
             transition={{ duration: 0.3, delay: 0.1 }}
             className="next-film-layer"
           >
-             <div className="film-card" style={{ padding: 0, background: 'transparent', boxShadow: 'none', height: '100%' }}>
-                <div className="poster-container" style={{ marginBottom: 0, height: '100%' }}>
+             <div className="film-card-poster-container">
+                <div className="poster-inner">
                    {getPosterUrl(nextFilm) && (
                       <img src={getPosterUrl(nextFilm)} alt="" className="film-card-poster" />
                    )}
@@ -170,6 +170,9 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
                  {currentFilm.overview}
                </p>
             )}
+            
+            {/* Extra spacer at bottom of text so it doesn't feel cramped when fully scrolled */}
+            <div style={{ height: '20px' }} />
           </motion.div>
         )}
       </div>
