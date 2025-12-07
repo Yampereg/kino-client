@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-// ADDED: sendInteraction to handle swipe API calls
 import { fetchNextFilms, fetchRecommendations, fetchPopular, sendInteraction } from "../api/filmService";
 import { motion, useMotionValue, useTransform, AnimatePresence } from "framer-motion";
 
@@ -15,61 +14,32 @@ import SettingsDrawer from "../Components/SettingsDrawer.jsx";
 
 import "./RecommendationsPage.css";
 
-// --- ISOLATED COMPONENT: Swipeable Card ---
-// Keeps motion state (x, rotate, opacity) completely separate for each film.
-const SwipeableCard = ({ film, onSwipe, onOpenDetail }) => {
-  const x = useMotionValue(0);
-  const rotate = useTransform(x, [-200, 200], [-15, 15]);
-  const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0]);
-
-  // We use a ref to ensure we don't trigger the callback multiple times per card
-  const hasSwiped = useRef(false);
-
-  const onDragEnd = (event, info) => {
-    const threshold = 100;
-    const swipeDistance = info.offset.x;
-
-    if (Math.abs(swipeDistance) > threshold && !hasSwiped.current) {
-      hasSwiped.current = true;
-      const direction = swipeDistance > 0 ? "right" : "left";
-      onSwipe(direction);
-    }
-  };
-
-  return (
-    <motion.div
-      style={{
-        position: 'absolute',
-        top: 0, left: 0, width: '100%', height: '100%',
-        zIndex: 10,
-        x, rotate, opacity,
-        cursor: 'grab'
-      }}
-      drag="x"
-      dragConstraints={{ left: 0, right: 0 }}
-      dragElastic={0.7}
-      onDragEnd={onDragEnd}
-      whileTap={{ cursor: 'grabbing' }}
-      // Entrance animation
-      initial={{ scale: 0.95, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      // Exit animation
-      exit={{
-        x: x.get() < 0 ? -500 : 500,
-        opacity: 0,
-        rotate: x.get() < 0 ? -45 : 45,
-        transition: { duration: 0.3 }
-      }}
-    >
-      <FilmCard film={film} onOpenDetail={onOpenDetail} />
-    </motion.div>
-  );
-};
-
 // --- Sub-component: Home View ---
 function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatch, setDetailFilm }) {
   const currentFilm = films[0];
   const nextFilm = films[1];
+
+  // Motion Value (Managed in Parent for linked animations)
+  const x = useMotionValue(0);
+  const isSwiping = useRef(false);
+
+  // --- 1. Slicker Animations ---
+  // Rotate: Less rotation for a more professional feel
+  const rotate = useTransform(x, [-200, 200], [-8, 8]);
+  
+  // Opacity: Stay opaque (1) longer (until 150px) to prevent "peeking"
+  const opacity = useTransform(x, [-300, -150, 0, 150, 300], [0, 1, 1, 1, 0]);
+
+  // Back Card Animation: Grows slightly as you swipe the front card away
+  const backCardScale = useTransform(x, [-200, 0, 200], [1, 0.96, 1]);
+  const backCardOpacity = useTransform(x, [-200, 0, 200], [1, 0.5, 1]);
+
+  // --- 2. State Reset Fix ---
+  // When the film changes, INSTANTLY reset X to 0 to prevent the "stuck" glitch
+  useEffect(() => {
+    x.set(0);
+    isSwiping.current = false;
+  }, [currentFilm, x]);
 
   // Background Banner Logic
   const activeFilm = currentFilm || nextFilm;
@@ -85,66 +55,98 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
     ? `https://image.tmdb.org/t/p/w500/${film.posterPath}`
     : null;
 
-  // Handler specifically for Swipes (API Call + State Update)
-  const onCardSwipe = async (direction) => {
-    if (!currentFilm) return;
+  const onDragEnd = (event, info) => {
+    const threshold = 100;
+    const swipeDistance = info.offset.x;
+    
+    // Check if swipe is strong enough
+    if (Math.abs(swipeDistance) > threshold && !isSwiping.current) {
+      isSwiping.current = true;
+      const direction = swipeDistance > 0 ? "right" : "left";
+      const type = direction === "right" ? "like" : "dislike";
+      
+      // 1. Optimistic UI Removal
+      handleInteraction(currentFilm.id);
 
-    const filmId = currentFilm.id;
-    const type = direction === "right" ? "like" : "dislike";
-
-    // 1. Optimistic UI update (Remove card immediately)
-    handleInteraction(filmId); 
-
-    // 2. Fire API call in background (matches ActionButtons logic)
-    try {
-      await sendInteraction(token, filmId, type);
-    } catch (err) {
-      console.error("Swipe API failed", err);
-      // Optional: Add logic here to revert state if you want strict consistency
+      // 2. API Call
+      sendInteraction(token, currentFilm.id, type).catch(err => 
+        console.error("Interaction failed", err)
+      );
     }
   };
 
   return (
-    <div className="recommendations-page font-kino">
+    <div className="recommendations-page font-kino" style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
       <div className="background-banner" style={{ backgroundImage: `url(${bannerUrl})` }} />
       <div className="background-fade" />
       
-      <div className="film-scroll-area" style={{ position: 'relative' }}>
+      {/* --- 3. Layout Fix: flex: 1 ensures this fills all space between Nav and Buttons --- */}
+      <div className="film-scroll-area" style={{ position: 'relative', flex: 1, width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         
-        {/* 1. BACK CARD (Next Film) - Static visual placeholder */}
+        {/* BACK CARD (Next Film) */}
         {nextFilm && (
-          <div 
+          <motion.div 
             style={{ 
               position: 'absolute',
-              top: 0, left: 0, width: '100%', height: '100%',
+              width: '100%', 
+              height: '100%',
               zIndex: 5,
-              transform: 'scale(0.95) translateY(10px)',
-              opacity: 0.6,
-              display: 'flex', flexDirection: 'column', alignItems: 'center'
+              scale: backCardScale,     // Animated
+              opacity: backCardOpacity, // Animated
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center',
+              pointerEvents: 'none'
             }}
           >
-             <div className="film-card" style={{ pointerEvents: 'none' }}>
+             <div className="film-card">
                 <div className="poster-container">
                    {getPosterUrl(nextFilm) ? (
                       <img src={getPosterUrl(nextFilm)} alt="" className="film-card-poster" />
                    ) : <div className="film-card-poster bg-gray-800" />}
                 </div>
+                {/* Hide text on back card to reduce visual noise */}
                 <div style={{ opacity: 0 }}>
                    <h1 className="film-title">Placeholder</h1>
                 </div>
              </div>
-          </div>
+          </motion.div>
         )}
 
-        {/* 2. FRONT CARD (Current Film) - Interactive */}
-        <AnimatePresence mode="popLayout">
+        {/* FRONT CARD (Current Film) */}
+        <AnimatePresence>
           {currentFilm ? (
-            <SwipeableCard 
-              key={currentFilm.id} // VITAL: Creates new instance per film
-              film={currentFilm}
-              onSwipe={onCardSwipe}
-              onOpenDetail={() => setDetailFilm(currentFilm)}
-            />
+            <motion.div
+              key={currentFilm.id}
+              style={{ 
+                position: 'absolute',
+                width: '100%', 
+                height: '100%',
+                zIndex: 10,
+                x, 
+                rotate, 
+                opacity,
+                cursor: 'grab'
+              }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.6} // Tighter elastic for slicker feel
+              onDragEnd={onDragEnd}
+              whileTap={{ cursor: 'grabbing', scale: 0.98 }}
+              
+              // Slick Entrance: Just appear (since back card was already there)
+              initial={{ scale: 1, opacity: 1 }}
+              animate={{ scale: 1, opacity: 1 }}
+              
+              // Slick Exit: Fly out fast
+              exit={{ 
+                x: x.get() < 0 ? -600 : 600, 
+                opacity: 0, 
+                transition: { duration: 0.2, ease: "easeIn" } 
+              }}
+            >
+              <FilmCard film={currentFilm} onOpenDetail={() => setDetailFilm(currentFilm)} />
+            </motion.div>
           ) : (
             <div className="empty-state font-kino">
                <h2>No more films!</h2>
@@ -152,19 +154,19 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
             </div>
           )}
         </AnimatePresence>
-        
-        <div className="bottom-scroll-spacer" />
       </div>
       
       <div className="poster-fade" /> 
       
-      {/* Action Buttons (Pass setFilms directly as they handle their own API calls) */}
-      <ActionButtons
-        films={films}
-        setFilms={handleInteraction}
-        token={token}
-        loadNextBatch={loadNextBatch}
-      />
+      {/* Buttons anchored at bottom via flex layout */}
+      <div style={{ flexShrink: 0, zIndex: 20 }}>
+        <ActionButtons
+          films={films}
+          setFilms={handleInteraction}
+          token={token}
+          loadNextBatch={loadNextBatch}
+        />
+      </div>
     </div>
   );
 }
@@ -251,19 +253,14 @@ export default function RecommendationsPage() {
   }, [carouselActionCount, loadForYouData]);
 
   // --- Handlers ---
-  
-  // Unified State Updater
-  // Handles inputs from Swipe (ID) and ActionButtons (Function Updater)
   const handleHomeInteraction = (filmIdOrUpdateFn) => {
     setFilms((prev) => {
       let updated;
-      
       if (typeof filmIdOrUpdateFn === "function") {
         updated = filmIdOrUpdateFn(prev);
       } else {
         updated = prev.filter((f) => f.id !== filmIdOrUpdateFn);
       }
-
       if (updated.length < 3) {
         loadNextBatch();
       }
@@ -300,6 +297,7 @@ export default function RecommendationsPage() {
     setTimeout(() => setLoading(false), 800);
   };
 
+  // --- Render ---
   if (!token) return null; 
   
   if (loading && films.length === 0) {
