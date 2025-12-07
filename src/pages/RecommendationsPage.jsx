@@ -109,12 +109,23 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
     : null;
 
   return (
-    <div className="recommendations-page font-kino" style={{ display: 'flex', flexDirection: 'column', height: '100dvh', overflow: 'hidden' }}>
+    // FIX: Using CSS Grid for strict vertical layout
+    // Row 1: 55% (Poster)
+    // Row 2: 1fr (Text - Takes remaining space)
+    // Row 3: auto (Buttons - Fixed size)
+    <div className="recommendations-page font-kino" 
+         style={{ 
+           display: 'grid', 
+           gridTemplateRows: '55% 1fr auto', 
+           height: '100dvh', 
+           overflow: 'hidden' 
+         }}>
+         
       <div className="background-banner" style={{ backgroundImage: `url(${bannerUrl})` }} />
       <div className="background-fade" />
       
-      {/* 1. POSTER AREA (Fixed 55%) */}
-      <div style={{ flex: '0 0 55%', position: 'relative', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      {/* 1. POSTER AREA (Row 1) */}
+      <div style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         
         {/* Next Film */}
         {nextFilm && (
@@ -160,17 +171,16 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
         </AnimatePresence>
       </div>
 
-      {/* 2. SCROLLABLE TEXT AREA */}
+      {/* 2. SCROLLABLE TEXT AREA (Row 2) */}
       <div 
         className="info-scroll-container"
         style={{ 
-          flex: '1',               // Grow to fill remaining space
-          minHeight: 0,            // Prevent overflow blowout
-          overflowY: 'auto',       // Enable scroll
+          minHeight: 0,            // Allows grid item to shrink if needed
+          overflowY: 'scroll',     // FORCE scrollbar to appear
           padding: '0 24px', 
           
-          // KEY FIX: Physical margin ensures scroll box ends ABOVE buttons
-          marginBottom: '10px',     
+          // KEY FIX: Pushes text block UP away from buttons
+          marginBottom: '20px',    
           
           zIndex: 15, 
           textAlign: 'center', 
@@ -199,8 +209,7 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
                <p className="film-overview" style={{ 
                  fontSize: '0.9rem', 
                  opacity: 0.8, 
-                 // KEY FIX: Padding inside scroll so text doesn't hit the bottom edge
-                 paddingBottom: '20px' 
+                 paddingBottom: '20px' // Padding inside the scroll area
                }}>
                  {currentFilm.overview}
                </p>
@@ -209,8 +218,8 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
         )}
       </div>
       
-      {/* 3. ACTION BUTTONS (Fixed at Bottom) */}
-      <div style={{ flex: '0 0 auto', zIndex: 20, paddingBottom: '30px', background: 'transparent' }}>
+      {/* 3. ACTION BUTTONS (Row 3) */}
+      <div style={{ zIndex: 20, paddingBottom: '30px', background: 'transparent' }}>
         <ActionButtons
           films={films}
           setFilms={handleInteraction}
@@ -219,15 +228,15 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
         />
       </div>
 
-      {/* Visible Scrollbar Styles */}
+      {/* Styles to keep scrollbar strictly visible and styled */}
       <style>{`
-        /* Force scrollbar to be visible even on mobile */
         .info-scroll-container::-webkit-scrollbar {
           width: 5px;
-          display: block; /* Force display */
+          display: block; /* Strict visibility */
         }
         .info-scroll-container::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.05); /* Slight track bg */
+          background: rgba(255, 255, 255, 0.05);
+          margin-bottom: 5px; /* Keeps track away from bottom edge */
         }
         .info-scroll-container::-webkit-scrollbar-thumb {
           background: rgba(255, 255, 255, 0.4); 
