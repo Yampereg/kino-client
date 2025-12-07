@@ -2,7 +2,8 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { fetchNextFilms, fetchRecommendations, fetchPopular } from "../api/filmService";
+// ADDED: sendInteraction to handle swipe API calls
+import { fetchNextFilms, fetchRecommendations, fetchPopular, sendInteraction } from "../api/filmService";
 import { motion, useMotionValue, useTransform, AnimatePresence } from "framer-motion";
 
 import FilmDetailModal from "../Components/FilmDetailModal";
@@ -14,23 +15,61 @@ import SettingsDrawer from "../Components/SettingsDrawer.jsx";
 
 import "./RecommendationsPage.css";
 
-// --- Sub-component: Home View (Swipe Stack) ---
-function HomeRecommendationsView({ films, handleInteraction, loadNextBatch, setDetailFilm }) {
-  const currentFilm = films[0];
-  const nextFilm = films[1];
-
-  // Motion values for the active card
+// --- ISOLATED COMPONENT: Swipeable Card ---
+// Keeps motion state (x, rotate, opacity) completely separate for each film.
+const SwipeableCard = ({ film, onSwipe, onOpenDetail }) => {
   const x = useMotionValue(0);
-  
-  // Front card transformations
   const rotate = useTransform(x, [-200, 200], [-15, 15]);
   const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0]);
 
-  // Back card transformations (Linked to Front Card's X)
-  const bgScale = useTransform(x, [-200, 0, 200], [1, 0.92, 1]);
-  const bgOpacity = useTransform(x, [-200, 0, 200], [1, 0.6, 1]);
+  // We use a ref to ensure we don't trigger the callback multiple times per card
+  const hasSwiped = useRef(false);
 
-  const isSwiping = useRef(false);
+  const onDragEnd = (event, info) => {
+    const threshold = 100;
+    const swipeDistance = info.offset.x;
+
+    if (Math.abs(swipeDistance) > threshold && !hasSwiped.current) {
+      hasSwiped.current = true;
+      const direction = swipeDistance > 0 ? "right" : "left";
+      onSwipe(direction);
+    }
+  };
+
+  return (
+    <motion.div
+      style={{
+        position: 'absolute',
+        top: 0, left: 0, width: '100%', height: '100%',
+        zIndex: 10,
+        x, rotate, opacity,
+        cursor: 'grab'
+      }}
+      drag="x"
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={0.7}
+      onDragEnd={onDragEnd}
+      whileTap={{ cursor: 'grabbing' }}
+      // Entrance animation
+      initial={{ scale: 0.95, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      // Exit animation
+      exit={{
+        x: x.get() < 0 ? -500 : 500,
+        opacity: 0,
+        rotate: x.get() < 0 ? -45 : 45,
+        transition: { duration: 0.3 }
+      }}
+    >
+      <FilmCard film={film} onOpenDetail={onOpenDetail} />
+    </motion.div>
+  );
+};
+
+// --- Sub-component: Home View ---
+function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatch, setDetailFilm }) {
+  const currentFilm = films[0];
+  const nextFilm = films[1];
 
   // Background Banner Logic
   const activeFilm = currentFilm || nextFilm;
@@ -42,31 +81,28 @@ function HomeRecommendationsView({ films, handleInteraction, loadNextBatch, setD
     ? `https://image.tmdb.org/t/p/w500/${activeFilm.posterPath}`
     : "";
 
-  const onDragEnd = (event, info) => {
-    const threshold = 120;
-    const swipeDistance = info.offset.x;
-    const velocity = info.velocity.x;
-
-    if (Math.abs(swipeDistance) > threshold || Math.abs(velocity) > 500) {
-      if (!isSwiping.current) {
-        isSwiping.current = true;
-        
-        const direction = swipeDistance > 0 ? "right" : "left";
-        
-        // Pass ID and direction to parent handler
-        handleInteraction(currentFilm.id, direction);
-
-        // Reset lock shortly after
-        setTimeout(() => {
-          isSwiping.current = false;
-        }, 300);
-      }
-    }
-  };
-
   const getPosterUrl = (film) => film?.posterPath 
     ? `https://image.tmdb.org/t/p/w500/${film.posterPath}`
     : null;
+
+  // Handler specifically for Swipes (API Call + State Update)
+  const onCardSwipe = async (direction) => {
+    if (!currentFilm) return;
+
+    const filmId = currentFilm.id;
+    const type = direction === "right" ? "like" : "dislike";
+
+    // 1. Optimistic UI update (Remove card immediately)
+    handleInteraction(filmId); 
+
+    // 2. Fire API call in background (matches ActionButtons logic)
+    try {
+      await sendInteraction(token, filmId, type);
+    } catch (err) {
+      console.error("Swipe API failed", err);
+      // Optional: Add logic here to revert state if you want strict consistency
+    }
+  };
 
   return (
     <div className="recommendations-page font-kino">
@@ -75,22 +111,16 @@ function HomeRecommendationsView({ films, handleInteraction, loadNextBatch, setD
       
       <div className="film-scroll-area" style={{ position: 'relative' }}>
         
-        {/* 1. BACK CARD (Next Film) */}
+        {/* 1. BACK CARD (Next Film) - Static visual placeholder */}
         {nextFilm && (
-          <motion.div 
+          <div 
             style={{ 
               position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
+              top: 0, left: 0, width: '100%', height: '100%',
               zIndex: 5,
-              scale: bgScale,
-              opacity: bgOpacity,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              transformOrigin: 'center bottom'
+              transform: 'scale(0.95) translateY(10px)',
+              opacity: 0.6,
+              display: 'flex', flexDirection: 'column', alignItems: 'center'
             }}
           >
              <div className="film-card" style={{ pointerEvents: 'none' }}>
@@ -103,39 +133,18 @@ function HomeRecommendationsView({ films, handleInteraction, loadNextBatch, setD
                    <h1 className="film-title">Placeholder</h1>
                 </div>
              </div>
-          </motion.div>
+          </div>
         )}
 
-        {/* 2. FRONT CARD (Current Film) */}
+        {/* 2. FRONT CARD (Current Film) - Interactive */}
         <AnimatePresence mode="popLayout">
           {currentFilm ? (
-            <motion.div
-              key={currentFilm.id}
-              style={{ 
-                position: 'absolute',
-                top: 0, left: 0, width: '100%', height: '100%',
-                zIndex: 10,
-                x, 
-                rotate,
-                opacity,
-                cursor: 'grab'
-              }}
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.7}
-              onDragEnd={onDragEnd}
-              whileTap={{ cursor: 'grabbing' }}
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ 
-                x: x.get() < 0 ? -500 : 500, 
-                opacity: 0, 
-                rotate: x.get() < 0 ? -45 : 45, 
-                transition: { duration: 0.3, ease: "easeIn" } 
-              }}
-            >
-              <FilmCard film={currentFilm} onOpenDetail={() => setDetailFilm(currentFilm)} />
-            </motion.div>
+            <SwipeableCard 
+              key={currentFilm.id} // VITAL: Creates new instance per film
+              film={currentFilm}
+              onSwipe={onCardSwipe}
+              onOpenDetail={() => setDetailFilm(currentFilm)}
+            />
           ) : (
             <div className="empty-state font-kino">
                <h2>No more films!</h2>
@@ -149,9 +158,11 @@ function HomeRecommendationsView({ films, handleInteraction, loadNextBatch, setD
       
       <div className="poster-fade" /> 
       
+      {/* Action Buttons (Pass setFilms directly as they handle their own API calls) */}
       <ActionButtons
         films={films}
         setFilms={handleInteraction}
+        token={token}
         loadNextBatch={loadNextBatch}
       />
     </div>
@@ -241,36 +252,18 @@ export default function RecommendationsPage() {
 
   // --- Handlers ---
   
-  // Handles both Swipe (ID + Direction) and ActionButtons (State Updater Function)
-  const handleHomeInteraction = (arg1, arg2) => {
-    // 1. Handle API Calls for Swipes
-    // If arg2 is present (direction), it's a swipe action from HomeRecommendationsView
-    if (typeof arg1 !== 'function' && arg2) {
-       const direction = arg2;
-       const filmId = arg1;
-       
-       // TODO: Add actual API calls for liking/disliking here (e.g., using filmService)
-       if (direction === 'right') {
-          // call filmService.likeFilm(filmId, token);
-       } else if (direction === 'left') {
-          // call filmService.dislikeFilm(filmId, token);
-       }
-       console.log(`Swiped ${direction} on film ${filmId}`);
-    }
-
-    // 2. Handle State Updates
+  // Unified State Updater
+  // Handles inputs from Swipe (ID) and ActionButtons (Function Updater)
+  const handleHomeInteraction = (filmIdOrUpdateFn) => {
     setFilms((prev) => {
       let updated;
       
-      // If passing a function (standard setState usage from ActionButtons)
-      if (typeof arg1 === "function") {
-        updated = arg1(prev);
+      if (typeof filmIdOrUpdateFn === "function") {
+        updated = filmIdOrUpdateFn(prev);
       } else {
-        // Standard ID removal (Swipe)
-        updated = prev.filter((f) => f.id !== arg1);
+        updated = prev.filter((f) => f.id !== filmIdOrUpdateFn);
       }
 
-      // Fetch more when running low
       if (updated.length < 3) {
         loadNextBatch();
       }
@@ -307,7 +300,6 @@ export default function RecommendationsPage() {
     setTimeout(() => setLoading(false), 800);
   };
 
-  // --- Render ---
   if (!token) return null; 
   
   if (loading && films.length === 0) {
@@ -336,6 +328,7 @@ export default function RecommendationsPage() {
     return (
       <HomeRecommendationsView 
         films={films} 
+        token={token}
         loadNextBatch={loadNextBatch} 
         handleInteraction={handleHomeInteraction} 
         setDetailFilm={openDetailFromHome} 
