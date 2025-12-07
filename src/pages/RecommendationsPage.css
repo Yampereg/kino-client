@@ -23,14 +23,13 @@ html, body {
   overflow: hidden;
   background-color: var(--page-bg);
   
-  /* KEY CHANGE 1: Push everything down away from TopNav */
+  /* Pushes everything down away from TopNav */
   padding-top: 85px; 
   box-sizing: border-box;
 
-  /* KEY CHANGE 2: 
-     Row 1 (Poster): Reduced from 55% to 42% to give space to text.
-     Row 2 (Text): minmax(0, 1fr) takes all remaining space.
-     Row 3 (Buttons): Auto sized.
+  /* Row 1 (Poster): 42% height.
+     Row 2 (Text): 1fr (Takes all remaining space for bigger scroll area).
+     Row 3 (Buttons): Auto sized based on content.
   */
   grid-template-rows: 42% minmax(0, 1fr) auto;
   grid-template-columns: 1fr;
@@ -46,16 +45,17 @@ html, body {
   justify-content: center;
   align-items: center;
   z-index: 10;
-  /* Ensure padding doesn't affect centering inside this cell */
-  padding-bottom: 10px;
+  /* Slight padding between poster and text area */
+  padding-bottom: 20px;
 }
 
 .poster-container {
-  /* Ensure container doesn't overflow grid cell */
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
+  /* Ensure container doesn't overflow grid cell height */
+  max-height: 100%;
 }
 
 .swipeable-poster-wrapper {
@@ -121,7 +121,8 @@ html, body {
 .rec-actions-area {
   width: 100%;
   z-index: 20;
-  padding-bottom: 30px; 
+  /* FIX: Reduced padding to move buttons down */
+  padding-bottom: calc(10px + env(safe-area-inset-bottom));
   padding-top: 10px;
   display: flex;
   justify-content: center;
@@ -130,12 +131,9 @@ html, body {
 
 /* --- TYPOGRAPHY & ELEMENTS --- */
 .film-card-poster {
+  /* FIX: Reverted to stable width/aspect-ratio definitions so it doesn't squash */
   width: 60vw;
   max-width: 250px;
-  
-  /* KEY CHANGE 3: Ensure poster scales down if grid cell is small */
-  height: auto;
-  max-height: 100%; 
   aspect-ratio: 2/3;
   
   border-radius: var(--poster-radius);
