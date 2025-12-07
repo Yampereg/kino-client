@@ -6,7 +6,10 @@
   left: 0;
   right: 0;
   padding: 20px 0;
-  z-index: 100;
+  
+  /* FIXED: Lowered to 50 so it sits behind the drawer (1001) */
+  z-index: 50; 
+  
   display: flex;
   justify-content: center;
   align-items: center;
