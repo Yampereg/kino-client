@@ -1,117 +1,91 @@
 :root {
-	--modal-bottom-height: 150px; /* match bottom buttons like main page */
+  --modal-bottom-height: 120px; 
 }
 
 /* Overlay */
 .modal-overlay {
-	position: fixed;
-	inset: 0;
-	width: 100vw;
-	height: 100vh;
-	background-color: #111111;
-	z-index: 1000;
-	display: flex;
-	justify-content: center;
-	align-items: flex-start;
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh; /* Use dynamic viewport height */
+  background-color: #111111;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
 
-/* Container */
+/* Container: Uses Grid to split Content (top) and Buttons (bottom) */
 .modal-container {
-	position: relative;
-	width: 100%;
-	height: 100%;
-	background: #0f0f0f;
-	display: flex;
-	flex-direction: column;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #0f0f0f;
+  
+  display: grid;
+  grid-template-rows: 1fr auto;
+  grid-template-columns: 1fr;
+  overflow: hidden;
 }
 
-/* Banner & fade */
+/* Banner & fade (Behind the grid content) */
 .modal-banner {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 42vh;
-	background-size: cover;
-	background-position: center;
-	filter: blur(0.3px);
-	z-index: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 45vh;
+  background-size: cover;
+  background-position: center;
+  filter: blur(0.3px);
+  z-index: 0;
 }
 
 .banner-fade {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 42vh;
-	background: linear-gradient(to bottom, rgba(0,0,0,0.45), #0f0f0f 55%);
-	z-index: 1;
-}
-
-/* Poster */
-.modal-poster {
-	width: 130px;
-	border-radius: 16px;
-	box-shadow: 0 10px 34px rgba(0,0,0,0.6);
-	background: #111;
-	z-index: 25;
-	cursor: pointer;
-}
-
-/* Meta info under poster */
-.poster-meta {
-	font-size: 0.7rem;
-	color: #ffffff;
-	text-align: center;
-	display: inline-flex;
-	justify-content: center;
-	gap: 6px;
-	flex-wrap: nowrap;
-	flex-direction: row;
-}
-
-/* New stars row */
-.poster-rating {
-	display: flex;
-	justify-content: center;
-	gap: 4px;
-	margin-top: 6px;
-}
-.poster-rating img {
-	width: 18px;
-	height: 18px;
-}
-
-/* Scrollable content, same logic as main page */
-.modal-content {
   position: absolute;
-  top: 120px;
+  top: 0;
   left: 0;
-  right: 0;
-  bottom: calc(var(--modal-bottom-height) + env(safe-area-inset-bottom));
+  width: 100%;
+  height: 46vh; /* Slightly taller to blend smoothly */
+  background: linear-gradient(to bottom, rgba(0,0,0,0.45), #0f0f0f 95%);
+  z-index: 1;
+}
+
+/* --- ROW 1: Scrollable Content --- */
+.modal-scroll-area {
+  width: 100%;
+  /* min-height: 0 is crucial for grid scrolling */
+  min-height: 0; 
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   padding: 0;
   box-sizing: border-box;
   color: white;
   z-index: 10;
+  
+  /* Push content down visually to respect the banner */
+  padding-top: 100px; 
 }
+
+/* Hide scrollbar */
+.modal-scroll-area::-webkit-scrollbar { display: none; }
+.modal-scroll-area { -ms-overflow-style: none; scrollbar-width: none; }
 
 /* Header grid */
 .modal-header {
-	display: grid;
-	grid-template-columns: 130px 1fr;
-	gap: 24px;
-  /* FIXED: Vertically center the whole row to align title block with poster */
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 24px;
   align-items: center; 
-	margin-top: 0; 
-	max-width: 900px;
-	margin-left: auto;
-	margin-right: auto;
-	position: relative;
-	z-index: 20;
-	min-width: 0;
+  margin-top: 0; 
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  z-index: 20;
+  min-width: 0;
   padding: 0 24px;
+  margin-bottom: 20px;
 }
 
 .header-left { display: flex; flex-direction: column; gap: 8px; }
@@ -119,27 +93,67 @@
   display: flex; 
   flex-direction: column; 
   gap: 16px; 
-  /* FIXED: Align content to the start (left) for better flow next to poster on desktop */
   align-items: flex-start; 
   min-width: 0;
 }
 
-.modal-tags { display: flex; gap: 10px; flex-wrap: wrap; 
-  /* FIXED: Align tags to the left on desktop */
+/* Poster */
+.modal-poster {
+  width: 130px;
+  border-radius: 16px;
+  box-shadow: 0 10px 34px rgba(0,0,0,0.6);
+  background: #111;
+  z-index: 25;
+  cursor: pointer;
+}
+
+/* Meta info under poster */
+.poster-meta {
+  font-size: 0.7rem;
+  color: #ffffff;
+  text-align: center;
+  display: inline-flex;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+  flex-direction: row;
+}
+
+.poster-rating {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 6px;
+}
+.poster-rating img {
+  width: 18px;
+  height: 18px;
+}
+
+.modal-tags { 
+  display: flex; 
+  gap: 10px; 
+  flex-wrap: wrap; 
   justify-content: flex-start;
 }
-.modal-rating { font-size: 1.2rem; color: #e6d07a; }
 
-.genre-tag { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); padding: 8px 14px; border-radius: 20px; font-size: 0.95rem; color: #cfcfcf; }
+.genre-tag { 
+  background: rgba(255,255,255,0.04); 
+  border: 1px solid rgba(255,255,255,0.06); 
+  padding: 8px 14px; 
+  border-radius: 20px; 
+  font-size: 0.95rem; 
+  color: #cfcfcf; 
+}
 
 .title-row { display: flex; align-items: center; gap: 12px; flex-wrap: nowrap; }
+
 .modal-title { 
-  font-size: clamp(3rem, 5vw, 4.4rem); 
-  line-height: 1; 
+  font-size: clamp(2.2rem, 5vw, 4.4rem); 
+  line-height: 1.1; 
   margin: 0; 
   font-weight: 800; 
   color: #ddd; 
-  /* FIXED: Align title text to the left on desktop */
   text-align: left; 
   overflow: hidden; 
   width: 100%;
@@ -147,120 +161,118 @@
   word-break: break-word;
 }
 
-.modal-directors { color: #cfcfcf; font-size: 0.9rem; margin-top: 20px; text-align: center; max-width: 900px; position: relative; z-index: 50; }
-
-
-
 /* Overview */
 .modal-overview {
-	line-height: 1.4;
-	font-size: 15px;
-	font-weight: 300;
-	color: #ADADAD;
-	max-width: 900px;
-	position: relative;
-	z-index: 50;
-	overflow-wrap: break-word;
-	word-break: break-word;
-	margin-bottom: 20px;
+  line-height: 1.5;
+  font-size: 15px;
+  font-weight: 300;
+  color: #ADADAD;
+  max-width: 900px;
+  position: relative;
+  z-index: 50;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  margin-bottom: 25px;
   padding: 0 24px;
 }
 
 /* Actors */
 .actors-section {
-	position: relative;
-	display: flex;
-	overflow-x: auto;
-	scrollbar-width: none;
-	gap: 20px;
-	z-index: 50;
-	padding: 0 24px;
+  position: relative;
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  gap: 20px;
+  z-index: 50;
+  padding: 0 24px;
 }
 
 .actors-section.centered {
-	justify-content: center; /* apply only if 3 or fewer actors */
+  justify-content: center; 
 }
 
 .actors-section::-webkit-scrollbar { display: none; }
 
 .actors-row {
-	display: flex;
-	flex-wrap: nowrap;
-	gap: 20px;
-	min-width: max-content; /* keep scrolling if too many actors */
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 20px;
+  min-width: max-content;
 }
 
-/* Actor items */
 .actor-item { 
-	width: 92px; 
-	text-align: center; 
-	font-size: 0.9rem; 
-	color: #adadad; 
-	flex: 0 0 auto; 
+  width: 92px; 
+  text-align: center; 
+  font-size: 0.9rem; 
+  color: #adadad; 
+  flex: 0 0 auto; 
 }
 .actor-photo { 
-	width: 92px; 
-	height: 92px; 
-	border-radius: 50%; 
-	object-fit: cover; 
-	margin: 0 auto; 
-	box-shadow: 0 6px 20px rgba(0,0,0,0.6); 
-	border: 2px solid rgba(255,255,255,0.03); 
+  width: 92px; 
+  height: 92px; 
+  border-radius: 50%; 
+  object-fit: cover; 
+  margin: 0 auto; 
+  box-shadow: 0 6px 20px rgba(0,0,0,0.6); 
+  border: 2px solid rgba(255,255,255,0.03); 
 }
 .actor-name { 
-	margin-top: 4px; /* reduced space between first and last name lines */
-	line-height: 1.1; /* tighter spacing */
-	font-size: 0.85rem; 
-	color: #adadad; 
+  margin-top: 6px; 
+  line-height: 1.2; 
+  font-size: 0.85rem; 
+  color: #adadad; 
 }
 .actor-more { display: flex; flex-direction: column; align-items: center; }
 .actor-more-circle { 
-	width: 92px; 
-	height: 92px; 
-	border-radius: 50%; 
-	display: flex; 
-	align-items: center; 
-	justify-content: center; 
-	background: rgba(255,255,255,0.03); 
-	color: #cfcfcf; 
-	font-weight: 700; 
-	font-size: 1.15rem; 
-	border: 2px solid rgba(255,255,255,0.03); 
+  width: 92px; 
+  height: 92px; 
+  border-radius: 50%; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  background: rgba(255,255,255,0.03); 
+  color: #cfcfcf; 
+  font-weight: 700; 
+  font-size: 1.15rem; 
+  border: 2px solid rgba(255,255,255,0.03); 
 }
+
+.modal-directors { color: #cfcfcf; font-size: 0.9rem; margin-top: 25px; text-align: center; max-width: 900px; position: relative; z-index: 50; }
+.modal-credits { margin-top: 15px; font-size: 0.95rem; color: #bcbcbc; padding: 0 24px; text-align: center; z-index: 50; position: relative; }
 
 /* Close button */
-.close-button { position: absolute; top: 20px; right: 22px; font-size: 1.9rem; color: #fff; background: transparent; border: none; cursor: pointer; z-index: 30; }
-
-/* Credits */
-.modal-credits { margin-top: 24px; font-size: 0.95rem; color: #bcbcbc; padding: 0 24px; }
-
-.film-genres { margin-top: 8px; display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; }
-
-.genre-tag { background: rgba(255, 255, 255, 0.15); border-radius: 12px; padding: 4px 10px; font-size: 0.85rem; color: white; }
-
-@media (max-width: 720px) {
-	.actor-photo, .actor-more-circle { width: 50px; height: 50px; }
-	.actor-item { width: 76px; }
-	.modal-banner { height: 38vh; }
-	.modal-header { display: flex; flex-direction: column; margin-top: 0; margin-bottom: 20px; padding: 0 24px; }
-	.header-left, .header-right { width: 100%; align-items: center; text-align: center; }
-  .header-right { padding-top: 0; }
-  /* FIXED: Re-center title and tags for mobile stack layout */
-  .modal-title { text-align: center; }
-  .modal-tags { justify-content: center; }
+.close-button { 
+  position: absolute; 
+  top: 20px; 
+  right: 22px; 
+  font-size: 1.9rem; 
+  color: #fff; 
+  background: transparent; 
+  border: none; 
+  cursor: pointer; 
+  z-index: 100; 
 }
 
-/* Bottom fixed bar (same dark bg) */
+/* --- ROW 2: Bottom Action Bar --- */
 .modal-bottom-container {
-	position: sticky;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	width: 100%;
-	background: #0f0f0f; 
-	padding: 12px 24px;
-	display: flex;
-	flex-direction: column;
-	gap: 12px;
-	z-index: 50;
+  width: 100%;
+  background: #0f0f0f; 
+  /* Exactly matching the padding logic of the main page */
+  padding-bottom: calc(10px + env(safe-area-inset-bottom));
+  padding-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+  box-shadow: 0 -10px 40px rgba(0,0,0,0.8); /* Optional: seamless blend upwards */
+}
+
+@media (max-width: 720px) {
+  .actor-photo, .actor-more-circle { width: 60px; height: 60px; }
+  .actor-item { width: 76px; }
+  .modal-header { display: flex; flex-direction: column; margin-top: 0; margin-bottom: 20px; padding: 0 24px; }
+  .header-left, .header-right { width: 100%; align-items: center; text-align: center; }
+  .header-right { padding-top: 0; }
+  .modal-title { text-align: center; }
+  .modal-tags { justify-content: center; }
 }

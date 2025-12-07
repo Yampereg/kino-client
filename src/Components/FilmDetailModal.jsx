@@ -54,19 +54,20 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-container" onClick={(e) => e.stopPropagation()}>
-        <button className="close-button" onClick={onClose} aria-label="Close">
-          ✕
-        </button>
-
-        {/* Banner */}
+        
+        {/* Background Layers (Absolute) */}
         <div
           className="modal-banner"
           style={{ backgroundImage: `url(${bannerUrl})` }}
         />
         <div className="banner-fade" />
+        
+        <button className="close-button" onClick={onClose} aria-label="Close">
+          ✕
+        </button>
 
-        {/* Scrollable content */}
-        <div className="modal-content font-kino">
+        {/* ROW 1: Scrollable content Area */}
+        <div className="modal-scroll-area font-kino">
           <div className="modal-header">
             <div className="header-left">
               <img
@@ -152,16 +153,19 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
               </div>
             )}
           </div>
+          
+          {/* Spacer to ensure last element isn't touching the buttons */}
+          <div style={{ height: '30px' }} />
+        </div>
 
-          {/* Sticky bottom action bar */}
-          <div className="modal-bottom-container">
-            <ActionButtons
-              films={[film]}
-              setFilms={setFilms}
-              token={token}
-              loadNextBatch={wrappedLoadNextBatch} // Passes the logic to close modal on skip
-            />
-          </div>
+        {/* ROW 2: Sticky bottom action bar (Outside scroll area) */}
+        <div className="modal-bottom-container">
+          <ActionButtons
+            films={[film]}
+            setFilms={setFilms}
+            token={token}
+            loadNextBatch={wrappedLoadNextBatch} 
+          />
         </div>
       </div>
     </div>
