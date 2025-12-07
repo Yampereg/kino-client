@@ -52,10 +52,8 @@ const SwipeablePoster = ({ film, onSwipe, onOpenDetail }) => {
       dragElastic={0.6}
       onDragEnd={onDragEnd}
       whileTap={{ cursor: 'grabbing' }}
-      // Enter: Instant appearance to cover the background seamlessly
       initial={{ scale: 1, opacity: 1 }}
       animate={{ scale: 1, opacity: 1 }}
-      // Exit: Fly out animation
       exit={{
         x: x.get() < 0 ? -500 : 500,
         opacity: 0,
@@ -87,13 +85,12 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
   const currentFilm = films[0];
   const nextFilm = films[1];
 
-  // Handler specifically for Swipes
   const onCardSwipe = async (direction) => {
     if (!currentFilm) return;
     const filmId = currentFilm.id;
     const type = direction === "right" ? "like" : "dislike";
 
-    handleInteraction(filmId); // Optimistic UI update
+    handleInteraction(filmId);
 
     try {
       await sendInteraction(token, filmId, type);
@@ -118,8 +115,9 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
       <div className="background-banner" style={{ backgroundImage: `url(${bannerUrl})` }} />
       <div className="background-fade" />
       
-      {/* 1. SWIPE AREA (Posters Only) */}
-      <div style={{ flex: 1, position: 'relative', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}>
+      {/* 1. SWIPE AREA (Posters) */}
+      {/* FIXED: We give this a fixed height percentage so it never shrinks/grows based on text below */}
+      <div style={{ height: '55%', position: 'relative', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden', flexShrink: 0 }}>
         
         {/* Next Film (Back Card) */}
         {nextFilm && (
@@ -132,8 +130,6 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
               position: 'absolute',
               width: '100%', height: '100%',
               zIndex: 5,
-              // FIX 1: Perfectly centered behind front card. 
-              // scale(0.95) ensures it is smaller and fully hidden by the scale(1) front card.
               transform: 'scale(0.95)', 
               display: 'flex', justifyContent: 'center', alignItems: 'center',
               pointerEvents: 'none'
@@ -167,9 +163,9 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
         </AnimatePresence>
       </div>
 
-      {/* 2. STATIC INFO AREA (Text Only) */}
-      {/* FIX 2: Removed large padding above. This sits naturally right below the centered posters */}
-      <div style={{ padding: '0 24px', zIndex: 15, textAlign: 'center', minHeight: '100px', flexShrink: 0 }}>
+      {/* 2. SCROLLABLE TEXT AREA */}
+      {/* FIXED: This takes the remaining space (flex: 1) and scrolls strictly within that area */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px', zIndex: 15, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         {currentFilm && (
           <motion.div 
             key={currentFilm.id}
@@ -177,10 +173,10 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <h1 className="film-title" style={{ fontSize: '1.8rem', marginBottom: '8px' }}>
+            <h1 className="film-title" style={{ fontSize: '1.8rem', marginBottom: '8px', marginTop: '10px' }}>
               {currentFilm.title}
             </h1>
-            <div className="film-genres" style={{ justifyContent: 'center', marginBottom: '8px' }}>
+            <div className="film-genres" style={{ justifyContent: 'center', marginBottom: '12px' }}>
               {(currentFilm.genres || []).slice(0, 3).map((g) => (
                 <span key={g.id || g.name} className="genre-tag">
                   {g.name}
@@ -191,10 +187,7 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
                <p className="film-overview" style={{ 
                  fontSize: '0.9rem', 
                  opacity: 0.8, 
-                 display: '-webkit-box', 
-                 WebkitLineClamp: 2, 
-                 WebkitBoxOrient: 'vertical',
-                 overflow: 'hidden'
+                 paddingBottom: '20px' // Padding so text doesn't touch the buttons when scrolled to bottom
                }}>
                  {currentFilm.overview}
                </p>
@@ -204,8 +197,8 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
       </div>
       
       {/* 3. BUTTONS */}
-      {/* Sits at the bottom with standard padding */}
-      <div style={{ flexShrink: 0, zIndex: 20, paddingBottom: '30px' }}>
+      {/* Fixed at bottom, separate from scroll area */}
+      <div style={{ flexShrink: 0, zIndex: 20, paddingBottom: '30px', background: 'linear-gradient(to top, #000 20%, transparent 100%)' }}>
         <ActionButtons
           films={films}
           setFilms={handleInteraction}
@@ -235,7 +228,6 @@ export default function RecommendationsPage() {
   const [modalSource, setModalSource] = useState(null); 
   const [carouselActionCount, setCarouselActionCount] = useState(0); 
 
-  // --- Fetchers ---
   const loadNextBatch = useCallback(async () => {
     setError("");
     try {
@@ -268,7 +260,6 @@ export default function RecommendationsPage() {
     navigate("/login");
   };
 
-  // --- Initial Load ---
   useEffect(() => {
     if (!token) {
       navigate("/login");
@@ -287,7 +278,6 @@ export default function RecommendationsPage() {
     loadInitialData();
   }, [token, loadNextBatch, loadForYouData, navigate]);
 
-  // --- Refresh Carousel ---
   useEffect(() => {
     if (carouselActionCount > 0 && carouselActionCount % 3 === 0) {
       setLoading(true);
@@ -298,7 +288,6 @@ export default function RecommendationsPage() {
     }
   }, [carouselActionCount, loadForYouData]);
 
-  // --- Handlers ---
   const handleHomeInteraction = (filmIdOrUpdateFn) => {
     setFilms((prev) => {
       let updated;
@@ -343,7 +332,6 @@ export default function RecommendationsPage() {
     setTimeout(() => setLoading(false), 800);
   };
 
-  // --- Render ---
   if (!token) return null; 
   
   if (loading && films.length === 0) {
