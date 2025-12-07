@@ -2,40 +2,40 @@ import React, { useState } from "react";
 import "./FilmDetailModal.css";
 import ActionButtons from "../Components/ActionButtons";
 
-// --- Custom Star Icons (SVG) ---
+// --- Custom Star Components ---
+// 1. The Base SVG geometry (Shared)
+const StarSvg = ({ fill }) => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill={fill} stroke="none" style={{ display: 'block' }}>
+    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+  </svg>
+);
+
+// 2. The Logic Component
 const StarIcon = ({ type }) => {
-  const color = "#FFD700"; // Gold color
-  const emptyColor = "#555"; // Dark gray for empty part
+  const gold = "#FFD700";
+  const gray = "#555";
 
   if (type === "full") {
+    return <StarSvg fill={gold} />;
+  } 
+  
+  if (type === "half") {
     return (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill={color} stroke="none">
-        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-      </svg>
-    );
-  } else if (type === "half") {
-    return (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-        <defs>
-          <linearGradient id="halfGrad">
-            <stop offset="50%" stopColor={color} />
-            <stop offset="50%" stopColor={emptyColor} />
-          </linearGradient>
-        </defs>
-        <path 
-          fill="url(#halfGrad)" 
-          d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" 
-        />
-      </svg>
-    );
-  } else {
-    // Empty
-    return (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill={emptyColor} stroke="none">
-        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-      </svg>
+      <div style={{ position: "relative", width: "18px", height: "18px", display: "inline-block" }}>
+        {/* Background Gray Star */}
+        <div style={{ position: "absolute", inset: 0 }}>
+          <StarSvg fill={gray} />
+        </div>
+        {/* Foreground Gold Star (Clipped to 50%) */}
+        <div style={{ position: "absolute", top: 0, left: 0, width: "50%", height: "100%", overflow: "hidden" }}>
+          <StarSvg fill={gold} />
+        </div>
+      </div>
     );
   }
+
+  // Empty
+  return <StarSvg fill={gray} />;
 };
 
 export default function FilmDetailModal({ film, onClose, films, setFilms, token, loadNextBatch }) {
@@ -67,7 +67,7 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
     onClose();
   };
 
-  // Generate array of star types based on score
+  // Star Calculation Logic
   const getStarTypes = (score) => {
     const types = [];
     const ratingOutOfFive = (score || 0) / 2;
@@ -96,8 +96,16 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
         />
         <div className="banner-fade" />
         
-        {/* Close Button - High Z-Index to ensure clickability */}
-        <button className="close-button" onClick={onClose} aria-label="Close">
+        {/* CLOSE BUTTON */}
+        {/* Added z-index 1000 and padding to ensure it catches clicks */}
+        <button 
+            className="close-button" 
+            onClick={(e) => {
+                e.stopPropagation();
+                onClose();
+            }} 
+            aria-label="Close"
+        >
           ✕
         </button>
 
@@ -120,7 +128,7 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
                 </span>
               </div>
               
-              {/* Custom SVG Stars */}
+              {/* Star Rating Row */}
               <div className="poster-rating">
                 {starTypes.map((type, idx) => (
                   <StarIcon key={idx} type={type} />
@@ -191,11 +199,10 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
             )}
           </div>
           
-          {/* Spacer */}
           <div style={{ height: '30px' }} />
         </div>
 
-        {/* ROW 2: Sticky Bottom Actions with Smooth Gradient */}
+        {/* ROW 2: Sticky Bottom Actions */}
         <div className="modal-bottom-container">
           <div className="bottom-gradient-overlay" />
           <ActionButtons
