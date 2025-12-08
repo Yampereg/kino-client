@@ -13,16 +13,21 @@ export default function PageHeader({ onRefresh }) {
     if (isSpinning) return;
 
     setIsSpinning(true);
-    
+
     try {
-      if (onRefresh) {
-        // Await the parent's refresh function
-        await onRefresh();
-      }
+      // Create a promise that resolves after 1 second (minimum spin time)
+      const minSpinTime = new Promise((resolve) => setTimeout(resolve, 1000));
+      
+      // Execute the refresh logic (if it exists)
+      // We wrap it in Promise.resolve to handle both async and sync functions safely
+      const refreshAction = onRefresh ? Promise.resolve(onRefresh()) : Promise.resolve();
+
+      // Wait for BOTH the minimum time AND the data refresh to finish
+      await Promise.all([minSpinTime, refreshAction]);
+
     } catch (error) {
       console.error("Refresh failed", error);
     } finally {
-      // Stop spinning only after the await finishes
       setIsSpinning(false);
     }
   };
