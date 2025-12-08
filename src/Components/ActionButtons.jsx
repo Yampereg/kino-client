@@ -5,7 +5,6 @@ import "./ActionButtons.css";
 export default function ActionButtons({ films, setFilms, token, loadNextBatch }) {
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Always target the first film in the passed array
   const currentFilm = films && films.length > 0 ? films[0] : null;
 
   const handleInteraction = async (type) => {
@@ -14,11 +13,8 @@ export default function ActionButtons({ films, setFilms, token, loadNextBatch })
     setIsProcessing(true);
 
     try {
-      // 1. Send API call
       await sendInteraction(token, currentFilm.id, type);
 
-      // 2. Remove film from Parent State (RecommendationsPage)
-      // This triggers the Visual Removal AND the Counter
       if (setFilms) {
         setFilms((prevFilms) => prevFilms.filter((f) => f.id !== currentFilm.id));
       }
@@ -31,8 +27,10 @@ export default function ActionButtons({ films, setFilms, token, loadNextBatch })
 
   const handleSwipe = (direction) => handleInteraction(direction === "right" ? "like" : "dislike");
   
-  // Skip just closes the modal (or loads next batch in Home view)
   const handleSkip = () => {
+    if (setFilms && currentFilm) {
+      setFilms((prevFilms) => prevFilms.filter((f) => f.id !== currentFilm.id));
+    }
     if (loadNextBatch) loadNextBatch();
   };
 
