@@ -210,6 +210,9 @@ export default function RecommendationsPage() {
   const [films, setFilms] = useState([]);
   const [popularFilms, setPopularFilms] = useState([]);
   const [recommendedFilms, setRecommendedFilms] = useState([]);
+  
+  // NEW STATE: Tracks only the refresh of the 'For You' page content
+  const [isForYouRefreshing, setIsForYouRefreshing] = useState(false);
 
   const [detailFilm, setDetailFilm] = useState(null);
   const [modalSource, setModalSource] = useState(null);
@@ -357,11 +360,21 @@ export default function RecommendationsPage() {
     setModalSource('carousel');
   };
 
+  // MODIFIED: Use isForYouRefreshing instead of setLoading(true/false)
   const handleRefresh = async () => {
-    setLoading(true);
-    await loadForYouData();
+    if (isForYouRefreshing) return;
+    
+    setIsForYouRefreshing(true);
+    
+    try {
+      await loadForYouData();
+    } catch (err) {
+      console.error("Failed to refresh For You data", err);
+    }
+    
     setCarouselActionCount(0);
-    setTimeout(() => setLoading(false), 800);
+    // Removed setTimeout(() => setLoading(false), 800);
+    setIsForYouRefreshing(false);
   };
 
   if (!token) return null;
@@ -386,6 +399,7 @@ export default function RecommendationsPage() {
           recommendedFilms={recommendedFilms}
           onRefresh={handleRefresh}
           onFilmClick={openDetailFromCarousel}
+          isRefreshing={isForYouRefreshing} // PASS NEW STATE
         />
       );
     }
