@@ -42,10 +42,12 @@ const StarIcon = ({ type }) => {
 export default function FilmDetailModal({ film, onClose, films, setFilms, token, loadNextBatch }) {
   if (!film) return null;
 
+  // OPTIMIZATION: Use w1280/w780 instead of original. 
+  // 'Original' images are often 5MB+, w1280 is ~200KB.
   const bannerUrl = film.bannerPath
-    ? `https://image.tmdb.org/t/p/original/${film.bannerPath}`
+    ? `https://image.tmdb.org/t/p/w1280/${film.bannerPath}`
     : film.backdropPath
-    ? `https://image.tmdb.org/t/p/original/${film.backdropPath}`
+    ? `https://image.tmdb.org/t/p/w1280/${film.backdropPath}`
     : `https://image.tmdb.org/t/p/w500/${film.posterPath}`;
 
   const posterUrl = film.posterPath ? `https://image.tmdb.org/t/p/w500/${film.posterPath}` : bannerUrl;
@@ -60,7 +62,7 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
 
   const actorImg = (p) =>
     p && p.length
-      ? `https://image.tmdb.org/t/p/original/${p}`
+      ? `https://image.tmdb.org/t/p/w185/${p}` // Optimized actor images too (w185 is standard for avatars)
       : posterUrl || bannerUrl || "";
 
   const wrappedLoadNextBatch = async () => {
@@ -77,7 +79,6 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
       if (ratingOutOfFive >= i) {
         types.push("full");
       } else if (ratingOutOfFive >= i - 0.5) {
-        // If the rating is 3.7, at i=4, 3.7 >= 3.5 is true -> Half Star
         types.push("half");
       } else {
         types.push("empty");
@@ -117,6 +118,7 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
                 alt={film.title}
                 className="modal-poster"
                 onClick={onClose}
+                decoding="async"
               />
               <div className="poster-meta">
                 <span>{film.releaseDate?.split("-")[0]}</span> •
@@ -163,6 +165,7 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
                       src={actorImg(a.profilePath)}
                       alt={a.name}
                       className="actor-photo"
+                      loading="lazy"
                     />
                     <div className="actor-name">{a.name}</div>
                   </div>

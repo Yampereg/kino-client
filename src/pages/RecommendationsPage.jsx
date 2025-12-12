@@ -31,9 +31,10 @@ const SwipeablePoster = ({ film, onSwipe, onOpenDetail }) => {
     }
   };
 
+  // OPTIMIZATION: Use w780 instead of original for banner fallback
   const posterUrl = film.posterPath
     ? `https://image.tmdb.org/t/p/w500/${film.posterPath}`
-    : `https://image.tmdb.org/t/p/original/${film.bannerPath}`;
+    : `https://image.tmdb.org/t/p/w780/${film.bannerPath}`;
 
   return (
     <motion.div
@@ -61,6 +62,7 @@ const SwipeablePoster = ({ film, onSwipe, onOpenDetail }) => {
               alt={film.title}
               className="film-card-poster"
               onClick={onOpenDetail}
+              decoding="async" // OPTIMIZATION: Don't block main thread
             />
           ) : (
             <div className="film-card-poster bg-gray-800" />
@@ -76,6 +78,26 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
   const currentFilm = films[0];
   const nextFilm = films[1];
 
+  // --- NEW: Preload the NEXT film's images invisible in background ---
+  useEffect(() => {
+    if (nextFilm) {
+      // Preload Banner
+      const imgBanner = new Image();
+      imgBanner.src = nextFilm.bannerPath
+        ? `https://image.tmdb.org/t/p/w1280/${nextFilm.bannerPath}`
+        : nextFilm.posterPath
+        ? `https://image.tmdb.org/t/p/w500/${nextFilm.posterPath}`
+        : "";
+
+      // Preload Poster
+      if (nextFilm.posterPath) {
+        const imgPoster = new Image();
+        imgPoster.src = `https://image.tmdb.org/t/p/w500/${nextFilm.posterPath}`;
+      }
+    }
+  }, [nextFilm]);
+  // ------------------------------------------------------------------
+
   const onCardSwipe = async (direction) => {
     if (!currentFilm) return;
     const filmId = currentFilm.id;
@@ -89,14 +111,14 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
       await sendInteraction(token, filmId, type);
     } catch (err) {
       console.error("Swipe API failed", err);
-      // Optional: You could revert the swipe here if you wanted strict consistency,
-      // but for Tinder-style apps, ignoring failures is usually better for UX.
     }
   };
 
   const activeFilm = currentFilm || nextFilm;
+  
+  // OPTIMIZATION: switched 'original' -> 'w1280' for significantly faster loading
   const bannerUrl = activeFilm?.bannerPath
-    ? `https://image.tmdb.org/t/p/original/${activeFilm.bannerPath}`
+    ? `https://image.tmdb.org/t/p/w1280/${activeFilm.bannerPath}`
     : activeFilm?.posterPath
     ? `https://image.tmdb.org/t/p/w500/${activeFilm.posterPath}`
     : "";
@@ -124,7 +146,12 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
              <div className="film-card-poster-container">
                 <div className="poster-inner">
                    {getPosterUrl(nextFilm) && (
-                      <img src={getPosterUrl(nextFilm)} alt="" className="film-card-poster" />
+                      <img 
+                        src={getPosterUrl(nextFilm)} 
+                        alt="" 
+                        className="film-card-poster"
+                        decoding="async"
+                      />
                    )}
                 </div>
              </div>
@@ -213,28 +240,24 @@ export default function RecommendationsPage() {
   const [modalSource, setModalSource] = useState(null);
   const [carouselActionCount, setCarouselActionCount] = useState(0);
 
-  // Blacklist to store IDs of films we've interacted with this session.
-  // This solves the race condition where the server returns a film we just swiped.
   const seenFilmIds = useRef(new Set());
 
   const loadNextBatch = useCallback(async () => {
     setError("");
     let newItems = [];
     let attempts = 0;
-    const MAX_ATTEMPTS = 3; // Prevent infinite loops if server keeps returning seen films
+    const MAX_ATTEMPTS = 3; 
 
-    // Retry loop: If we fetch a batch and ALL of them are in our 'seen' list, fetch again immediately.
     while (newItems.length === 0 && attempts < MAX_ATTEMPTS) {
         try {
             const nextFilms = await fetchNextFilms(token);
             const safe = Array.isArray(nextFilms) ? nextFilms : [];
             
-            if (safe.length === 0) break; // API returned nothing, stop trying
+            if (safe.length === 0) break; 
 
-            // Filter out films we have already swiped locally
             newItems = safe.filter(f => !seenFilmIds.current.has(f.id));
             
-            if (newItems.length > 0) break; // We found valid films!
+            if (newItems.length > 0) break; 
 
             console.log("Duplicate batch detected (server lagging), retrying fetch...");
             attempts++;
@@ -246,7 +269,6 @@ export default function RecommendationsPage() {
 
     if (newItems.length > 0) {
         setFilms((prev) => {
-            // Also ensure we don't add duplicates that are currently in the state
             const unique = newItems.filter(n => !prev.some(p => p.id === n.id));
             return [...prev, ...unique];
         });
@@ -304,18 +326,15 @@ export default function RecommendationsPage() {
 
       if (typeof filmIdOrUpdateFn === "function") {
         updated = filmIdOrUpdateFn(prev);
-        // Note: extracting the ID in this case is harder, but usually this fn is used for bulk set
       } else {
         removedId = filmIdOrUpdateFn;
         updated = prev.filter((f) => f.id !== removedId);
       }
 
-      // Add to blacklist so it never comes back this session
       if (removedId) {
           seenFilmIds.current.add(removedId);
       }
 
-      // Aggressive buffering: Fetch more when we dip below 5, not 3.
       if (updated.length < 5) {
         loadNextBatch();
       }
