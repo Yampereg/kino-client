@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
@@ -6,6 +7,11 @@ import RecommendationsPage from "./pages/RecommendationsPage";
 import PrivateRoute from "./Components/PrivateRoute"
 
 function App() {
+  // FIX: specific effect to rename the app in the browser tab
+  useEffect(() => {
+    document.title = "Kino";
+  }, []);
+
   return (
     <Router>
       <Routes>

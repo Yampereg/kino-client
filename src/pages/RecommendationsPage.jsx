@@ -1,4 +1,3 @@
-/* src/pages/RecommendationsPage.jsx */
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -12,6 +11,16 @@ import ForYouPage from "./ForYouPage.jsx";
 import SettingsDrawer from "../Components/SettingsDrawer.jsx";
 
 import "./RecommendationsPage.css";
+
+// --- REUSABLE COMPONENT: Full Screen Loader ---
+const FullScreenLoader = () => (
+  <div className="loading-screen font-kino">
+    <div className="loader-content">
+      <div className="loader-ring"></div>
+      <div className="loader-logo">KINO</div>
+    </div>
+  </div>
+);
 
 // --- ISOLATED COMPONENT: Swipeable Poster ---
 const SwipeablePoster = ({ film, onSwipe, onOpenDetail }) => {
@@ -44,7 +53,6 @@ const SwipeablePoster = ({ film, onSwipe, onOpenDetail }) => {
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.6}
       onDragEnd={onDragEnd}
-      // FIX: Use onTap instead of onClick on child to prevent conflict with drag
       onTap={() => {
         if (!hasSwiped.current) onOpenDetail();
       }}
@@ -65,7 +73,6 @@ const SwipeablePoster = ({ film, onSwipe, onOpenDetail }) => {
               src={posterUrl}
               alt={film.title}
               className="film-card-poster"
-              // Removed onClick here to fix double-click issue; handled by onTap above
             />
           ) : (
             <div className="film-card-poster bg-gray-800" />
@@ -99,7 +106,6 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
 
   const activeFilm = currentFilm || nextFilm;
   
-  // OPTIMIZATION: w1280 is much lighter than original but looks the same
   const bannerUrl = activeFilm?.bannerPath
     ? `https://image.tmdb.org/t/p/w1280/${activeFilm.bannerPath}`
     : activeFilm?.posterPath
@@ -147,9 +153,9 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
             />
           ) : (
             <div className="empty-state font-kino">
-               {/* FIX: Show loader if we are actively fetching more to prevent flash */}
+               {/* FIX: Use Full Screen Loader here if fetching */}
                {isFetchingNext ? (
-                 <div className="loader-ring" style={{ width: '40px', height: '40px' }} />
+                 <FullScreenLoader />
                ) : (
                  <>
                    <h2>No more films!</h2>
@@ -222,12 +228,11 @@ export default function RecommendationsPage() {
   const [popularFilms, setPopularFilms] = useState([]);
   const [recommendedFilms, setRecommendedFilms] = useState([]);
   
-  // State for specific loading indicators
   const [isForYouRefreshing, setIsForYouRefreshing] = useState(false);
-  const [isFetchingNext, setIsFetchingNext] = useState(false); // New state to prevent "No films" flash
+  const [isFetchingNext, setIsFetchingNext] = useState(false);
 
   const [detailFilm, setDetailFilm] = useState(null);
-  const [modalSource, setModalSource] = useState(null); // 'home', 'carousel', 'popular'
+  const [modalSource, setModalSource] = useState(null);
   const [carouselActionCount, setCarouselActionCount] = useState(0);
 
   const seenFilmIds = useRef(new Set());
@@ -355,7 +360,6 @@ export default function RecommendationsPage() {
     });
   };
 
-  // Generic handler for opening details from different sources
   const handleDetailOpen = (film, source) => {
     setDetailFilm(film);
     setModalSource(source);
@@ -375,15 +379,9 @@ export default function RecommendationsPage() {
 
   if (!token) return null;
 
+  // Use the reusable component for the initial main loading
   if (loading) {
-    return (
-      <div className="loading-screen font-kino">
-        <div className="loader-content">
-          <div className="loader-ring"></div>
-          <div className="loader-logo">KINO</div>
-        </div>
-      </div>
-    );
+    return <FullScreenLoader />;
   }
 
   const renderContent = () => {
@@ -393,7 +391,6 @@ export default function RecommendationsPage() {
           popularFilms={popularFilms}
           recommendedFilms={recommendedFilms}
           onRefresh={handleRefresh}
-          // Pass a handler that specifies the source
           onFilmClick={handleDetailOpen}
           isRefreshing={isForYouRefreshing}
         />
@@ -434,11 +431,9 @@ export default function RecommendationsPage() {
           film={detailFilm}
           onClose={() => setDetailFilm(null)}
           token={token}
-          // Only pass films list if we want swiping/actions (Popular view doesn't use this)
           films={modalSource === 'home' ? films : (modalSource === 'carousel' ? recommendedFilms : [])}
           setFilms={modalSource === 'home' ? handleHomeInteraction : handleCarouselListUpdate}
           loadNextBatch={modalSource === 'home' ? loadNextBatch : null}
-          // Hide actions if source is 'popular'
           showActions={modalSource !== 'popular'}
         />
       )}
