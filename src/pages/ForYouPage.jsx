@@ -4,13 +4,13 @@ import FilmCarousel from "../Components/FilmCarousel";
 import FilmList from "../Components/FilmList";
 import "./ForYouPage.css";
 
-// It receives 'onFilmClick' from RecommendationsPage and passes it to FilmCarousel
-export default function ForYouPage({ popularFilms, recommendedFilms, onRefresh, onFilmClick }) {
+// MODIFIED: Added isRefreshing prop
+export default function ForYouPage({ popularFilms, recommendedFilms, onRefresh, onFilmClick, isRefreshing }) {
   return (
     <div className="for-you-page">
       <div className="content-scroll-area">
-        {/* Header handles the refresh pull */}
-        <PageHeader onRefresh={onRefresh} />
+        {/* MODIFIED: Pass isRefreshing to PageHeader */}
+        <PageHeader onRefresh={onRefresh} isRefreshing={isRefreshing} />
 
         <section className="section">
           <h2 className="section-title">Top Picks For You</h2>

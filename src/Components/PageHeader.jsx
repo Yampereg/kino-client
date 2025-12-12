@@ -2,33 +2,18 @@ import React, { useState, useCallback } from "react";
 import SettingsDrawer from "./SettingsDrawer";
 import { useAuth } from "../context/AuthContext";
 
-export default function PageHeader({ onRefresh }) {
+// MODIFIED: Added isRefreshing prop
+export default function PageHeader({ onRefresh, isRefreshing }) {
   const { user, logout } = useAuth();
   const username = user && user.name ? user.name : "User";
 
-  const [isSpinning, setIsSpinning] = useState(false);
+  // REMOVED: isSpinning state
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const handleRefreshClick = async () => {
-    if (isSpinning) return;
-
-    setIsSpinning(true);
-
-    try {
-      // Create a promise that resolves after 1 second (minimum spin time)
-      const minSpinTime = new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      // Execute the refresh logic (if it exists)
-      // We wrap it in Promise.resolve to handle both async and sync functions safely
-      const refreshAction = onRefresh ? Promise.resolve(onRefresh()) : Promise.resolve();
-
-      // Wait for BOTH the minimum time AND the data refresh to finish
-      await Promise.all([minSpinTime, refreshAction]);
-
-    } catch (error) {
-      console.error("Refresh failed", error);
-    } finally {
-      setIsSpinning(false);
+  // MODIFIED: handleRefreshClick now just calls onRefresh (which manages isRefreshing in parent)
+  const handleRefreshClick = () => {
+    if (onRefresh && !isRefreshing) {
+      onRefresh(); 
     }
   };
 
@@ -59,10 +44,11 @@ export default function PageHeader({ onRefresh }) {
 
           <div className="header-actions" style={{ display: 'flex', gap: '10px' }}>
             <button
-              className={`refresh-button ${isSpinning ? "spinning" : ""}`}
+              // MODIFIED: Use isRefreshing prop to control spinning class and disabled state
+              className={`refresh-button ${isRefreshing ? "spinning" : ""}`}
               onClick={handleRefreshClick}
               aria-label="Refresh Recommendations"
-              disabled={isSpinning}
+              disabled={isRefreshing}
             >
               <svg className="refresh-icon" viewBox="0 0 24 24">
                 <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" />
