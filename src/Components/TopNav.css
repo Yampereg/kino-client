@@ -1,3 +1,4 @@
+/* src/Components/TopNav.css */
 .top-nav {
   background: transparent !important;
   background-color: transparent !important;
@@ -23,11 +24,13 @@
 .nav-item {
   cursor: pointer;
   color: #888;
-  transition: color 0.1s ease;
+  transition: all 0.2s ease;
 }
 
 .nav-item.active {
   color: #fff;
+  background: transparent !important; /* Explicitly ensure no white bg */
+  font-weight: 800; /* Bolder as requested */
 }
 
 .nav-sep {

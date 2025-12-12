@@ -1,3 +1,4 @@
+/* src/pages/RecommendationsPage.jsx */
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -43,6 +44,10 @@ const SwipeablePoster = ({ film, onSwipe, onOpenDetail }) => {
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.6}
       onDragEnd={onDragEnd}
+      // FIX: Use onTap instead of onClick on child to prevent conflict with drag
+      onTap={() => {
+        if (!hasSwiped.current) onOpenDetail();
+      }}
       whileTap={{ cursor: 'grabbing' }}
       initial={{ scale: 1, opacity: 1 }}
       animate={{ scale: 1, opacity: 1 }}
@@ -60,7 +65,7 @@ const SwipeablePoster = ({ film, onSwipe, onOpenDetail }) => {
               src={posterUrl}
               alt={film.title}
               className="film-card-poster"
-              onClick={onOpenDetail} 
+              // Removed onClick here to fix double-click issue; handled by onTap above
             />
           ) : (
             <div className="film-card-poster bg-gray-800" />
@@ -72,7 +77,7 @@ const SwipeablePoster = ({ film, onSwipe, onOpenDetail }) => {
 };
 
 // --- Sub-component: Home View ---
-function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatch, setDetailFilm }) {
+function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatch, setDetailFilm, isFetchingNext }) {
   const currentFilm = films[0];
   const nextFilm = films[1];
 
@@ -142,8 +147,15 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
             />
           ) : (
             <div className="empty-state font-kino">
-               <h2>No more films!</h2>
-               <p>Check back later.</p>
+               {/* FIX: Show loader if we are actively fetching more to prevent flash */}
+               {isFetchingNext ? (
+                 <div className="loader-ring" style={{ width: '40px', height: '40px' }} />
+               ) : (
+                 <>
+                   <h2>No more films!</h2>
+                   <p>Check back later.</p>
+                 </>
+               )}
             </div>
           )}
         </AnimatePresence>
@@ -203,7 +215,6 @@ export default function RecommendationsPage() {
   const [activeView, setActiveView] = useState('home');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   
-  // Loading starts true and stays true until ALL fetches complete
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -211,24 +222,24 @@ export default function RecommendationsPage() {
   const [popularFilms, setPopularFilms] = useState([]);
   const [recommendedFilms, setRecommendedFilms] = useState([]);
   
-  // NEW STATE: Tracks only the refresh of the 'For You' page content
+  // State for specific loading indicators
   const [isForYouRefreshing, setIsForYouRefreshing] = useState(false);
+  const [isFetchingNext, setIsFetchingNext] = useState(false); // New state to prevent "No films" flash
 
   const [detailFilm, setDetailFilm] = useState(null);
-  const [modalSource, setModalSource] = useState(null);
+  const [modalSource, setModalSource] = useState(null); // 'home', 'carousel', 'popular'
   const [carouselActionCount, setCarouselActionCount] = useState(0);
 
-  // Blacklist Ref
   const seenFilmIds = useRef(new Set());
 
   // 1. Fetch & Process '/next' Films
   const loadNextBatch = useCallback(async () => {
+    setIsFetchingNext(true);
     setError("");
     let newItems = [];
     let attempts = 0;
     const MAX_ATTEMPTS = 3; 
 
-    // We await this loop, so the Promise doesn't resolve until we actually have data or give up
     while (newItems.length === 0 && attempts < MAX_ATTEMPTS) {
         try {
             const nextFilms = await fetchNextFilms(token);
@@ -254,7 +265,7 @@ export default function RecommendationsPage() {
             return [...prev, ...unique];
         });
     }
-    // implicitly returns a Promise that resolves when this function finishes
+    setIsFetchingNext(false);
   }, [token]);
 
   // 2. Fetch & Render 'For You' Page Data
@@ -276,7 +287,6 @@ export default function RecommendationsPage() {
     navigate("/login");
   };
 
-  // --- STRICT LOADING SEQUENCE ---
   useEffect(() => {
     if (!token) {
       navigate("/login");
@@ -286,9 +296,6 @@ export default function RecommendationsPage() {
     const startAppSequence = async () => {
       try {
         setLoading(true);
-        // Execute both major tasks in parallel, but WAIT for both to finish
-        // 1. Recommendations fetched & rendered (via state set)
-        // 2. /next fetched & processed (via state set)
         await Promise.all([
             loadNextBatch(), 
             loadForYouData()
@@ -296,7 +303,6 @@ export default function RecommendationsPage() {
       } catch (err) {
         setError("Could not load data.");
       } finally {
-        // Only remove loading screen after everything above is done
         setLoading(false);
       }
     };
@@ -330,7 +336,6 @@ export default function RecommendationsPage() {
           seenFilmIds.current.add(removedId);
       }
 
-      // Aggressive buffering (5 instead of 3)
       if (updated.length < 5) {
         loadNextBatch();
       }
@@ -350,36 +355,26 @@ export default function RecommendationsPage() {
     });
   };
 
-  const openDetailFromHome = (film) => {
+  // Generic handler for opening details from different sources
+  const handleDetailOpen = (film, source) => {
     setDetailFilm(film);
-    setModalSource('home');
+    setModalSource(source);
   };
 
-  const openDetailFromCarousel = (film) => {
-    setDetailFilm(film);
-    setModalSource('carousel');
-  };
-
-  // MODIFIED: Use isForYouRefreshing instead of setLoading(true/false)
   const handleRefresh = async () => {
     if (isForYouRefreshing) return;
-    
     setIsForYouRefreshing(true);
-    
     try {
       await loadForYouData();
     } catch (err) {
       console.error("Failed to refresh For You data", err);
     }
-    
     setCarouselActionCount(0);
-    // Removed setTimeout(() => setLoading(false), 800);
     setIsForYouRefreshing(false);
   };
 
   if (!token) return null;
 
-  // Render loading screen if loading is true (regardless of film count)
   if (loading) {
     return (
       <div className="loading-screen font-kino">
@@ -398,8 +393,9 @@ export default function RecommendationsPage() {
           popularFilms={popularFilms}
           recommendedFilms={recommendedFilms}
           onRefresh={handleRefresh}
-          onFilmClick={openDetailFromCarousel}
-          isRefreshing={isForYouRefreshing} // PASS NEW STATE
+          // Pass a handler that specifies the source
+          onFilmClick={handleDetailOpen}
+          isRefreshing={isForYouRefreshing}
         />
       );
     }
@@ -410,7 +406,8 @@ export default function RecommendationsPage() {
         token={token}
         loadNextBatch={loadNextBatch}
         handleInteraction={handleHomeInteraction}
-        setDetailFilm={openDetailFromHome}
+        setDetailFilm={(f) => handleDetailOpen(f, 'home')}
+        isFetchingNext={isFetchingNext}
       />
     );
   };
@@ -437,9 +434,12 @@ export default function RecommendationsPage() {
           film={detailFilm}
           onClose={() => setDetailFilm(null)}
           token={token}
-          films={modalSource === 'home' ? films : recommendedFilms}
+          // Only pass films list if we want swiping/actions (Popular view doesn't use this)
+          films={modalSource === 'home' ? films : (modalSource === 'carousel' ? recommendedFilms : [])}
           setFilms={modalSource === 'home' ? handleHomeInteraction : handleCarouselListUpdate}
           loadNextBatch={modalSource === 'home' ? loadNextBatch : null}
+          // Hide actions if source is 'popular'
+          showActions={modalSource !== 'popular'}
         />
       )}
     </>

@@ -1,3 +1,4 @@
+/* src/Components/FilmDetailModal.jsx */
 import React, { useState } from "react";
 import "./FilmDetailModal.css";
 import ActionButtons from "../Components/ActionButtons";
@@ -39,11 +40,10 @@ const StarIcon = ({ type }) => {
   return <StarSvg fill={gray} />;
 };
 
-export default function FilmDetailModal({ film, onClose, films, setFilms, token, loadNextBatch }) {
+// MODIFIED: Added showActions prop (defaults to true)
+export default function FilmDetailModal({ film, onClose, films, setFilms, token, loadNextBatch, showActions = true }) {
   if (!film) return null;
 
-  // OPTIMIZATION: Switched from 'original' to 'w1280'.
-  // This drastically speeds up loading (300KB vs 5MB) without visual artifacts.
   const bannerUrl = film.bannerPath
     ? `https://image.tmdb.org/t/p/w1280/${film.bannerPath}`
     : film.backdropPath
@@ -62,7 +62,7 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
 
   const actorImg = (p) =>
     p && p.length
-      ? `https://image.tmdb.org/t/p/w185/${p}` // Optimized actor images (w185 is standard for avatars)
+      ? `https://image.tmdb.org/t/p/w185/${p}` 
       : posterUrl || "";
 
   const wrappedLoadNextBatch = async () => {
@@ -70,7 +70,6 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
     onClose();
   };
 
-  // --- LOGIC: Calculate Full, Half, Empty stars ---
   const getStarTypes = (score) => {
     const types = [];
     const ratingOutOfFive = (score || 0) / 2;
@@ -129,7 +128,6 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
                 </span>
               </div>
               
-              {/* Star Rating Row */}
               <div className="poster-rating">
                 {starTypes.map((type, idx) => (
                   <StarIcon key={idx} type={type} />
@@ -204,16 +202,18 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
           <div style={{ height: '30px' }} />
         </div>
 
-        {/* ROW 2: Sticky Bottom Actions */}
-        <div className="modal-bottom-container">
-          <div className="bottom-gradient-overlay" />
-          <ActionButtons
-            films={[film]}
-            setFilms={setFilms}
-            token={token}
-            loadNextBatch={wrappedLoadNextBatch} 
-          />
-        </div>
+        {/* ROW 2: Sticky Bottom Actions - CONDITIONALLY RENDERED */}
+        {showActions && (
+          <div className="modal-bottom-container">
+            <div className="bottom-gradient-overlay" />
+            <ActionButtons
+              films={[film]}
+              setFilms={setFilms}
+              token={token}
+              loadNextBatch={wrappedLoadNextBatch} 
+            />
+          </div>
+        )}
       </div>
     </div>
   );
