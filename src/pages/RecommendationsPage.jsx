@@ -62,7 +62,6 @@ const SwipeablePoster = ({ film, onSwipe, onOpenDetail }) => {
               alt={film.title}
               className="film-card-poster"
               onClick={onOpenDetail} 
-              /* Reverted: Removed decoding="async" to ensure click reliability */
             />
           ) : (
             <div className="film-card-poster bg-gray-800" />
@@ -204,6 +203,8 @@ export default function RecommendationsPage() {
 
   const [activeView, setActiveView] = useState('home');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  
+  // Loading starts true and stays true until ALL fetches complete
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -218,12 +219,14 @@ export default function RecommendationsPage() {
   // Blacklist Ref
   const seenFilmIds = useRef(new Set());
 
+  // 1. Fetch & Process '/next' Films
   const loadNextBatch = useCallback(async () => {
     setError("");
     let newItems = [];
     let attempts = 0;
     const MAX_ATTEMPTS = 3; 
 
+    // We await this loop, so the Promise doesn't resolve until we actually have data or give up
     while (newItems.length === 0 && attempts < MAX_ATTEMPTS) {
         try {
             const nextFilms = await fetchNextFilms(token);
@@ -249,13 +252,17 @@ export default function RecommendationsPage() {
             return [...prev, ...unique];
         });
     }
+    // implicitly returns a Promise that resolves when this function finishes
   }, [token]);
 
+  // 2. Fetch & Render 'For You' Page Data
   const loadForYouData = useCallback(async () => {
     try {
-      const popular = await fetchPopular();
+      const [popular, recommendations] = await Promise.all([
+         fetchPopular(),
+         fetchRecommendations()
+      ]);
       setPopularFilms(popular || []);
-      const recommendations = await fetchRecommendations();
       setRecommendedFilms(recommendations || []);
     } catch (err) {
       console.error("Failed to fetch For You data", err);
@@ -267,22 +274,32 @@ export default function RecommendationsPage() {
     navigate("/login");
   };
 
+  // --- STRICT LOADING SEQUENCE ---
   useEffect(() => {
     if (!token) {
       navigate("/login");
       return;
     }
-    const loadInitialData = async () => {
+
+    const startAppSequence = async () => {
       try {
-        await loadNextBatch();
-        await loadForYouData();
+        setLoading(true);
+        // Execute both major tasks in parallel, but WAIT for both to finish
+        // 1. Recommendations fetched & rendered (via state set)
+        // 2. /next fetched & processed (via state set)
+        await Promise.all([
+            loadNextBatch(), 
+            loadForYouData()
+        ]);
       } catch (err) {
         setError("Could not load data.");
       } finally {
-        setTimeout(() => setLoading(false), 1200);
+        // Only remove loading screen after everything above is done
+        setLoading(false);
       }
     };
-    loadInitialData();
+
+    startAppSequence();
   }, [token, loadNextBatch, loadForYouData, navigate]);
 
   useEffect(() => {
@@ -350,7 +367,8 @@ export default function RecommendationsPage() {
 
   if (!token) return null;
 
-  if (loading && films.length === 0) {
+  // Render loading screen if loading is true (regardless of film count)
+  if (loading) {
     return (
       <div className="loading-screen font-kino">
         <div className="loader-content">
