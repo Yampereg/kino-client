@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./FilmDetailModal.css";
 import ActionButtons from "../Components/ActionButtons";
 
@@ -40,37 +40,17 @@ const StarIcon = ({ type }) => {
 };
 
 export default function FilmDetailModal({ film, onClose, films, setFilms, token, loadNextBatch }) {
-  // 1. Define URLs
-  // "Instant" URL: The one we likely already have cached (w500)
-  const lowResUrl = film?.posterPath 
-    ? `https://image.tmdb.org/t/p/w500/${film.posterPath}` 
-    : null;
-
-  // "High Quality" URL: The target we want to show (w1280)
-  const highResUrl = film?.bannerPath
-    ? `https://image.tmdb.org/t/p/w1280/${film.bannerPath}`
-    : film?.backdropPath
-    ? `https://image.tmdb.org/t/p/w1280/${film.backdropPath}`
-    : lowResUrl;
-
-  // 2. State for Progressive Loading
-  // Start with the low-res image so background appears INSTANTLY
-  const [activeBackground, setActiveBackground] = useState(lowResUrl || highResUrl);
-
-  useEffect(() => {
-    if (highResUrl && highResUrl !== lowResUrl) {
-      const img = new Image();
-      img.src = highResUrl;
-      img.onload = () => {
-        // Only swap to high-res once it is fully downloaded
-        setActiveBackground(highResUrl);
-      };
-    }
-  }, [highResUrl, lowResUrl]);
-
   if (!film) return null;
 
-  const posterUrl = film.posterPath ? `https://image.tmdb.org/t/p/w500/${film.posterPath}` : activeBackground;
+  // OPTIMIZATION: Use w1280. It is much smaller than original (10MB -> 300KB)
+  // This is the single biggest fix for speed without complex code.
+  const bannerUrl = film.bannerPath
+    ? `https://image.tmdb.org/t/p/w1280/${film.bannerPath}`
+    : film.backdropPath
+    ? `https://image.tmdb.org/t/p/w1280/${film.backdropPath}`
+    : `https://image.tmdb.org/t/p/w500/${film.posterPath}`;
+
+  const posterUrl = film.posterPath ? `https://image.tmdb.org/t/p/w500/${film.posterPath}` : bannerUrl;
 
   const directors = (film.directors || []).map((d) => d.name).join(" · ");
   const actors = (film.actors || []).sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
@@ -116,10 +96,7 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
         {/* Background Layers */}
         <div
           className="modal-banner"
-          style={{ 
-            backgroundImage: `url(${activeBackground})`,
-            transition: 'background-image 0.3s ease-in-out' // Smooth transition when high-res loads
-          }}
+          style={{ backgroundImage: `url(${bannerUrl})` }}
         />
         <div className="banner-fade" />
         
@@ -141,7 +118,6 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
                 alt={film.title}
                 className="modal-poster"
                 onClick={onClose}
-                decoding="async"
               />
               <div className="poster-meta">
                 <span>{film.releaseDate?.split("-")[0]}</span> •
@@ -188,7 +164,6 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
                       src={actorImg(a.profilePath)}
                       alt={a.name}
                       className="actor-photo"
-                      loading="lazy"
                     />
                     <div className="actor-name">{a.name}</div>
                   </div>

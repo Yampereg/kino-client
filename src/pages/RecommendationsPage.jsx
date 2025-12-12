@@ -31,7 +31,7 @@ const SwipeablePoster = ({ film, onSwipe, onOpenDetail }) => {
     }
   };
 
-  // OPTIMIZATION: Use w780 instead of original for banner fallback
+  // OPTIMIZATION: Use w780 or w500 to render faster, avoiding 'original'
   const posterUrl = film.posterPath
     ? `https://image.tmdb.org/t/p/w500/${film.posterPath}`
     : `https://image.tmdb.org/t/p/w780/${film.bannerPath}`;
@@ -61,8 +61,8 @@ const SwipeablePoster = ({ film, onSwipe, onOpenDetail }) => {
               src={posterUrl}
               alt={film.title}
               className="film-card-poster"
-              onClick={onOpenDetail}
-              decoding="async" // OPTIMIZATION: Don't block main thread
+              onClick={onOpenDetail} 
+              /* Reverted: Removed decoding="async" to ensure click reliability */
             />
           ) : (
             <div className="film-card-poster bg-gray-800" />
@@ -78,35 +78,15 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
   const currentFilm = films[0];
   const nextFilm = films[1];
 
-  // --- NEW: Preload the NEXT film's images invisible in background ---
-  useEffect(() => {
-    if (nextFilm) {
-      // Preload Banner
-      const imgBanner = new Image();
-      imgBanner.src = nextFilm.bannerPath
-        ? `https://image.tmdb.org/t/p/w1280/${nextFilm.bannerPath}`
-        : nextFilm.posterPath
-        ? `https://image.tmdb.org/t/p/w500/${nextFilm.posterPath}`
-        : "";
-
-      // Preload Poster
-      if (nextFilm.posterPath) {
-        const imgPoster = new Image();
-        imgPoster.src = `https://image.tmdb.org/t/p/w500/${nextFilm.posterPath}`;
-      }
-    }
-  }, [nextFilm]);
-  // ------------------------------------------------------------------
-
   const onCardSwipe = async (direction) => {
     if (!currentFilm) return;
     const filmId = currentFilm.id;
     const type = direction === "right" ? "like" : "dislike";
     
-    // 1. Optimistic Update (Immediate)
+    // 1. Optimistic Update
     handleInteraction(filmId);
     
-    // 2. Async Server Sync (Background)
+    // 2. Async Server Sync
     try {
       await sendInteraction(token, filmId, type);
     } catch (err) {
@@ -116,7 +96,7 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
 
   const activeFilm = currentFilm || nextFilm;
   
-  // OPTIMIZATION: switched 'original' -> 'w1280' for significantly faster loading
+  // OPTIMIZATION: w1280 is much lighter than original but looks the same
   const bannerUrl = activeFilm?.bannerPath
     ? `https://image.tmdb.org/t/p/w1280/${activeFilm.bannerPath}`
     : activeFilm?.posterPath
@@ -134,7 +114,7 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
 
       {/* --- GRID ROW 1: POSTER AREA --- */}
       <div className="rec-poster-area">
-        {/* Next Film (Layered Underneath) */}
+        {/* Next Film */}
         {nextFilm && (
           <motion.div
             key={nextFilm.id}
@@ -146,19 +126,14 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
              <div className="film-card-poster-container">
                 <div className="poster-inner">
                    {getPosterUrl(nextFilm) && (
-                      <img 
-                        src={getPosterUrl(nextFilm)} 
-                        alt="" 
-                        className="film-card-poster"
-                        decoding="async"
-                      />
+                      <img src={getPosterUrl(nextFilm)} alt="" className="film-card-poster" />
                    )}
                 </div>
              </div>
           </motion.div>
         )}
 
-        {/* Current Film (Interactive) */}
+        {/* Current Film */}
         <AnimatePresence mode="popLayout">
           {currentFilm ? (
             <SwipeablePoster
@@ -240,6 +215,7 @@ export default function RecommendationsPage() {
   const [modalSource, setModalSource] = useState(null);
   const [carouselActionCount, setCarouselActionCount] = useState(0);
 
+  // Blacklist Ref
   const seenFilmIds = useRef(new Set());
 
   const loadNextBatch = useCallback(async () => {
@@ -259,7 +235,7 @@ export default function RecommendationsPage() {
             
             if (newItems.length > 0) break; 
 
-            console.log("Duplicate batch detected (server lagging), retrying fetch...");
+            console.log("Duplicate batch detected, retrying fetch...");
             attempts++;
         } catch (err) {
             console.error("Failed to fetch films", err);
@@ -335,6 +311,7 @@ export default function RecommendationsPage() {
           seenFilmIds.current.add(removedId);
       }
 
+      // Aggressive buffering (5 instead of 3)
       if (updated.length < 5) {
         loadNextBatch();
       }

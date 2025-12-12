@@ -12,22 +12,14 @@ export default function FilmCard({ film, onOpenDetail }) {
 
   return (
     <div className="film-card">
-      {/* Moved onClick here and added pointer cursor.
-        This fixes the "Double Click" bug on mobile where the first tap 
-        is often captured by hover states or image focus.
-      */}
-      <div 
-        className="poster-container" 
-        onClick={onOpenDetail}
-        style={{ cursor: 'pointer' }}
-      >
+      <div className="poster-container">
         {posterUrl ? (
           <img
             src={posterUrl}
             alt={film.title}
             className="film-card-poster"
-            loading="lazy"
-            decoding="async"
+            onClick={onOpenDetail}
+            style={{ cursor: 'pointer' }}
           />
         ) : (
           <div className="film-card-poster" style={{ display: 'grid', placeItems: 'center', background: '#333' }}>
