@@ -31,7 +31,6 @@ const SwipeablePoster = ({ film, onSwipe, onOpenDetail }) => {
     }
   };
 
-  // OPTIMIZATION: Use w780 or w500 to render faster, avoiding 'original'
   const posterUrl = film.posterPath
     ? `https://image.tmdb.org/t/p/w500/${film.posterPath}`
     : `https://image.tmdb.org/t/p/w780/${film.bannerPath}`;
