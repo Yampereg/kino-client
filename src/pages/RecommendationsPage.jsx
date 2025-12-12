@@ -15,7 +15,7 @@ import "./RecommendationsPage.css";
 // --- ISOLATED COMPONENT: Swipeable Poster ---
 const SwipeablePoster = ({ film, onSwipe, onOpenDetail }) => {
   const x = useMotionValue(0);
-  const rotate = useTransform(x, [-200, 200], [-10, 10]); 
+  const rotate = useTransform(x, [-200, 200], [-10, 10]);
   const opacity = useTransform(x, [-200, -120, 0, 120, 200], [0, 1, 1, 1, 0]);
 
   const hasSwiped = useRef(false);
@@ -31,7 +31,7 @@ const SwipeablePoster = ({ film, onSwipe, onOpenDetail }) => {
     }
   };
 
-  const posterUrl = film.posterPath 
+  const posterUrl = film.posterPath
     ? `https://image.tmdb.org/t/p/w500/${film.posterPath}`
     : `https://image.tmdb.org/t/p/original/${film.bannerPath}`;
 
@@ -56,10 +56,10 @@ const SwipeablePoster = ({ film, onSwipe, onOpenDetail }) => {
       <div className="film-card-poster-container">
         <div className="poster-inner">
           {posterUrl ? (
-            <img 
-              src={posterUrl} 
-              alt={film.title} 
-              className="film-card-poster" 
+            <img
+              src={posterUrl}
+              alt={film.title}
+              className="film-card-poster"
               onClick={onOpenDetail}
             />
           ) : (
@@ -80,11 +80,17 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
     if (!currentFilm) return;
     const filmId = currentFilm.id;
     const type = direction === "right" ? "like" : "dislike";
+    
+    // 1. Optimistic Update (Immediate)
     handleInteraction(filmId);
+    
+    // 2. Async Server Sync (Background)
     try {
       await sendInteraction(token, filmId, type);
     } catch (err) {
       console.error("Swipe API failed", err);
+      // Optional: You could revert the swipe here if you wanted strict consistency,
+      // but for Tinder-style apps, ignoring failures is usually better for UX.
     }
   };
 
@@ -95,7 +101,7 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
     ? `https://image.tmdb.org/t/p/w500/${activeFilm.posterPath}`
     : "";
 
-  const getPosterUrl = (film) => film?.posterPath 
+  const getPosterUrl = (film) => film?.posterPath
     ? `https://image.tmdb.org/t/p/w500/${film.posterPath}`
     : null;
 
@@ -103,15 +109,15 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
     <div className="recommendations-container font-kino">
       <div className="background-banner" style={{ backgroundImage: `url(${bannerUrl})` }} />
       <div className="background-fade" />
-      
+
       {/* --- GRID ROW 1: POSTER AREA --- */}
       <div className="rec-poster-area">
         {/* Next Film (Layered Underneath) */}
         {nextFilm && (
-          <motion.div 
-            key={nextFilm.id} 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 0.6 }} 
+          <motion.div
+            key={nextFilm.id}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.6 }}
             transition={{ duration: 0.3, delay: 0.1 }}
             className="next-film-layer"
           >
@@ -128,8 +134,8 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
         {/* Current Film (Interactive) */}
         <AnimatePresence mode="popLayout">
           {currentFilm ? (
-            <SwipeablePoster 
-              key={currentFilm.id} 
+            <SwipeablePoster
+              key={currentFilm.id}
               film={currentFilm}
               onSwipe={onCardSwipe}
               onOpenDetail={() => setDetailFilm(currentFilm)}
@@ -146,7 +152,7 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
       {/* --- GRID ROW 2: SCROLLABLE INFO AREA --- */}
       <div className="rec-info-area">
         {currentFilm && (
-          <motion.div 
+          <motion.div
             key={currentFilm.id}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -156,7 +162,7 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
             <h1 className="film-title">
               {currentFilm.title}
             </h1>
-            
+
             <div className="film-genres">
               {(currentFilm.genres || []).slice(0, 3).map((g) => (
                 <span key={g.id || g.name} className="genre-tag">
@@ -170,13 +176,12 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
                  {currentFilm.overview}
                </p>
             )}
-            
-            {/* Extra spacer at bottom of text so it doesn't feel cramped when fully scrolled */}
+
             <div style={{ height: '20px' }} />
           </motion.div>
         )}
       </div>
-      
+
       {/* --- GRID ROW 3: ACTION BUTTONS --- */}
       <div className="rec-actions-area">
         <ActionButtons
@@ -195,32 +200,56 @@ export default function RecommendationsPage() {
   const { token, user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const [activeView, setActiveView] = useState('home'); 
+  const [activeView, setActiveView] = useState('home');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const [films, setFilms] = useState([]); 
-  const [popularFilms, setPopularFilms] = useState([]); 
-  const [recommendedFilms, setRecommendedFilms] = useState([]); 
+  const [films, setFilms] = useState([]);
+  const [popularFilms, setPopularFilms] = useState([]);
+  const [recommendedFilms, setRecommendedFilms] = useState([]);
 
   const [detailFilm, setDetailFilm] = useState(null);
-  const [modalSource, setModalSource] = useState(null); 
-  const [carouselActionCount, setCarouselActionCount] = useState(0); 
+  const [modalSource, setModalSource] = useState(null);
+  const [carouselActionCount, setCarouselActionCount] = useState(0);
+
+  // Blacklist to store IDs of films we've interacted with this session.
+  // This solves the race condition where the server returns a film we just swiped.
+  const seenFilmIds = useRef(new Set());
 
   const loadNextBatch = useCallback(async () => {
     setError("");
-    try {
-      const nextFilms = await fetchNextFilms(token);
-      const safe = Array.isArray(nextFilms) ? nextFilms : [];
-      setFilms((prev) => {
-        if (prev.length === 0) return safe;
-        const newItems = safe.filter(n => !prev.some(p => p.id === n.id));
-        return [...prev, ...newItems];
-      });
-    } catch (err) {
-      console.error("Failed to fetch films", err);
-      setFilms(prev => prev.length > 0 ? prev : []); 
+    let newItems = [];
+    let attempts = 0;
+    const MAX_ATTEMPTS = 3; // Prevent infinite loops if server keeps returning seen films
+
+    // Retry loop: If we fetch a batch and ALL of them are in our 'seen' list, fetch again immediately.
+    while (newItems.length === 0 && attempts < MAX_ATTEMPTS) {
+        try {
+            const nextFilms = await fetchNextFilms(token);
+            const safe = Array.isArray(nextFilms) ? nextFilms : [];
+            
+            if (safe.length === 0) break; // API returned nothing, stop trying
+
+            // Filter out films we have already swiped locally
+            newItems = safe.filter(f => !seenFilmIds.current.has(f.id));
+            
+            if (newItems.length > 0) break; // We found valid films!
+
+            console.log("Duplicate batch detected (server lagging), retrying fetch...");
+            attempts++;
+        } catch (err) {
+            console.error("Failed to fetch films", err);
+            break;
+        }
+    }
+
+    if (newItems.length > 0) {
+        setFilms((prev) => {
+            // Also ensure we don't add duplicates that are currently in the state
+            const unique = newItems.filter(n => !prev.some(p => p.id === n.id));
+            return [...prev, ...unique];
+        });
     }
   }, [token]);
 
@@ -262,7 +291,7 @@ export default function RecommendationsPage() {
     if (carouselActionCount > 0 && carouselActionCount % 3 === 0) {
       setLoading(true);
       loadForYouData().then(() => {
-        setCarouselActionCount(0); 
+        setCarouselActionCount(0);
         setTimeout(() => setLoading(false), 800);
       });
     }
@@ -271,12 +300,23 @@ export default function RecommendationsPage() {
   const handleHomeInteraction = (filmIdOrUpdateFn) => {
     setFilms((prev) => {
       let updated;
+      let removedId = null;
+
       if (typeof filmIdOrUpdateFn === "function") {
         updated = filmIdOrUpdateFn(prev);
+        // Note: extracting the ID in this case is harder, but usually this fn is used for bulk set
       } else {
-        updated = prev.filter((f) => f.id !== filmIdOrUpdateFn);
+        removedId = filmIdOrUpdateFn;
+        updated = prev.filter((f) => f.id !== removedId);
       }
-      if (updated.length < 3) {
+
+      // Add to blacklist so it never comes back this session
+      if (removedId) {
+          seenFilmIds.current.add(removedId);
+      }
+
+      // Aggressive buffering: Fetch more when we dip below 5, not 3.
+      if (updated.length < 5) {
         loadNextBatch();
       }
       return updated;
@@ -312,8 +352,8 @@ export default function RecommendationsPage() {
     setTimeout(() => setLoading(false), 800);
   };
 
-  if (!token) return null; 
-  
+  if (!token) return null;
+
   if (loading && films.length === 0) {
     return (
       <div className="loading-screen font-kino">
@@ -328,38 +368,38 @@ export default function RecommendationsPage() {
   const renderContent = () => {
     if (activeView === 'forYou') {
       return (
-        <ForYouPage 
-          popularFilms={popularFilms} 
+        <ForYouPage
+          popularFilms={popularFilms}
           recommendedFilms={recommendedFilms}
           onRefresh={handleRefresh}
-          onFilmClick={openDetailFromCarousel} 
+          onFilmClick={openDetailFromCarousel}
         />
       );
     }
 
     return (
-      <HomeRecommendationsView 
-        films={films} 
+      <HomeRecommendationsView
+        films={films}
         token={token}
-        loadNextBatch={loadNextBatch} 
-        handleInteraction={handleHomeInteraction} 
-        setDetailFilm={openDetailFromHome} 
+        loadNextBatch={loadNextBatch}
+        handleInteraction={handleHomeInteraction}
+        setDetailFilm={openDetailFromHome}
       />
     );
   };
 
   return (
     <>
-      <TopNav 
-        activeView={activeView} 
-        onViewChange={setActiveView} 
+      <TopNav
+        activeView={activeView}
+        onViewChange={setActiveView}
         onMenuClick={() => setIsDrawerOpen(true)}
       />
-      
-      <SettingsDrawer 
-        isOpen={isDrawerOpen} 
+
+      <SettingsDrawer
+        isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
-        userName={user?.name} 
+        userName={user?.name}
         onLogout={handleLogout}
       />
 
@@ -372,7 +412,7 @@ export default function RecommendationsPage() {
           token={token}
           films={modalSource === 'home' ? films : recommendedFilms}
           setFilms={modalSource === 'home' ? handleHomeInteraction : handleCarouselListUpdate}
-          loadNextBatch={modalSource === 'home' ? loadNextBatch : null} 
+          loadNextBatch={modalSource === 'home' ? loadNextBatch : null}
         />
       )}
     </>
