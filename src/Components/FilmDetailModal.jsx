@@ -42,8 +42,8 @@ const StarIcon = ({ type }) => {
 export default function FilmDetailModal({ film, onClose, films, setFilms, token, loadNextBatch }) {
   if (!film) return null;
 
-  // OPTIMIZATION: Use w1280. It is much smaller than original (10MB -> 300KB)
-  // This is the single biggest fix for speed without complex code.
+  // OPTIMIZATION: Switched from 'original' to 'w1280'.
+  // This drastically speeds up loading (300KB vs 5MB) without visual artifacts.
   const bannerUrl = film.bannerPath
     ? `https://image.tmdb.org/t/p/w1280/${film.bannerPath}`
     : film.backdropPath
@@ -62,7 +62,7 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
 
   const actorImg = (p) =>
     p && p.length
-      ? `https://image.tmdb.org/t/p/w185/${p}`
+      ? `https://image.tmdb.org/t/p/w185/${p}` // Optimized actor images (w185 is standard for avatars)
       : posterUrl || "";
 
   const wrappedLoadNextBatch = async () => {
@@ -118,6 +118,7 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
                 alt={film.title}
                 className="modal-poster"
                 onClick={onClose}
+                decoding="async"
               />
               <div className="poster-meta">
                 <span>{film.releaseDate?.split("-")[0]}</span> •
@@ -164,6 +165,7 @@ export default function FilmDetailModal({ film, onClose, films, setFilms, token,
                       src={actorImg(a.profilePath)}
                       alt={a.name}
                       className="actor-photo"
+                      loading="lazy"
                     />
                     <div className="actor-name">{a.name}</div>
                   </div>
