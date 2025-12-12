@@ -103,7 +103,8 @@
 
 /* Animation Class */
 .refresh-button.spinning .refresh-icon {
-  animation: spinIcon 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  /* MODIFIED: Added 'linear' and 'infinite' so it spins continuously */
+  animation: spinIcon 1s linear infinite;
 }
 
 @keyframes spinIcon {
