@@ -54,23 +54,27 @@ export default function LikedDislikedPage({ type }) {
   return (
     <div className="ld-page">
       <div className="ld-header">
-        <h1 className="ld-title">{title}</h1>
+        <div className="ld-header-left">
+          <button className="ld-back-btn" onClick={() => navigate("/")}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19 12H5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M12 19L5 12L12 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+          <h1 className="ld-title">{title}</h1>
+        </div>
         
         <div className="ld-controls">
           <div className="ld-sort-wrapper">
-            <span className="ld-sort-label">Sort by:</span>
+            <span className="ld-sort-label">Sort by</span>
             <select className="ld-sort-select" value={sortType} onChange={handleSort}>
               <option value="date">Release Date</option>
               <option value="budget">Budget</option>
-              <option value="rating">Ratings</option>
+              <option value="rating">Rating</option>
               <option value="popularity">Popularity</option>
               <option value="runtime">Runtime</option>
             </select>
           </div>
-
-          <button className="ld-close-btn" onClick={() => navigate("/")}>
-            ✕
-          </button>
         </div>
       </div>
 
@@ -91,12 +95,17 @@ export default function LikedDislikedPage({ type }) {
                                     className="ld-poster"
                                 />
                             ) : (
-                                <div className="ld-poster-missing">No Image</div>
+                                <div className="ld-poster-missing">
+                                    <span>{film.title}</span>
+                                </div>
                             )}
+                            <div className="ld-overlay">
+                                <span className="ld-view-details">View</span>
+                            </div>
                         </div>
                         <div className="ld-card-info">
                              <div className="ld-card-title">{film.title}</div>
-                             <div className="ld-card-sub">
+                             <div className="ld-card-meta">
                                 {sortType === 'rating' && `★ ${film.voteAverage?.toFixed(1)}`}
                                 {sortType === 'date' && (film.releaseDate?.split('-')[0] || 'N/A')}
                                 {sortType === 'runtime' && `${film.runtime} min`}

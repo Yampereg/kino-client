@@ -1,113 +1,193 @@
 .ld-page {
     width: 100vw;
     height: 100vh;
-    background-color: #0f0f0f;
-    color: white;
+    background-color: #111111;
+    color: #ffffff;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    font-family: 'PloniRegular', sans-serif;
+    font-family: 'PloniRegular', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .ld-header {
     flex-shrink: 0;
-    padding: 20px 30px;
+    padding: 30px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #141414;
-    border-bottom: 1px solid #333;
+    background: rgba(17, 17, 17, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 10;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.ld-header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.ld-back-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #fff;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.ld-back-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(-2px);
 }
 
 .ld-title {
     margin: 0;
-    font-size: 24px;
-    font-weight: bold;
-    color: #e50914; /* Netflix Red-ish */
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #fff;
 }
 
 .ld-controls {
     display: flex;
     align-items: center;
-    gap: 20px;
 }
 
 .ld-sort-wrapper {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: background 0.2s ease;
+}
+
+.ld-sort-wrapper:hover {
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .ld-sort-label {
-    font-size: 14px;
-    color: #aaa;
+    font-size: 0.9rem;
+    color: #888;
+    font-weight: 500;
 }
 
 .ld-sort-select {
-    background: #333;
-    color: white;
-    border: 1px solid #555;
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 14px;
+    background: transparent;
+    color: #fff;
+    border: none;
+    font-size: 0.95rem;
+    font-weight: 600;
     outline: none;
     cursor: pointer;
+    font-family: inherit;
 }
 
-.ld-close-btn {
-    background: transparent;
-    border: none;
+.ld-sort-select option {
+    background: #222;
     color: #fff;
-    font-size: 24px;
-    cursor: pointer;
-    line-height: 1;
-    padding: 0;
-}
-
-.ld-close-btn:hover {
-    color: #ccc;
 }
 
 .ld-content {
     flex: 1;
     overflow-y: auto;
-    padding: 30px;
+    padding: 40px;
+    /* Custom Scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: #333 transparent;
+}
+
+.ld-content::-webkit-scrollbar {
+    width: 8px;
+}
+.ld-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+.ld-content::-webkit-scrollbar-thumb {
+    background-color: #333;
+    border-radius: 20px;
 }
 
 .ld-message {
     text-align: center;
-    color: #777;
-    margin-top: 50px;
-    font-size: 18px;
+    color: #666;
+    margin-top: 100px;
+    font-size: 1.2rem;
 }
 
 .ld-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 20px;
+    /* Forces exactly 4 columns */
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+@media (max-width: 1024px) {
+    .ld-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .ld-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+    .ld-header {
+        padding: 20px;
+    }
+    .ld-title {
+        font-size: 1.5rem;
+    }
+    .ld-content {
+        padding: 20px;
+    }
 }
 
 .ld-card {
     cursor: pointer;
-    transition: transform 0.2s;
+    group: hover;
+    transition: transform 0.3s ease;
 }
 
 .ld-card:hover {
-    transform: scale(1.03);
+    transform: translateY(-6px);
 }
 
 .ld-poster-wrapper {
+    position: relative;
     width: 100%;
     aspect-ratio: 2 / 3;
-    border-radius: 6px;
+    border-radius: 12px;
     overflow: hidden;
-    background: #222;
+    background: #1a1a1a;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    transition: box-shadow 0.3s ease;
+}
+
+.ld-card:hover .ld-poster-wrapper {
+    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
 }
 
 .ld-poster {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.ld-card:hover .ld-poster {
+    transform: scale(1.05);
 }
 
 .ld-poster-missing {
@@ -116,24 +196,67 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #555;
-    font-size: 12px;
+    color: #444;
+    font-weight: 600;
+    text-align: center;
+    padding: 10px;
+}
+
+/* Hover Overlay */
+.ld-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease;
+}
+
+.ld-card:hover .ld-overlay {
+    opacity: 1;
+}
+
+.ld-view-details {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #fff;
+    transform: translateY(10px);
+    transition: transform 0.3s ease;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.ld-card:hover .ld-view-details {
+    transform: translateY(0);
 }
 
 .ld-card-info {
-    margin-top: 8px;
+    margin-top: 14px;
 }
 
 .ld-card-title {
-    font-size: 14px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-weight: 500;
+    opacity: 0.95;
 }
 
-.ld-card-sub {
-    font-size: 12px;
-    color: #888;
-    margin-top: 2px;
+.ld-card-meta {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 4px;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.ld-card:hover .ld-card-meta {
+    color: #999;
 }
