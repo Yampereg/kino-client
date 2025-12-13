@@ -43,6 +43,14 @@ export function fetchNextFilms() {
   return apiFetch("/api/films/next");
 }
 
+export function fetchLikedFilms() {
+  return apiFetch("/api/interaction/liked");
+}
+
+export function fetchDislikedFilms() {
+  return apiFetch("/api/interaction/disliked");
+}
+
 export function sendInteraction(token, filmId, type) {
   // Using apiFetch ensures consistent error handling (401s, etc)
   return apiFetch(`/api/interaction/${type}/${filmId}`, {
