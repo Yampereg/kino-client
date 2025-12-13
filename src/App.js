@@ -7,13 +7,14 @@ import SignUp from './pages/SignUp';
 import Main from './pages/Main';
 import RecommendationsPage from './pages/RecommendationsPage';
 import ForYouPage from './pages/ForYouPage';
-import LikedDislikedPage from './pages/LikedDislikedPage'; // Import new page
+import LikedDislikedPage from './pages/LikedDislikedPage';
 import './App.css';
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
+    // 1. Router must be the top-level wrapper so AuthProvider can use navigation hooks
+    <Router>
+      <AuthProvider>
         <div className="App">
           <Routes>
             <Route path="/login" element={<Login />} />
@@ -32,8 +33,8 @@ function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>
-      </Router>
-    </AuthProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 
