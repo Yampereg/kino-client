@@ -5,7 +5,7 @@ import SignUp from "./pages/SignUp";
 import Main from "./pages/Main";
 import RecommendationsPage from "./pages/RecommendationsPage";
 import ForYouPage from "./pages/ForYouPage";
-import LikedDislikedPage from "./pages/LikedDislikedPage"; // Import the new page
+import LikedDislikedPage from "./pages/LikedDislikedPage"; 
 import PrivateRoute from "./Components/PrivateRoute";
 import "./App.css";
 
@@ -21,18 +21,57 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           
-          {/* Private Routes */}
-          <Route element={<PrivateRoute />}>
-            <Route path="/" element={<Main />} />
-            <Route path="/recommendations" element={<RecommendationsPage />} />
-            <Route path="/foryou" element={<ForYouPage />} />
-            
-            {/* New Routes for Liked/Disliked */}
-            <Route path="/liked" element={<LikedDislikedPage type="liked" />} />
-            <Route path="/disliked" element={<LikedDislikedPage type="disliked" />} />
-          </Route>
+          {/* FIX: We must wrap each component in <PrivateRoute> explicitly 
+             because your PrivateRoute component renders {children}, not <Outlet />.
+          */}
+          <Route 
+            path="/" 
+            element={
+              <PrivateRoute>
+                <Main />
+              </PrivateRoute>
+            } 
+          />
+          
+          <Route 
+            path="/recommendations" 
+            element={
+              <PrivateRoute>
+                <RecommendationsPage />
+              </PrivateRoute>
+            } 
+          />
+          
+          <Route 
+            path="/foryou" 
+            element={
+              <PrivateRoute>
+                <ForYouPage />
+              </PrivateRoute>
+            } 
+          />
 
-          <Route path="*" element={<Navigate to="/" replace />} />
+          {/* New Routes */}
+          <Route 
+            path="/liked" 
+            element={
+              <PrivateRoute>
+                <LikedDislikedPage type="liked" />
+              </PrivateRoute>
+            } 
+          />
+
+          <Route 
+            path="/disliked" 
+            element={
+              <PrivateRoute>
+                <LikedDislikedPage type="disliked" />
+              </PrivateRoute>
+            } 
+          />
+
+          {/* Reverted to /login to match your original version */}
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </div>
     </Router>

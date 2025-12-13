@@ -54,6 +54,7 @@ export function fetchDislikedFilms() {
 // -----------------------------------
 
 export function sendInteraction(token, filmId, type) {
+  // Using apiFetch ensures consistent error handling (401s, etc)
   return apiFetch(`/api/interaction/${type}/${filmId}`, {
      method: "POST"
   });
