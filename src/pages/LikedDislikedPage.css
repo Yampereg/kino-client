@@ -1,262 +1,251 @@
 .ld-page {
-    width: 100vw;
+    width: 100%;
     height: 100vh;
     background-color: #111111;
     color: #ffffff;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    font-family: 'PloniRegular', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    /* Use the correct font family defined in index.css */
+    font-family: 'KinoFont', -apple-system, sans-serif;
 }
 
-.ld-header {
+/* --- Level 1: Top Header --- */
+.ld-header-top {
     flex-shrink: 0;
-    padding: 30px 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(17, 17, 17, 0.95);
-    backdrop-filter: blur(10px);
-    z-index: 10;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.ld-header-left {
+    padding: 24px 32px 10px 32px; /* Bottom padding reduced */
     display: flex;
     align-items: center;
     gap: 20px;
+    background: #111111;
 }
 
 .ld-back-btn {
-    background: rgba(255, 255, 255, 0.1);
+    background: transparent;
     border: none;
     color: #fff;
-    width: 44px;
-    height: 44px;
+    cursor: pointer;
+    padding: 8px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background 0.2s;
 }
 
 .ld-back-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateX(-2px);
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .ld-title {
+    font-size: 2.5rem; /* Big modern title */
+    font-weight: 700;
     margin: 0;
-    font-size: 2rem;
-    font-weight: 800;
     letter-spacing: -0.02em;
-    color: #fff;
 }
 
-.ld-controls {
+/* --- Level 2: Toolbar --- */
+.ld-toolbar {
+    flex-shrink: 0;
+    padding: 0 32px 24px 32px;
     display: flex;
-    align-items: center;
+    justify-content: space-between;
+    align-items: flex-end;
+    background: #111111;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 5;
 }
 
-.ld-sort-wrapper {
+.ld-sort-group {
     display: flex;
-    align-items: center;
-    gap: 12px;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 8px 16px;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: background 0.2s ease;
-}
-
-.ld-sort-wrapper:hover {
-    background: rgba(255, 255, 255, 0.08);
+    flex-direction: column;
+    gap: 6px;
 }
 
 .ld-sort-label {
-    font-size: 0.9rem;
-    color: #888;
-    font-weight: 500;
+    font-size: 0.8rem;
+    color: #666;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.ld-select-wrapper {
+    position: relative;
+    display: inline-block;
 }
 
 .ld-sort-select {
+    appearance: none;
+    -webkit-appearance: none;
     background: transparent;
-    color: #fff;
     border: none;
-    font-size: 0.95rem;
-    font-weight: 600;
-    outline: none;
-    cursor: pointer;
-    font-family: inherit;
-}
-
-.ld-sort-select option {
-    background: #222;
     color: #fff;
+    font-family: 'KinoFont', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding-right: 24px;
+    cursor: pointer;
+    outline: none;
 }
 
+.ld-sort-select:hover {
+    color: #ddd;
+}
+
+/* Custom arrow for select */
+.ld-select-wrapper::after {
+    content: '▼';
+    font-size: 0.6rem;
+    position: absolute;
+    right: 0;
+    top: 55%;
+    transform: translateY(-50%);
+    color: #666;
+    pointer-events: none;
+}
+
+.ld-count {
+    color: #444;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* --- Content Area --- */
 .ld-content {
     flex: 1;
     overflow-y: auto;
-    padding: 40px;
-    /* Custom Scrollbar */
-    scrollbar-width: thin;
-    scrollbar-color: #333 transparent;
+    padding: 30px 32px;
 }
 
-.ld-content::-webkit-scrollbar {
-    width: 8px;
-}
-.ld-content::-webkit-scrollbar-track {
-    background: transparent;
-}
-.ld-content::-webkit-scrollbar-thumb {
-    background-color: #333;
-    border-radius: 20px;
-}
-
-.ld-message {
+.ld-status-msg {
     text-align: center;
-    color: #666;
-    margin-top: 100px;
+    color: #555;
+    margin-top: 80px;
     font-size: 1.2rem;
+    font-weight: 500;
 }
 
+/* --- Grid System --- */
 .ld-grid {
     display: grid;
-    /* Forces exactly 4 columns */
+    /* Strictly 4 columns as requested */
     grid-template-columns: repeat(4, 1fr);
-    gap: 30px;
-    max-width: 1400px;
+    gap: 24px;
+    width: 100%;
     margin: 0 auto;
 }
 
+/* Responsive adjustments if screen is too small, 
+   but defaults to 4 on standard desktop/laptop */
 @media (max-width: 1024px) {
     .ld-grid {
         grid-template-columns: repeat(3, 1fr);
     }
 }
-
 @media (max-width: 768px) {
     .ld-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 16px;
     }
-    .ld-header {
-        padding: 20px;
+    .ld-header-top {
+        padding: 20px 20px 10px 20px;
     }
-    .ld-title {
-        font-size: 1.5rem;
+    .ld-toolbar {
+        padding: 0 20px 20px 20px;
     }
     .ld-content {
         padding: 20px;
     }
 }
 
+/* --- Card Design --- */
 .ld-card {
     cursor: pointer;
     group: hover;
-    transition: transform 0.3s ease;
+    transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .ld-card:hover {
-    transform: translateY(-6px);
+    transform: translateY(-4px);
 }
 
-.ld-poster-wrapper {
+.ld-poster-container {
     position: relative;
     width: 100%;
     aspect-ratio: 2 / 3;
-    border-radius: 12px;
+    border-radius: 8px;
     overflow: hidden;
     background: #1a1a1a;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    transition: box-shadow 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
-.ld-card:hover .ld-poster-wrapper {
-    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
-}
-
-.ld-poster {
+.ld-poster-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.5s ease;
+    transition: opacity 0.2s;
 }
 
-.ld-card:hover .ld-poster {
-    transform: scale(1.05);
-}
-
-.ld-poster-missing {
+.ld-poster-placeholder {
     width: 100%;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #444;
+    background: #222;
+    color: #555;
     font-weight: 600;
     text-align: center;
     padding: 10px;
 }
 
-/* Hover Overlay */
-.ld-overlay {
+.ld-hover-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(0,0,0,0.4);
+    background: rgba(0,0,0,0.3);
     opacity: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.2s ease;
 }
 
-.ld-card:hover .ld-overlay {
+.ld-card:hover .ld-hover-overlay {
     opacity: 1;
 }
 
-.ld-view-details {
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(5px);
-    padding: 8px 20px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: 600;
+.ld-overlay-icon {
+    font-size: 1.5rem;
     color: #fff;
-    transform: translateY(10px);
-    transition: transform 0.3s ease;
-    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.2);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
 }
 
-.ld-card:hover .ld-view-details {
-    transform: translateY(0);
+.ld-meta {
+    margin-top: 12px;
 }
 
-.ld-card-info {
-    margin-top: 14px;
-}
-
-.ld-card-title {
+.ld-film-title {
     font-size: 1rem;
-    font-weight: 700;
+    font-weight: 600; /* PloniDBold equivalent */
     color: #fff;
+    margin: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    opacity: 0.95;
+    line-height: 1.3;
 }
 
-.ld-card-meta {
+.ld-film-detail {
     font-size: 0.85rem;
-    color: #666;
+    color: #888;
+    font-weight: 400; /* PloniRegular equivalent */
     margin-top: 4px;
-    font-weight: 500;
-    transition: color 0.2s;
-}
-
-.ld-card:hover .ld-card-meta {
-    color: #999;
+    display: block;
 }

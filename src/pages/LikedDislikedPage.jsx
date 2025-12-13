@@ -33,85 +33,82 @@ export default function LikedDislikedPage({ type }) {
     setSortType(e.target.value);
   };
 
-  // Sorting Logic
   const sortedFilms = [...films].sort((a, b) => {
     switch (sortType) {
-      case "date": // Release Date (Newest first)
-        return new Date(b.releaseDate || 0) - new Date(a.releaseDate || 0);
-      case "budget": // Higher budget first
-        return (b.budget || 0) - (a.budget || 0);
-      case "rating": // Higher rating first
-        return (b.voteAverage || 0) - (a.voteAverage || 0);
-      case "popularity": // Higher popularity first
-        return (b.popularity || 0) - (a.popularity || 0);
-      case "runtime": // Longer runtime first
-        return (b.runtime || 0) - (a.runtime || 0);
-      default:
-        return 0;
+      case "date": return new Date(b.releaseDate || 0) - new Date(a.releaseDate || 0);
+      case "budget": return (b.budget || 0) - (a.budget || 0);
+      case "rating": return (b.voteAverage || 0) - (a.voteAverage || 0);
+      case "popularity": return (b.popularity || 0) - (a.popularity || 0);
+      case "runtime": return (b.runtime || 0) - (a.runtime || 0);
+      default: return 0;
     }
   });
 
   return (
     <div className="ld-page">
-      <div className="ld-header">
-        <div className="ld-header-left">
-          <button className="ld-back-btn" onClick={() => navigate("/")}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M19 12H5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M12 19L5 12L12 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
-          <h1 className="ld-title">{title}</h1>
-        </div>
-        
-        <div className="ld-controls">
-          <div className="ld-sort-wrapper">
-            <span className="ld-sort-label">Sort by</span>
-            <select className="ld-sort-select" value={sortType} onChange={handleSort}>
-              <option value="date">Release Date</option>
-              <option value="budget">Budget</option>
-              <option value="rating">Rating</option>
-              <option value="popularity">Popularity</option>
-              <option value="runtime">Runtime</option>
-            </select>
-          </div>
-        </div>
+      {/* Level 1: Main Header */}
+      <div className="ld-header-top">
+        <button className="ld-back-btn" onClick={() => navigate("/")}>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19 12H5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M12 19L5 12L12 5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
+        <h1 className="ld-title">{title}</h1>
       </div>
 
+      {/* Level 2: Toolbar / Controls */}
+      <div className="ld-toolbar">
+        <div className="ld-sort-group">
+            <label className="ld-sort-label">Sort by</label>
+            <div className="ld-select-wrapper">
+                <select className="ld-sort-select" value={sortType} onChange={handleSort}>
+                    <option value="date">Release Date</option>
+                    <option value="budget">Budget</option>
+                    <option value="rating">Rating</option>
+                    <option value="popularity">Popularity</option>
+                    <option value="runtime">Runtime</option>
+                </select>
+            </div>
+        </div>
+        <div className="ld-count">{films.length} Films</div>
+      </div>
+
+      {/* Content Area */}
       <div className="ld-content">
         {loading ? (
-            <div className="ld-message">Loading...</div>
+            <div className="ld-status-msg">Loading...</div>
         ) : sortedFilms.length === 0 ? (
-            <div className="ld-message">No films found in this list.</div>
+            <div className="ld-status-msg">No films here yet.</div>
         ) : (
             <div className="ld-grid">
                 {sortedFilms.map(film => (
                     <div key={film.id} className="ld-card" onClick={() => setSelectedFilm(film)}>
-                        <div className="ld-poster-wrapper">
+                        <div className="ld-poster-container">
                             {film.posterPath ? (
                                 <img 
                                     src={`https://image.tmdb.org/t/p/w500/${film.posterPath}`} 
                                     alt={film.title} 
-                                    className="ld-poster"
+                                    className="ld-poster-img"
                                 />
                             ) : (
-                                <div className="ld-poster-missing">
+                                <div className="ld-poster-placeholder">
                                     <span>{film.title}</span>
                                 </div>
                             )}
-                            <div className="ld-overlay">
-                                <span className="ld-view-details">View</span>
+                            <div className="ld-hover-overlay">
+                                <span className="ld-overlay-icon">↗</span>
                             </div>
                         </div>
-                        <div className="ld-card-info">
-                             <div className="ld-card-title">{film.title}</div>
-                             <div className="ld-card-meta">
+                        <div className="ld-meta">
+                             <h3 className="ld-film-title">{film.title}</h3>
+                             <span className="ld-film-detail">
                                 {sortType === 'rating' && `★ ${film.voteAverage?.toFixed(1)}`}
                                 {sortType === 'date' && (film.releaseDate?.split('-')[0] || 'N/A')}
                                 {sortType === 'runtime' && `${film.runtime} min`}
                                 {sortType === 'popularity' && `Pop: ${Math.round(film.popularity)}`}
                                 {sortType === 'budget' && `$${(film.budget/1000000).toFixed(0)}M`}
-                             </div>
+                             </span>
                         </div>
                     </div>
                 ))}
