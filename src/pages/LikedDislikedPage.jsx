@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchLikedFilms, fetchDislikedFilms } from "../api/filmService";
 import FilmDetailModal from "../Components/FilmDetailModal";
@@ -20,7 +20,8 @@ export default function LikedDislikedPage({ type }) {
   const isLiked = type === "liked";
   const title = isLiked ? "Liked Films" : "Disliked Films";
 
-  const loadFilms = async (forceRefresh = false) => {
+  // FIX: Wrapped in useCallback to handle dependencies correctly without ESLint warnings
+  const loadFilms = useCallback(async (forceRefresh = false) => {
     // If we have cached data and not forcing a refresh, use it
     if (!forceRefresh && pageCache[type]) {
       setFilms(pageCache[type]);
@@ -40,12 +41,11 @@ export default function LikedDislikedPage({ type }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [type, isLiked]);
 
   useEffect(() => {
     loadFilms();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [type]);
+  }, [loadFilms]);
 
   const handleRefresh = () => {
     loadFilms(true);
