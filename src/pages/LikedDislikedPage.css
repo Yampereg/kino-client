@@ -18,6 +18,7 @@
     gap: 20px;
     background: #111111;
     position: relative;
+    z-index: 20; /* Ensure header buttons are clickable */
 }
 
 .ld-back-btn {
@@ -38,7 +39,7 @@
 }
 
 .ld-title {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     font-weight: 700;
     margin: 0;
     letter-spacing: -0.02em;
@@ -50,8 +51,8 @@
     border: 1px solid rgba(255,255,255,0.1);
     color: #888;
     cursor: pointer;
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -59,13 +60,24 @@
     transition: all 0.2s;
 }
 
-.ld-refresh-btn:hover {
+.ld-refresh-btn:hover:not(:disabled) {
     background: rgba(255,255,255,0.15);
     color: #fff;
 }
 
-.ld-refresh-btn:active {
+.ld-refresh-btn:active:not(:disabled) {
     transform: scale(0.92);
+}
+
+/* Spinning Animation */
+.ld-refresh-btn.spinning svg {
+    animation: spin 1s linear infinite;
+    color: #fff; /* Highlight color when spinning */
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 /* --- Level 2: Toolbar --- */
@@ -138,7 +150,11 @@
 .ld-content {
     flex: 1;
     overflow-y: auto;
-    padding: 30px 40px; /* More side padding */
+    padding: 30px;
+    /* Center the grid logic */
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
 }
 
 .ld-status-msg {
@@ -152,27 +168,29 @@
 /* --- Grid System --- */
 .ld-grid-container {
     width: 100%;
-    display: flex;
-    justify-content: center;
+    /* Constraints to fix the "HUGE" issue */
+    max-width: 900px; 
+    margin: 0 auto;
 }
 
 .ld-grid {
     display: grid;
+    /* Strictly 4 columns */
     grid-template-columns: repeat(4, 1fr);
-    gap: 24px;
+    gap: 20px;
     width: 100%;
-    /* Constraints to prevent it from being "huge" on wide screens */
-    max-width: 1200px; 
 }
 
 /* Responsive adjustments */
-@media (max-width: 1100px) {
+@media (max-width: 1024px) {
+    .ld-grid-container {
+        max-width: 700px;
+    }
     .ld-grid {
         grid-template-columns: repeat(3, 1fr);
-        max-width: 900px;
     }
 }
-@media (max-width: 768px) {
+@media (max-width: 600px) {
     .ld-grid {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -183,19 +201,17 @@
         padding: 0 20px 20px 20px;
     }
     .ld-content {
-        padding: 20px;
+        padding: 20px 10px;
     }
 }
 
 /* --- Card Design --- */
 .ld-card {
     cursor: pointer;
-    /* Optional: Limit individual card width if grid is still too wide */
+    /* Constraint on individual cards just in case */
+    max-width: 220px; 
     width: 100%;
-}
-
-.ld-card:hover {
-    /* No scale transform on container to keep grid strict, just internal effects */
+    margin: 0 auto; /* Center in grid cell */
 }
 
 .ld-poster-container {
@@ -262,22 +278,23 @@
 }
 
 .ld-meta {
-    margin-top: 12px;
+    margin-top: 10px;
+    text-align: left;
 }
 
 .ld-film-title {
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 600;
     color: #fff;
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    line-height: 1.3;
+    line-height: 1.2;
 }
 
 .ld-film-detail {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: #888;
     font-weight: 400;
     margin-top: 4px;
