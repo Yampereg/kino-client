@@ -2,15 +2,13 @@ import React, { useState, useCallback } from "react";
 import SettingsDrawer from "./SettingsDrawer";
 import { useAuth } from "../context/AuthContext";
 
-// MODIFIED: Added isRefreshing prop
-export default function PageHeader({ onRefresh, isRefreshing }) {
+// MODIFIED: Added onShowLiked prop
+export default function PageHeader({ onRefresh, isRefreshing, onShowLiked }) {
   const { user, logout } = useAuth();
   const username = user && user.name ? user.name : "User";
 
-  // REMOVED: isSpinning state
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  // MODIFIED: handleRefreshClick now just calls onRefresh (which manages isRefreshing in parent)
   const handleRefreshClick = () => {
     if (onRefresh && !isRefreshing) {
       onRefresh(); 
@@ -44,7 +42,6 @@ export default function PageHeader({ onRefresh, isRefreshing }) {
 
           <div className="header-actions" style={{ display: 'flex', gap: '10px' }}>
             <button
-              // MODIFIED: Use isRefreshing prop to control spinning class and disabled state
               className={`refresh-button ${isRefreshing ? "spinning" : ""}`}
               onClick={handleRefreshClick}
               aria-label="Refresh Recommendations"
@@ -73,6 +70,7 @@ export default function PageHeader({ onRefresh, isRefreshing }) {
         onClose={handleCloseDrawer}
         userName={username}
         onLogout={handleLogout}
+        onShowLiked={onShowLiked}
       />
     </>
   );
