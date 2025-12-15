@@ -428,6 +428,9 @@ export default function RecommendationsPage() {
     );
   };
 
+// FIND THIS SECTION IN RecommendationsPage.jsx (around line 330-340)
+// REPLACE IT WITH THIS:
+
   return (
     <>
       <TopNav
@@ -441,7 +444,12 @@ export default function RecommendationsPage() {
         onClose={() => setIsDrawerOpen(false)}
         userName={user?.name}
         onLogout={handleLogout}
-        onShowLiked={(type) => setLikedModal({ open: true, type })}
+        onShowLiked={(type) => {
+          console.log('Opening modal with type:', type); // DEBUG
+          console.log('Liked films:', likedFilms.length); // DEBUG
+          console.log('Disliked films:', dislikedFilms.length); // DEBUG
+          setLikedModal({ open: true, type });
+        }}
       />
 
       {renderContent()}
@@ -458,12 +466,15 @@ export default function RecommendationsPage() {
         />
       )}
 
-      {/* Liked / Disliked Modal Overlay */}
-      {likedModal.open && likedFilms.length >= 0 && dislikedFilms.length >= 0 && (
+      {/* Liked / Disliked Modal - ALWAYS RENDER IF OPEN */}
+      {likedModal.open && (
         <LikedDislikedModal 
           type={likedModal.type}
           films={likedModal.type === 'liked' ? likedFilms : dislikedFilms}
-          onClose={() => setLikedModal({ ...likedModal, open: false })} 
+          onClose={() => {
+            console.log('Closing modal'); // DEBUG
+            setLikedModal({ open: false, type: likedModal.type });
+          }} 
         />
       )}
     </>
