@@ -88,8 +88,8 @@ export default function LikedDislikedModal({ type, films, onClose }) {
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: '2.5rem', /* Even bigger gap */
-          padding: '0 3rem 4rem 3rem', /* More padding */
+          gap: '1rem', /* Even bigger gap */
+          padding: '0px 1rem 3rem', /* More padding */
           width: '100%',
           boxSizing: 'border-box'
         }}
