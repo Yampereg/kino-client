@@ -459,8 +459,7 @@ export default function RecommendationsPage() {
       )}
 
       {/* Liked / Disliked Modal Overlay */}
-      {/* We pass the pre-fetched data directly. NO LOADING here. */}
-      {likedModal.open && (
+      {likedModal.open && likedFilms.length >= 0 && dislikedFilms.length >= 0 && (
         <LikedDislikedModal 
           type={likedModal.type}
           films={likedModal.type === 'liked' ? likedFilms : dislikedFilms}
