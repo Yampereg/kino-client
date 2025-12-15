@@ -120,8 +120,6 @@
 @media (max-width: 768px) {
   .films-grid {
     grid-template-columns: repeat(2, 1fr);
-    padding: 0 1rem 4rem 1rem;
-    gap: 1rem;
   }
   
   .liked-modal-header {
