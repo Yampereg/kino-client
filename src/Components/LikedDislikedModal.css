@@ -1,5 +1,5 @@
 /* src/Components/LikedDislikedModal.css */
-/* Note: Main overlay styles are inline in JSX to guarantee visibility */
+/* Main overlay styles are inline in JSX to guarantee visibility/z-index */
 
 .liked-modal-header {
   display: flex;
@@ -10,7 +10,7 @@
   top: 0;
   background-color: #111;
   z-index: 100001;
-  padding: 1rem 0;
+  padding: 1.5rem 2rem;
   border-bottom: 1px solid #333;
   color: #fff;
 }
@@ -68,12 +68,13 @@
   color: #ff4757;
 }
 
-/* Grid Layout */
+/* Grid Layout: Strictly 4 columns with proper spacing */
 .films-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
-  padding-bottom: 4rem;
+  padding: 0 2rem 4rem 2rem;
+  max-width: 100%;
 }
 
 /* Poster Card */
@@ -85,6 +86,7 @@
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   position: relative;
+  width: 100%;
 }
 
 .grid-poster-card:hover {
@@ -109,49 +111,50 @@
   text-align: center;
   padding: 10px;
   background: #1a1a1a;
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
-/* Loader Animations */
-.loader-ring {
-  width: 60px;
-  height: 60px;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  border-top: 2px solid #fff;
-  border-radius: 50%;
-  animation: spin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-  margin-bottom: 20px;
-}
-
-.loader-logo {
-  font-size: 1.5rem;
-  font-weight: 900;
-  letter-spacing: 4px;
-  color: #fff;
-  text-align: center;
-}
-
+/* Spin animation for loader */
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
 
-@media (max-width: 1024px) {
+/* Responsive adjustments */
+@media (max-width: 1200px) {
   .films-grid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .films-grid {
     grid-template-columns: repeat(2, 1fr);
+    padding: 0 1rem 4rem 1rem;
+    gap: 1rem;
   }
+  
   .liked-modal-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
+    padding: 1rem;
   }
+  
   .header-controls {
     width: 100%;
     justify-content: space-between;
+  }
+  
+  .page-title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .films-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
   }
 }

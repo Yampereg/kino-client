@@ -79,7 +79,7 @@ export default function LikedDislikedModal({ type, films, onClose }) {
         </div>
       </div>
 
-      {/* Content - Immediate Render */}
+      {/* Content - Immediate Render of Grid */}
       <div className="films-grid">
         {displayedFilms.length > 0 ? (
           displayedFilms.map((film) => {
