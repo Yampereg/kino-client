@@ -2,7 +2,14 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { fetchNextFilms, fetchPopular, fetchRecommendations, sendInteraction } from "../api/filmService";
+import { 
+  fetchNextFilms, 
+  fetchPopular, 
+  fetchRecommendations, 
+  sendInteraction,
+  fetchLikedFilms,     // Imported
+  fetchDislikedFilms   // Imported
+} from "../api/filmService";
 import { motion, useMotionValue, useTransform, AnimatePresence } from "framer-motion";
 
 import FilmDetailModal from "../Components/FilmDetailModal";
@@ -10,7 +17,7 @@ import TopNav from "../Components/TopNav.jsx";
 import ActionButtons from "../Components/ActionButtons";
 import ForYouPage from "./ForYouPage.jsx";
 import SettingsDrawer from "../Components/SettingsDrawer.jsx";
-import LikedDislikedModal from "../Components/LikedDislikedModal.jsx"; // UPDATED IMPORT
+import LikedDislikedModal from "../Components/LikedDislikedModal.jsx";
 
 import "./RecommendationsPage.css";
 
@@ -231,6 +238,8 @@ export default function RecommendationsPage() {
   const [films, setFilms] = useState([]);
   const [popularFilms, setPopularFilms] = useState([]);
   const [recommendedFilms, setRecommendedFilms] = useState([]);
+  const [likedFilms, setLikedFilms] = useState([]); // State for Liked
+  const [dislikedFilms, setDislikedFilms] = useState([]); // State for Disliked
   
   const [isForYouRefreshing, setIsForYouRefreshing] = useState(false);
   const [isFetchingNext, setIsFetchingNext] = useState(false);
@@ -277,17 +286,22 @@ export default function RecommendationsPage() {
     setIsFetchingNext(false);
   }, [token]);
 
-  // 2. Fetch & Render 'For You' Page Data
+  // 2. Fetch ALL Data (For You + Liked + Disliked)
   const loadForYouData = useCallback(async () => {
     try {
-      const [popular, recommendations] = await Promise.all([
+      // PRE-FETCH everything in parallel
+      const [popular, recommendations, liked, disliked] = await Promise.all([
          fetchPopular(),
-         fetchRecommendations()
+         fetchRecommendations(),
+         fetchLikedFilms(),
+         fetchDislikedFilms()
       ]);
       setPopularFilms(popular || []);
       setRecommendedFilms(recommendations || []);
+      setLikedFilms(liked || []);
+      setDislikedFilms(disliked || []);
     } catch (err) {
-      console.error("Failed to fetch For You data", err);
+      console.error("Failed to fetch data", err);
     }
   }, []);
 
@@ -443,9 +457,11 @@ export default function RecommendationsPage() {
       )}
 
       {/* Liked / Disliked Modal Overlay */}
+      {/* We pass the data immediately, no loading inside the modal */}
       {likedModal.open && (
         <LikedDislikedModal 
-          type={likedModal.type} 
+          type={likedModal.type}
+          films={likedModal.type === 'liked' ? likedFilms : dislikedFilms}
           onClose={() => setLikedModal({ ...likedModal, open: false })} 
         />
       )}

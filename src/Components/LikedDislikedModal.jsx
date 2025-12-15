@@ -2,30 +2,9 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import FilmDetailModal from "./FilmDetailModal";
-import { fetchLikedFilms, fetchDislikedFilms } from "../api/filmService";
 import "./LikedDislikedModal.css";
 
-// Internal Loader with Inline Styles to guarantee it works
-const ModalLoader = () => (
-  <div style={{
-    position: 'fixed',
-    inset: 0,
-    backgroundColor: '#111',
-    zIndex: 100002, // Higher than modal
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
-  }}>
-    <div className="loader-content">
-      <div className="loader-ring"></div>
-      <div className="loader-logo">KINO</div>
-    </div>
-  </div>
-);
-
-export default function LikedDislikedModal({ type, onClose }) {
-  const [films, setFilms] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function LikedDislikedModal({ type, films, onClose }) {
   const [sortBy, setSortBy] = useState("date");
   const [selectedFilm, setSelectedFilm] = useState(null);
 
@@ -35,54 +14,41 @@ export default function LikedDislikedModal({ type, onClose }) {
   useEffect(() => {
     // Lock body scroll
     document.body.style.overflow = "hidden";
-
-    const loadFilms = async () => {
-      try {
-        setLoading(true);
-        // Minimum load time to prevent flickering
-        const [data] = await Promise.all([
-           isLiked ? fetchLikedFilms() : fetchDislikedFilms(),
-           new Promise(resolve => setTimeout(resolve, 500))
-        ]);
-        setFilms(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.error("Failed to fetch films", error);
-        setFilms([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadFilms();
-
     return () => {
       document.body.style.overflow = "";
     };
-  }, [type, isLiked]);
+  }, []);
 
   const getSortedFilms = () => {
-    if (!films) return [];
+    if (!films || films.length === 0) return [];
+    
     const sorted = [...films];
     switch (sortBy) {
-      case "date": return sorted.sort((a, b) => new Date(b.releaseDate || 0) - new Date(a.releaseDate || 0));
-      case "budget": return sorted.sort((a, b) => (b.budget || 0) - (a.budget || 0));
-      case "rating": return sorted.sort((a, b) => (b.voteAverage || 0) - (a.voteAverage || 0));
-      case "popularity": return sorted.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
-      case "runtime": return sorted.sort((a, b) => (b.runtime || 0) - (a.runtime || 0));
-      default: return sorted;
+      case "date": 
+        return sorted.sort((a, b) => new Date(b.releaseDate || 0) - new Date(a.releaseDate || 0));
+      case "budget": 
+        return sorted.sort((a, b) => (b.budget || 0) - (a.budget || 0));
+      case "rating": 
+        return sorted.sort((a, b) => (b.voteAverage || 0) - (a.voteAverage || 0));
+      case "popularity": 
+        return sorted.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+      case "runtime": 
+        return sorted.sort((a, b) => (b.runtime || 0) - (a.runtime || 0));
+      default: 
+        return sorted;
     }
   };
 
   const displayedFilms = getSortedFilms();
 
-  // Use Portal with critical inline styles to ensure visibility
   return ReactDOM.createPortal(
     <div 
       className="liked-modal-overlay"
       style={{
         position: 'fixed',
         inset: 0,
-        backgroundColor: '#111111', // Force solid black
-        zIndex: 100000, // Force top layer
+        backgroundColor: '#111111',
+        zIndex: 100000, 
         overflowY: 'auto',
         fontFamily: '"KinoFont", sans-serif'
       }}
@@ -113,43 +79,39 @@ export default function LikedDislikedModal({ type, onClose }) {
         </div>
       </div>
 
-      {/* Content */}
-      {loading ? (
-        <ModalLoader />
-      ) : (
-        <div className="films-grid">
-          {displayedFilms.length > 0 ? (
-            displayedFilms.map((film) => {
-              const posterUrl = film.posterPath 
-                ? `https://image.tmdb.org/t/p/w500/${film.posterPath}`
-                : film.bannerPath 
-                ? `https://image.tmdb.org/t/p/original/${film.bannerPath}`
-                : null;
+      {/* Content - Immediate Render */}
+      <div className="films-grid">
+        {displayedFilms.length > 0 ? (
+          displayedFilms.map((film) => {
+            const posterUrl = film.posterPath 
+              ? `https://image.tmdb.org/t/p/w500/${film.posterPath}`
+              : film.bannerPath 
+              ? `https://image.tmdb.org/t/p/original/${film.bannerPath}`
+              : null;
 
-              return (
-                <div 
-                  key={film.id} 
-                  className="grid-poster-card"
-                  onClick={() => setSelectedFilm(film)}
-                >
-                  {posterUrl ? (
-                    <img src={posterUrl} alt={film.title} loading="lazy"/>
-                  ) : (
-                    <div className="no-poster">
-                      <span>{film.title}</span>
-                    </div>
-                  )}
-                </div>
-              );
-            })
-          ) : (
-            <div style={{ color: '#888', textAlign: 'center', marginTop: '50px', gridColumn: '1/-1' }}>
-              <h2>No films found</h2>
-              <p>Films you {isLiked ? 'like' : 'dislike'} will appear here.</p>
-            </div>
-          )}
-        </div>
-      )}
+            return (
+              <div 
+                key={film.id} 
+                className="grid-poster-card"
+                onClick={() => setSelectedFilm(film)}
+              >
+                {posterUrl ? (
+                  <img src={posterUrl} alt={film.title} loading="lazy"/>
+                ) : (
+                  <div className="no-poster">
+                    <span>{film.title}</span>
+                  </div>
+                )}
+              </div>
+            );
+          })
+        ) : (
+          <div style={{ color: '#888', textAlign: 'center', marginTop: '50px', gridColumn: '1/-1' }}>
+            <h2>No films found</h2>
+            <p>Films you {isLiked ? 'like' : 'dislike'} will appear here.</p>
+          </div>
+        )}
+      </div>
 
       {/* Nested Detail Modal */}
       {selectedFilm && (
