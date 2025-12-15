@@ -1,8 +1,5 @@
 /* src/Components/TopNav.css */
 .top-nav {
-  background: linear-gradient(to bottom, rgba(17,17,17,0.7) 0%, rgba(17,17,17,0.4) 50%, transparent 100%) !important;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   position: fixed !important;
   top: 0;
   left: 0;
