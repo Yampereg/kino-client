@@ -1,3 +1,4 @@
+/* src/api/filmService.js */
 const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
 async function apiFetch(url, options = {}) {
@@ -11,7 +12,6 @@ async function apiFetch(url, options = {}) {
   const res = await fetch(`${apiBaseUrl}${url}`, { ...options, headers });
 
   if (res.status === 401) {
-    // token expired or invalid → remove and redirect to login
     localStorage.removeItem("token");
     window.location.href = "/login";
     throw new Error("unauthenticated");
@@ -22,7 +22,6 @@ async function apiFetch(url, options = {}) {
     throw new Error(text || "API request failed");
   }
 
-  // parse JSON only if content exists
   const contentType = res.headers.get("content-type");
   if (contentType && contentType.includes("application/json")) {
     return res.json();
@@ -30,7 +29,6 @@ async function apiFetch(url, options = {}) {
   return null;
 }
 
-// Exported functions using the wrapper
 export function fetchRecommendations() {
   return apiFetch("/api/films/recommendations");
 }
@@ -44,8 +42,16 @@ export function fetchNextFilms() {
 }
 
 export function sendInteraction(token, filmId, type) {
-  // Using apiFetch ensures consistent error handling (401s, etc)
   return apiFetch(`/api/interaction/${type}/${filmId}`, {
      method: "POST"
   });
+}
+
+// --- NEW FUNCTIONS ---
+export function fetchLikedFilms() {
+  return apiFetch("/api/interaction/liked");
+}
+
+export function fetchDislikedFilms() {
+  return apiFetch("/api/interaction/disliked");
 }
