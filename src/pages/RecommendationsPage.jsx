@@ -288,6 +288,7 @@ export default function RecommendationsPage() {
 
   // 2. Fetch ALL Data (For You + Liked + Disliked)
   const loadForYouData = useCallback(async () => {
+    console.log('loadForYouData CALLED - DO NOT SET LOADING HERE');
     try {
       const [popular, recommendations, liked, disliked] = await Promise.all([
          fetchPopular(),
@@ -299,6 +300,7 @@ export default function RecommendationsPage() {
       setRecommendedFilms(recommendations || []);
       setLikedFilms(liked || []);
       setDislikedFilms(disliked || []);
+      console.log('loadForYouData COMPLETE - Liked:', liked?.length, 'Disliked:', disliked?.length);
     } catch (err) {
       console.error("Failed to fetch data", err);
     }
@@ -337,7 +339,8 @@ export default function RecommendationsPage() {
     };
 
     startAppSequence();
-  }, [token, loadNextBatch, loadForYouData, navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // ONLY RUN ONCE ON MOUNT
 
   // FIXED: Removed setLoading(true) to prevent blocking modal
   useEffect(() => {
@@ -391,6 +394,7 @@ export default function RecommendationsPage() {
 
   const handleRefresh = async () => {
     if (isForYouRefreshing) return;
+    console.log('handleRefresh CALLED - setting isForYouRefreshing, NOT loading');
     setIsForYouRefreshing(true);
     try {
       await loadForYouData();
