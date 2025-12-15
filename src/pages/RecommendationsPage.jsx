@@ -7,8 +7,8 @@ import {
   fetchPopular, 
   fetchRecommendations, 
   sendInteraction,
-  fetchLikedFilms,     // Imported
-  fetchDislikedFilms   // Imported
+  fetchLikedFilms,
+  fetchDislikedFilms
 } from "../api/filmService";
 import { motion, useMotionValue, useTransform, AnimatePresence } from "framer-motion";
 
@@ -238,8 +238,8 @@ export default function RecommendationsPage() {
   const [films, setFilms] = useState([]);
   const [popularFilms, setPopularFilms] = useState([]);
   const [recommendedFilms, setRecommendedFilms] = useState([]);
-  const [likedFilms, setLikedFilms] = useState([]); // PRE-FETCH STATE
-  const [dislikedFilms, setDislikedFilms] = useState([]); // PRE-FETCH STATE
+  const [likedFilms, setLikedFilms] = useState([]);
+  const [dislikedFilms, setDislikedFilms] = useState([]);
   
   const [isForYouRefreshing, setIsForYouRefreshing] = useState(false);
   const [isFetchingNext, setIsFetchingNext] = useState(false);
@@ -289,7 +289,6 @@ export default function RecommendationsPage() {
   // 2. Fetch ALL Data (For You + Liked + Disliked)
   const loadForYouData = useCallback(async () => {
     try {
-      // PRE-FETCH everything in parallel
       const [popular, recommendations, liked, disliked] = await Promise.all([
          fetchPopular(),
          fetchRecommendations(),
@@ -319,7 +318,6 @@ export default function RecommendationsPage() {
     const startAppSequence = async () => {
       try {
         setLoading(true);
-        // Load everything at startup
         await Promise.all([
             loadNextBatch(), 
             loadForYouData()
@@ -334,13 +332,12 @@ export default function RecommendationsPage() {
     startAppSequence();
   }, [token, loadNextBatch, loadForYouData, navigate]);
 
+  // FIXED: Removed setLoading(true) to prevent blocking modal
   useEffect(() => {
     if (carouselActionCount > 0 && carouselActionCount % 3 === 0) {
-      // Only refresh "For You" data, not everything
-      setLoading(true);
+      // Silently refresh "For You" data without blocking UI
       loadForYouData().then(() => {
         setCarouselActionCount(0);
-        setTimeout(() => setLoading(false), 800);
       });
     }
   }, [carouselActionCount, loadForYouData]);
@@ -399,10 +396,6 @@ export default function RecommendationsPage() {
 
   if (!token) return null;
 
-  if (loading) {
-    return <FullScreenLoader />;
-  }
-
   const renderContent = () => {
     if (activeView === 'forYou') {
       return (
@@ -428,11 +421,11 @@ export default function RecommendationsPage() {
     );
   };
 
-// FIND THIS SECTION IN RecommendationsPage.jsx (around line 330-340)
-// REPLACE IT WITH THIS:
-
   return (
     <>
+      {/* Show loading ONLY on initial mount */}
+      {loading && <FullScreenLoader />}
+      
       <TopNav
         activeView={activeView}
         onViewChange={setActiveView}
@@ -445,14 +438,11 @@ export default function RecommendationsPage() {
         userName={user?.name}
         onLogout={handleLogout}
         onShowLiked={(type) => {
-          console.log('Opening modal with type:', type); // DEBUG
-          console.log('Liked films:', likedFilms.length); // DEBUG
-          console.log('Disliked films:', dislikedFilms.length); // DEBUG
           setLikedModal({ open: true, type });
         }}
       />
 
-      {renderContent()}
+      {!loading && renderContent()}
 
       {detailFilm && (
         <FilmDetailModal
@@ -466,15 +456,12 @@ export default function RecommendationsPage() {
         />
       )}
 
-      {/* Liked / Disliked Modal - ALWAYS RENDER IF OPEN */}
+      {/* Liked / Disliked Modal - Renders ABOVE everything */}
       {likedModal.open && (
         <LikedDislikedModal 
           type={likedModal.type}
           films={likedModal.type === 'liked' ? likedFilms : dislikedFilms}
-          onClose={() => {
-            console.log('Closing modal'); // DEBUG
-            setLikedModal({ open: false, type: likedModal.type });
-          }} 
+          onClose={() => setLikedModal({ open: false, type: likedModal.type })} 
         />
       )}
     </>
