@@ -309,6 +309,11 @@ export default function RecommendationsPage() {
     navigate("/login");
   };
 
+  // DEBUG: Log when loading changes
+  useEffect(() => {
+    console.log('LOADING STATE CHANGED:', loading);
+  }, [loading]);
+
   useEffect(() => {
     if (!token) {
       navigate("/login");
@@ -317,11 +322,13 @@ export default function RecommendationsPage() {
 
     const startAppSequence = async () => {
       try {
+        console.log('START: Initial app load');
         setLoading(true);
         await Promise.all([
             loadNextBatch(), 
             loadForYouData()
         ]);
+        console.log('DONE: Initial app load');
       } catch (err) {
         setError("Could not load data.");
       } finally {
@@ -440,6 +447,10 @@ export default function RecommendationsPage() {
         userName={user?.name}
         onLogout={handleLogout}
         onShowLiked={(type) => {
+          console.log('CLICKED LIKED/DISLIKED:', type);
+          console.log('Current loading state:', loading);
+          console.log('Liked films count:', likedFilms.length);
+          console.log('Disliked films count:', dislikedFilms.length);
           setLikedModal({ open: true, type });
         }}
       />
