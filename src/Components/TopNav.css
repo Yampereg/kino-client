@@ -1,12 +1,13 @@
 /* src/Components/TopNav.css */
 .top-nav {
-  background: linear-gradient(to bottom, rgba(17,17,17,0.95) 0%, rgba(17,17,17,0.8) 70%, transparent 100%) !important;
-  backdrop-filter: blur(8px);
+  background: linear-gradient(to bottom, rgba(17,17,17,0.7) 0%, rgba(17,17,17,0.4) 50%, transparent 100%) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   position: fixed !important;
   top: 0;
   left: 0;
   right: 0;
-  padding: 20px 0 30px 0; /* Extra bottom padding for gradient fade */
+  padding: 20px 0 40px 0; /* Extra bottom padding for longer gradient fade */
   
   /* CRITICAL: Keep low z-index so modals can cover it */
   z-index: 50; 
@@ -37,12 +38,14 @@
   transition: all 0.2s ease;
   position: relative;
   z-index: 51;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
 }
 
 .nav-item.active {
   color: #fff;
   background: transparent !important;
   font-weight: 800;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.8);
 }
 
 .nav-sep {
@@ -50,4 +53,5 @@
   margin: 0 4px;
   position: relative;
   z-index: 51;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
 }
