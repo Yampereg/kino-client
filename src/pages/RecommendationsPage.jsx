@@ -1,4 +1,4 @@
-/* src/pages/RecommendationsPage.jsx - COMPLETE FIX */
+/* src/pages/RecommendationsPage.jsx */
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -15,7 +15,8 @@ import { motion, useMotionValue, useTransform, AnimatePresence } from "framer-mo
 import FilmDetailModal from "../Components/FilmDetailModal";
 import TopNav from "../Components/TopNav.jsx";
 import ActionButtons from "../Components/ActionButtons";
-import SettingsDrawer from "../Components/SettingsDrawer";
+import ForYouPage from "./ForYouPage.jsx";
+import SettingsDrawer from "../Components/SettingsDrawer.jsx";
 import LikedDislikedModal from "../Components/LikedDislikedModal.jsx";
 
 import "./RecommendationsPage.css";
@@ -91,122 +92,6 @@ const SwipeablePoster = ({ film, onSwipe, onOpenDetail }) => {
   );
 };
 
-// --- PAGE HEADER COMPONENT (moved here to access state) ---
-function PageHeader({ onRefresh, isRefreshing, onOpenDrawer }) {
-  const { user } = useAuth();
-  const username = user && user.name ? user.name : "User";
-
-  const handleRefreshClick = () => {
-    if (onRefresh && !isRefreshing) {
-      onRefresh(); 
-    }
-  };
-
-  return (
-    <div className="page-header">
-      <div className="greeting">
-        <div className="greeting-group">
-          <div className="greeting-icon">
-            <svg className="icon-svg" viewBox="0 0 24 24">
-              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-            </svg>
-          </div>
-          <div className="header-text">
-            <span className="user-name">Hi {username}</span>
-            <span className="welcome-message">Welcome back to Kino</span>
-          </div>
-        </div>
-
-        <div className="header-actions" style={{ display: 'flex', gap: '10px' }}>
-          <button
-            className={`refresh-button ${isRefreshing ? "spinning" : ""}`}
-            onClick={handleRefreshClick}
-            aria-label="Refresh Recommendations"
-            disabled={isRefreshing}
-          >
-            <svg className="refresh-icon" viewBox="0 0 24 24">
-              <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" />
-            </svg>
-          </button>
-
-          <button
-            className="refresh-button"
-            onClick={onOpenDrawer}
-            aria-label="Open Settings"
-          >
-            <svg className="refresh-icon" viewBox="0 0 24 24">
-              <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.39-1.06-.73-1.69-.97l-.38-2.65c-.04-.26-.25-.44-.5-.44h-4c-.25 0-.46.18-.5.44l-.38 2.65c-.63.24-1.17.58-1.69.97l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.12.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.39 1.06.73 1.69.97l.38 2.65c.04.26.25.44.5.44h4c.25 0 .46-.18.5-.44l.38-2.65c.63-.24 1.17-.58 1.69-.97l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z" />
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// --- FOR YOU PAGE COMPONENT ---
-function ForYouPage({ popularFilms, recommendedFilms, onRefresh, onFilmClick, isRefreshing, onOpenDrawer }) {
-  return (
-    <div className="for-you-page">
-      <div className="content-scroll-area">
-        <PageHeader onRefresh={onRefresh} isRefreshing={isRefreshing} onOpenDrawer={onOpenDrawer} />
-
-        <section className="section">
-          <h2 className="section-title">Top Picks For You</h2>
-          
-          <div className="film-carousel-wrapper">
-            {recommendedFilms && recommendedFilms.length > 0 && (
-              <div style={{ cursor: 'pointer' }}>
-                {recommendedFilms.slice(0, 5).map((film) => (
-                  <div key={film.id} onClick={() => onFilmClick(film, 'carousel')}>
-                    {/* Simplified carousel item */}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </section>
-
-        <section className="section">
-          <h2 className="section-title">Popular Now</h2>
-          <div className="film-list-container">
-            {popularFilms && popularFilms.map((film, index) => (
-              <div 
-                key={film.id || index} 
-                className="film-list-item"
-                onClick={() => onFilmClick(film, 'popular')}
-                style={{ cursor: "pointer" }}
-              >
-                <span className="list-number">{index + 1}</span>
-                <div className="list-poster-wrapper">
-                  {film.posterPath ? (
-                    <img
-                      src={`https://image.tmdb.org/t/p/w200/${film.posterPath}`}
-                      alt={film.title}
-                      className="list-poster"
-                    />
-                  ) : (
-                    <div className="missing-poster-list"></div>
-                  )}
-                </div>
-                <div className="list-info">
-                  <span className="list-title">{film.title}</span>
-                  <div className="list-rating">
-                    <span className="star-icon">★</span>
-                    <span>{film.voteAverage ? film.voteAverage.toFixed(1) : '0.0'}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-        
-        <div className="page-footer">KINO</div>
-      </div>
-    </div>
-  );
-}
-
 // --- Sub-component: Home View ---
 function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatch, setDetailFilm, isFetchingNext }) {
   const currentFilm = films[0];
@@ -217,8 +102,10 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
     const filmId = currentFilm.id;
     const type = direction === "right" ? "like" : "dislike";
     
+    // 1. Optimistic Update
     handleInteraction(filmId);
     
+    // 2. Async Server Sync
     try {
       await sendInteraction(token, filmId, type);
     } catch (err) {
@@ -243,7 +130,9 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
       <div className="background-banner" style={{ backgroundImage: `url(${bannerUrl})` }} />
       <div className="background-fade" />
 
+      {/* --- GRID ROW 1: POSTER AREA --- */}
       <div className="rec-poster-area">
+        {/* Next Film */}
         {nextFilm && (
           <motion.div
             key={nextFilm.id}
@@ -262,6 +151,7 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
           </motion.div>
         )}
 
+        {/* Current Film */}
         <AnimatePresence mode="popLayout">
           {currentFilm ? (
             <SwipeablePoster
@@ -285,6 +175,7 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
         </AnimatePresence>
       </div>
 
+      {/* --- GRID ROW 2: SCROLLABLE INFO AREA --- */}
       <div className="rec-info-area">
         {currentFilm && (
           <motion.div
@@ -294,7 +185,9 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
             transition={{ duration: 0.3 }}
             className="info-content-wrapper"
           >
-            <h1 className="film-title">{currentFilm.title}</h1>
+            <h1 className="film-title">
+              {currentFilm.title}
+            </h1>
 
             <div className="film-genres">
               {(currentFilm.genres || []).slice(0, 3).map((g) => (
@@ -305,7 +198,9 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
             </div>
 
             {currentFilm.overview && (
-               <p className="film-overview">{currentFilm.overview}</p>
+               <p className="film-overview">
+                 {currentFilm.overview}
+               </p>
             )}
 
             <div style={{ height: '20px' }} />
@@ -313,6 +208,7 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
         )}
       </div>
 
+      {/* --- GRID ROW 3: ACTION BUTTONS --- */}
       <div className="rec-actions-area">
         <ActionButtons
           films={films}
@@ -332,6 +228,8 @@ export default function RecommendationsPage() {
 
   const [activeView, setActiveView] = useState('home');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  
+  // State for Liked/Disliked Modal
   const [likedModal, setLikedModal] = useState({ open: false, type: 'liked' });
 
   const [loading, setLoading] = useState(true);
@@ -351,6 +249,7 @@ export default function RecommendationsPage() {
 
   const seenFilmIds = useRef(new Set());
 
+  // 1. Fetch & Process '/next' Films
   const loadNextBatch = useCallback(async () => {
     setIsFetchingNext(true);
     setError("");
@@ -386,6 +285,7 @@ export default function RecommendationsPage() {
     setIsFetchingNext(false);
   }, [token]);
 
+  // 2. Fetch ALL Data (For You + Liked + Disliked)
   const loadForYouData = useCallback(async () => {
     try {
       const [popular, recommendations, liked, disliked] = await Promise.all([
@@ -398,7 +298,7 @@ export default function RecommendationsPage() {
       setRecommendedFilms(recommendations || []);
       setLikedFilms(liked || []);
       setDislikedFilms(disliked || []);
-      console.log('Liked Films loaded:', liked?.length);
+      console.log('loadForYouData: Liked Films loaded:', liked?.length);
     } catch (err) {
       console.error("Failed to fetch data", err);
     }
@@ -418,7 +318,10 @@ export default function RecommendationsPage() {
     const startAppSequence = async () => {
       try {
         setLoading(true);
-        await Promise.all([loadNextBatch(), loadForYouData()]);
+        await Promise.all([
+            loadNextBatch(), 
+            loadForYouData()
+        ]);
       } catch (err) {
         setError("Could not load data.");
       } finally {
@@ -427,7 +330,8 @@ export default function RecommendationsPage() {
     };
 
     startAppSequence();
-  }, [token, navigate, loadNextBatch, loadForYouData]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleHomeInteraction = (filmIdOrUpdateFn) => {
     setFilms((prev) => {
@@ -464,14 +368,16 @@ export default function RecommendationsPage() {
     setIsForYouRefreshing(false);
   };
 
+  // FIXED: Callback to open the Liked/Disliked modal
   const handleShowLiked = useCallback((type) => {
-    console.log("Opening modal for:", type);
+    console.log("RecommendationsPage: Opening modal for", type);
     setLikedModal({ open: true, type });
-    setIsDrawerOpen(false);
+    setIsDrawerOpen(false); // Close drawer when opening modal
   }, []);
 
   if (!token) return null;
 
+  // Render content based on active view
   const renderContent = () => {
     if (activeView === 'forYou') {
       return (
@@ -498,6 +404,7 @@ export default function RecommendationsPage() {
     );
   };
 
+  // Show loading screen ONLY during initial data fetch
   if (loading) {
     return <FullScreenLoader />;
   }
@@ -532,6 +439,7 @@ export default function RecommendationsPage() {
         />
       )}
 
+      {/* Liked / Disliked Modal - Renders ABOVE everything */}
       {likedModal.open && (
         <LikedDislikedModal 
           type={likedModal.type}
