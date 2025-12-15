@@ -289,6 +289,7 @@ export default function RecommendationsPage() {
   // 2. Fetch ALL Data (For You + Liked + Disliked)
   const loadForYouData = useCallback(async () => {
     console.log('loadForYouData CALLED - DO NOT SET LOADING HERE');
+    console.trace('WHO CALLED loadForYouData?'); // SHOW STACK TRACE
     try {
       const [popular, recommendations, liked, disliked] = await Promise.all([
          fetchPopular(),
