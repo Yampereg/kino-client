@@ -250,6 +250,7 @@ export default function RecommendationsPage() {
 
   const seenFilmIds = useRef(new Set());
 
+  // 1. Fetch & Process '/next' Films
   const loadNextBatch = useCallback(async () => {
     setIsFetchingNext(true);
     setError("");
@@ -261,9 +262,14 @@ export default function RecommendationsPage() {
         try {
             const nextFilms = await fetchNextFilms(token);
             const safe = Array.isArray(nextFilms) ? nextFilms : [];
+            
             if (safe.length === 0) break; 
+
             newItems = safe.filter(f => !seenFilmIds.current.has(f.id));
+            
             if (newItems.length > 0) break; 
+
+            console.log("Duplicate batch detected, retrying fetch...");
             attempts++;
         } catch (err) {
             console.error("Failed to fetch films", err);
@@ -280,7 +286,7 @@ export default function RecommendationsPage() {
     setIsFetchingNext(false);
   }, [token]);
 
-  // Fetch all user data including liked/disliked
+  // 2. Fetch ALL Data (For You + Liked + Disliked)
   const loadForYouData = useCallback(async () => {
     try {
       const [popular, recommendations, liked, disliked] = await Promise.all([
@@ -293,6 +299,7 @@ export default function RecommendationsPage() {
       setRecommendedFilms(recommendations || []);
       setLikedFilms(liked || []);
       setDislikedFilms(disliked || []);
+      console.log('loadForYouData: Liked Films loaded:', liked?.length);
     } catch (err) {
       console.error("Failed to fetch data", err);
     }
@@ -308,6 +315,7 @@ export default function RecommendationsPage() {
       navigate("/login");
       return;
     }
+
     const startAppSequence = async () => {
       try {
         setLoading(true);
@@ -321,6 +329,7 @@ export default function RecommendationsPage() {
         setLoading(false);
       }
     };
+
     startAppSequence();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -336,9 +345,11 @@ export default function RecommendationsPage() {
         removedId = filmIdOrUpdateFn;
         updated = prev.filter((f) => f.id !== removedId);
       }
+
       if (removedId) {
           seenFilmIds.current.add(removedId);
       }
+
       if (updated.length < 5) {
         loadNextBatch();
       }
@@ -360,7 +371,7 @@ export default function RecommendationsPage() {
 
   if (!token) return null;
 
-  // Render logic
+  // Render content based on active view
   const renderContent = () => {
     if (activeView === 'forYou') {
       return (
@@ -373,6 +384,7 @@ export default function RecommendationsPage() {
         />
       );
     }
+
     return (
       <HomeRecommendationsView
         films={films}
@@ -385,6 +397,7 @@ export default function RecommendationsPage() {
     );
   };
 
+  // Show loading screen ONLY during initial data fetch
   if (loading) {
     return <FullScreenLoader />;
   }
@@ -403,7 +416,7 @@ export default function RecommendationsPage() {
         userName={user?.name}
         onLogout={handleLogout}
         onShowLiked={(type) => {
-          // Open Modal, but DO NOT navigate
+          console.log("RecommendationsPage: Received request to show", type);
           setLikedModal({ open: true, type });
         }}
       />
@@ -422,7 +435,7 @@ export default function RecommendationsPage() {
         />
       )}
 
-      {/* Liked / Disliked Modal */}
+      {/* Liked / Disliked Modal - Renders ABOVE everything */}
       {likedModal.open && (
         <LikedDislikedModal 
           type={likedModal.type}

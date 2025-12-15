@@ -22,10 +22,15 @@ export default function SettingsDrawer({ isOpen, onClose, userName, onLogout, on
   };
 
   const handleLikedClick = (type) => {
-    // 1. Trigger the modal open in the parent (RecommendationsPage)
-    if (onShowLiked) {
+    console.log(`SettingsDrawer: Clicked ${type}`); // Debug log
+    
+    // 1. Trigger the modal open in the parent
+    if (typeof onShowLiked === 'function') {
       onShowLiked(type);
+    } else {
+      console.error("SettingsDrawer: onShowLiked prop is missing or not a function");
     }
+    
     // 2. Close the drawer
     onClose();
   };

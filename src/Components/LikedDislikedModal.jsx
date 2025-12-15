@@ -11,16 +11,16 @@ export default function LikedDislikedModal({ type, films, onClose }) {
   const isLiked = type === "liked";
   const title = isLiked ? "Liked Films" : "Disliked Films";
 
-  // Prevent scrolling on the body when modal is open
   useEffect(() => {
+    console.log("LikedDislikedModal: MOUNTED. Films count:", films?.length);
+    // Lock body scroll
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "";
     };
-  }, []);
+  }, [films]);
 
   const getSortedFilms = () => {
-    // Safety check for empty data
     if (!films || !Array.isArray(films)) return [];
     
     const sorted = [...films];
@@ -42,6 +42,7 @@ export default function LikedDislikedModal({ type, films, onClose }) {
 
   const displayedFilms = getSortedFilms();
 
+  // We use inline styles for the container to guarantee it covers the screen
   return ReactDOM.createPortal(
     <div 
       className="liked-modal-overlay"
@@ -49,9 +50,11 @@ export default function LikedDislikedModal({ type, films, onClose }) {
         position: 'fixed',
         inset: 0,
         backgroundColor: '#111111',
-        zIndex: 200000, /* Ultra high z-index to ensure visibility */
+        zIndex: 999999, /* Ultra high z-index */
         overflowY: 'auto',
-        fontFamily: '"KinoFont", sans-serif'
+        fontFamily: '"KinoFont", sans-serif',
+        display: 'flex',
+        flexDirection: 'column'
       }}
     >
       {/* Header */}
@@ -80,8 +83,18 @@ export default function LikedDislikedModal({ type, films, onClose }) {
         </div>
       </div>
 
-      {/* Content - Grid (4 columns enforced by CSS) */}
-      <div className="films-grid">
+      {/* Content - 4 Column Grid */}
+      <div 
+        className="films-grid" 
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          gap: '1.5rem',
+          padding: '0 2rem 4rem 2rem',
+          width: '100%',
+          boxSizing: 'border-box'
+        }}
+      >
         {displayedFilms.length > 0 ? (
           displayedFilms.map((film) => {
             const posterUrl = film.posterPath 
@@ -95,11 +108,17 @@ export default function LikedDislikedModal({ type, films, onClose }) {
                 key={film.id} 
                 className="grid-poster-card"
                 onClick={() => setSelectedFilm(film)}
+                style={{ aspectRatio: '2/3', cursor: 'pointer', position: 'relative' }}
               >
                 {posterUrl ? (
-                  <img src={posterUrl} alt={film.title} loading="lazy"/>
+                  <img 
+                    src={posterUrl} 
+                    alt={film.title} 
+                    loading="lazy"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+                  />
                 ) : (
-                  <div className="no-poster">
+                  <div className="no-poster" style={{ width: '100%', height: '100%', background: '#222', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <span>{film.title}</span>
                   </div>
                 )}
