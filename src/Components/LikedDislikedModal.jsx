@@ -82,14 +82,14 @@ export default function LikedDislikedModal({ type, films, onClose }) {
         </div>
       </div>
 
-      {/* Content - 4 Column Grid with BIGGER posters */}
+      {/* Content - 4 Column Grid with EVEN BIGGER posters */}
       <div 
         className="films-grid" 
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: '2rem', /* Bigger gap */
-          padding: '0 2rem 4rem 2rem',
+          gap: '2.5rem', /* Even bigger gap */
+          padding: '0 3rem 4rem 3rem', /* More padding */
           width: '100%',
           boxSizing: 'border-box'
         }}

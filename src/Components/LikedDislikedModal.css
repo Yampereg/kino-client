@@ -65,13 +65,12 @@
   color: #ff4757;
 }
 
-/* Grid Layout: 4 columns with BIGGER posters */
+/* Grid Layout: 4 columns with EVEN BIGGER posters */
 .films-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 2rem; /* Increased gap for better spacing */
-  padding: 0 2rem 4rem 2rem;
-  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .grid-poster-card {

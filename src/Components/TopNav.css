@@ -19,6 +19,16 @@
   font-weight: 500;
   pointer-events: auto;
   box-shadow: none !important;
+  
+  /* Smooth hide/show transitions */
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Hidden state when scrolling */
+.top-nav.hidden {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .nav-item {
@@ -36,4 +46,4 @@
 .nav-sep {
   color: #555;
   margin: 0 4px;
-} 
+}
