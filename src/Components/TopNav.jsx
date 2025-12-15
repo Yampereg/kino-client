@@ -25,7 +25,7 @@ export default function TopNav({ activeView, onViewChange }) {
       // Show nav when at top, hide when scrolling down
       if (currentScrollY < 10) {
         setIsVisible(true);
-      } else if (currentScrollY > lastScrollY && currentScrollY > 30) {
+      } else if (currentScrollY > lastScrollY && currentScrollY > 10) {
         // Scrolling down & past threshold - HIDE
         setIsVisible(false);
       } else if (currentScrollY < lastScrollY) {
