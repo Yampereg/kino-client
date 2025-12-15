@@ -16,7 +16,6 @@ import FilmDetailModal from "../Components/FilmDetailModal";
 import TopNav from "../Components/TopNav.jsx";
 import ActionButtons from "../Components/ActionButtons";
 import ForYouPage from "./ForYouPage.jsx";
-import SettingsDrawer from "../Components/SettingsDrawer.jsx";
 import LikedDislikedModal from "../Components/LikedDislikedModal.jsx";
 
 import "./RecommendationsPage.css";
@@ -227,7 +226,6 @@ export default function RecommendationsPage() {
   const navigate = useNavigate();
 
   const [activeView, setActiveView] = useState('home');
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   
   // State for Liked/Disliked Modal
   const [likedModal, setLikedModal] = useState({ open: false, type: 'liked' });
@@ -368,6 +366,12 @@ export default function RecommendationsPage() {
     setIsForYouRefreshing(false);
   };
 
+  // FIXED: Callback to open the Liked/Disliked modal
+  const handleShowLiked = useCallback((type) => {
+    console.log("RecommendationsPage: Opening modal for", type);
+    setLikedModal({ open: true, type });
+  }, []);
+
   if (!token) return null;
 
   // Render content based on active view
@@ -380,6 +384,7 @@ export default function RecommendationsPage() {
           onRefresh={handleRefresh}
           onFilmClick={handleDetailOpen}
           isRefreshing={isForYouRefreshing}
+          onShowLiked={handleShowLiked}
         />
       );
     }
@@ -406,20 +411,9 @@ export default function RecommendationsPage() {
       <TopNav
         activeView={activeView}
         onViewChange={setActiveView}
-        onMenuClick={() => setIsDrawerOpen(true)}
       />
 
-      <SettingsDrawer
-        isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-        userName={user?.name}
-        onLogout={handleLogout}
-        // --- THIS PROP WAS MISSING, AND IS REQUIRED FOR THE BUTTON TO WORK ---
-        onShowLiked={(type) => {
-          console.log("RecommendationsPage: Received request to show", type);
-          setLikedModal({ open: true, type });
-        }}
-      />
+      {/* REMOVED: Duplicate SettingsDrawer - now only exists in PageHeader */}
 
       {renderContent()}
 
