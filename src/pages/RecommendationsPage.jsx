@@ -421,11 +421,13 @@ export default function RecommendationsPage() {
     );
   };
 
+  // Show loading screen ONLY during initial data fetch
+  if (loading) {
+    return <FullScreenLoader />;
+  }
+
   return (
     <>
-      {/* Show loading ONLY on initial mount */}
-      {loading && <FullScreenLoader />}
-      
       <TopNav
         activeView={activeView}
         onViewChange={setActiveView}
@@ -442,7 +444,7 @@ export default function RecommendationsPage() {
         }}
       />
 
-      {!loading && renderContent()}
+      {renderContent()}
 
       {detailFilm && (
         <FilmDetailModal
