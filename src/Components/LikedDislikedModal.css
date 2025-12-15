@@ -1,5 +1,5 @@
-/* src/pages/LikedDislikedPage.css */
-.interaction-page-container {
+/* src/Components/LikedDislikedModal.css */
+.liked-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -10,21 +10,26 @@
   padding: 2rem;
   font-family: 'KinoFont', sans-serif;
   box-sizing: border-box;
-  z-index: 2000; /* High z-index to sit on top of everything */
-  overflow-y: auto; /* Enable scrolling within the modal */
+  z-index: 3000; /* Extremely high z-index to ensure it covers everything */
+  overflow-y: auto;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Header */
-.interaction-header {
+.liked-modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 2rem;
-  /* Sticky header within the modal */
   position: sticky;
   top: 0;
   background-color: #111;
-  z-index: 10;
+  z-index: 3002; /* Above the content */
   padding-bottom: 1rem;
   border-bottom: 1px solid #333;
 }
@@ -89,8 +94,9 @@
 /* Grid Layout */
 .films-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 posters per row */
+  grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
+  padding-bottom: 2rem;
 }
 
 /* Poster Only Card */
@@ -138,7 +144,7 @@
   .films-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  .interaction-header {
+  .liked-modal-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;

@@ -10,7 +10,7 @@ import TopNav from "../Components/TopNav.jsx";
 import ActionButtons from "../Components/ActionButtons";
 import ForYouPage from "./ForYouPage.jsx";
 import SettingsDrawer from "../Components/SettingsDrawer.jsx";
-import LikedDislikedPage from "./LikedDislikedPage.jsx"; // IMPORT ADDED
+import LikedDislikedModal from "../Components/LikedDislikedModal.jsx"; // UPDATED IMPORT
 
 import "./RecommendationsPage.css";
 
@@ -444,7 +444,7 @@ export default function RecommendationsPage() {
 
       {/* Liked / Disliked Modal Overlay */}
       {likedModal.open && (
-        <LikedDislikedPage 
+        <LikedDislikedModal 
           type={likedModal.type} 
           onClose={() => setLikedModal({ ...likedModal, open: false })} 
         />

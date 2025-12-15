@@ -1,12 +1,12 @@
-/* src/pages/LikedDislikedPage.jsx */
+/* src/Components/LikedDislikedModal.jsx */
 import React, { useEffect, useState } from "react";
-import FilmDetailModal from "../Components/FilmDetailModal";
+import FilmDetailModal from "./FilmDetailModal";
 import { fetchLikedFilms, fetchDislikedFilms } from "../api/filmService";
-import "./LikedDislikedPage.css";
+import "./LikedDislikedModal.css";
 
-// Reusing the loader style from RecommendationsPage
+// Reusing the loader style locally to ensure it renders correctly
 const FullScreenLoader = () => (
-  <div className="loading-screen font-kino" style={{ position: 'absolute', zIndex: 10 }}>
+  <div className="loading-screen font-kino" style={{ position: 'fixed', inset: 0, zIndex: 3001 }}>
     <div className="loader-content">
       <div className="loader-ring"></div>
       <div className="loader-logo">KINO</div>
@@ -14,7 +14,7 @@ const FullScreenLoader = () => (
   </div>
 );
 
-export default function LikedDislikedPage({ type, onClose }) {
+export default function LikedDislikedModal({ type, onClose }) {
   const [films, setFilms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState("date");
@@ -24,6 +24,9 @@ export default function LikedDislikedPage({ type, onClose }) {
   const title = isLiked ? "Liked Films" : "Disliked Films";
 
   useEffect(() => {
+    // Lock body scroll when modal is open
+    document.body.style.overflow = "hidden";
+    
     const loadFilms = async () => {
       try {
         setLoading(true);
@@ -36,6 +39,10 @@ export default function LikedDislikedPage({ type, onClose }) {
       }
     };
     loadFilms();
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
   }, [type, isLiked]);
 
   const getSortedFilms = () => {
@@ -59,9 +66,9 @@ export default function LikedDislikedPage({ type, onClose }) {
   const displayedFilms = getSortedFilms();
 
   return (
-    <div className="interaction-page-container">
+    <div className="liked-modal-overlay">
       {/* Header */}
-      <div className="interaction-header">
+      <div className="liked-modal-header">
         <h1 className="page-title">{title}</h1>
         
         <div className="header-controls">
@@ -121,7 +128,7 @@ export default function LikedDislikedPage({ type, onClose }) {
               );
             })
           ) : (
-            <div style={{gridColumn: '1/-1', textAlign: 'center', color: '#666', marginTop: '2rem'}}>
+            <div style={{gridColumn: '1/-1', textAlign: 'center', color: '#666', marginTop: '5rem'}}>
               No films found.
             </div>
           )}
