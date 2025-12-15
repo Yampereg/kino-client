@@ -11,8 +11,8 @@ export default function LikedDislikedModal({ type, films, onClose }) {
   const isLiked = type === "liked";
   const title = isLiked ? "Liked Films" : "Disliked Films";
 
+  // Prevent scrolling on the body when modal is open
   useEffect(() => {
-    // Lock body scroll
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "";
@@ -20,7 +20,8 @@ export default function LikedDislikedModal({ type, films, onClose }) {
   }, []);
 
   const getSortedFilms = () => {
-    if (!films || films.length === 0) return [];
+    // Safety check for empty data
+    if (!films || !Array.isArray(films)) return [];
     
     const sorted = [...films];
     switch (sortBy) {
@@ -48,7 +49,7 @@ export default function LikedDislikedModal({ type, films, onClose }) {
         position: 'fixed',
         inset: 0,
         backgroundColor: '#111111',
-        zIndex: 100000, 
+        zIndex: 200000, /* Ultra high z-index to ensure visibility */
         overflowY: 'auto',
         fontFamily: '"KinoFont", sans-serif'
       }}
@@ -79,7 +80,7 @@ export default function LikedDislikedModal({ type, films, onClose }) {
         </div>
       </div>
 
-      {/* Content - Grid (No Loading State) */}
+      {/* Content - Grid (4 columns enforced by CSS) */}
       <div className="films-grid">
         {displayedFilms.length > 0 ? (
           displayedFilms.map((film) => {

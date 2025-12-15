@@ -250,7 +250,6 @@ export default function RecommendationsPage() {
 
   const seenFilmIds = useRef(new Set());
 
-  // 1. Fetch & Process '/next' Films
   const loadNextBatch = useCallback(async () => {
     setIsFetchingNext(true);
     setError("");
@@ -262,14 +261,9 @@ export default function RecommendationsPage() {
         try {
             const nextFilms = await fetchNextFilms(token);
             const safe = Array.isArray(nextFilms) ? nextFilms : [];
-            
             if (safe.length === 0) break; 
-
             newItems = safe.filter(f => !seenFilmIds.current.has(f.id));
-            
             if (newItems.length > 0) break; 
-
-            console.log("Duplicate batch detected, retrying fetch...");
             attempts++;
         } catch (err) {
             console.error("Failed to fetch films", err);
@@ -286,10 +280,8 @@ export default function RecommendationsPage() {
     setIsFetchingNext(false);
   }, [token]);
 
-  // 2. Fetch ALL Data (For You + Liked + Disliked)
+  // Fetch all user data including liked/disliked
   const loadForYouData = useCallback(async () => {
-    console.log('loadForYouData CALLED - DO NOT SET LOADING HERE');
-    console.trace('WHO CALLED loadForYouData?'); // SHOW STACK TRACE
     try {
       const [popular, recommendations, liked, disliked] = await Promise.all([
          fetchPopular(),
@@ -301,7 +293,6 @@ export default function RecommendationsPage() {
       setRecommendedFilms(recommendations || []);
       setLikedFilms(liked || []);
       setDislikedFilms(disliked || []);
-      console.log('loadForYouData COMPLETE - Liked:', liked?.length, 'Disliked:', disliked?.length);
     } catch (err) {
       console.error("Failed to fetch data", err);
     }
@@ -312,47 +303,27 @@ export default function RecommendationsPage() {
     navigate("/login");
   };
 
-  // DEBUG: Log when loading changes
   useEffect(() => {
-    console.log('LOADING STATE CHANGED:', loading);
-  }, [loading]);
-
-  useEffect(() => {
-    console.log('useEffect RUNNING - should only happen ONCE on mount');
     if (!token) {
       navigate("/login");
       return;
     }
-
     const startAppSequence = async () => {
       try {
-        console.log('START: Initial app load');
         setLoading(true);
         await Promise.all([
             loadNextBatch(), 
             loadForYouData()
         ]);
-        console.log('DONE: Initial app load');
       } catch (err) {
         setError("Could not load data.");
       } finally {
         setLoading(false);
       }
     };
-
     startAppSequence();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // CRITICAL: Empty array = run only once on mount, never again
-
-  // FIXED: Removed setLoading(true) to prevent blocking modal
-  useEffect(() => {
-    if (carouselActionCount > 0 && carouselActionCount % 3 === 0) {
-      // Silently refresh "For You" data without blocking UI
-      loadForYouData().then(() => {
-        setCarouselActionCount(0);
-      });
-    }
-  }, [carouselActionCount, loadForYouData]);
+  }, []);
 
   const handleHomeInteraction = (filmIdOrUpdateFn) => {
     setFilms((prev) => {
@@ -365,27 +336,13 @@ export default function RecommendationsPage() {
         removedId = filmIdOrUpdateFn;
         updated = prev.filter((f) => f.id !== removedId);
       }
-
       if (removedId) {
           seenFilmIds.current.add(removedId);
       }
-
       if (updated.length < 5) {
         loadNextBatch();
       }
       return updated;
-    });
-  };
-
-  const handleCarouselListUpdate = (idOrUpdateFn) => {
-    setDetailFilm(null);
-    setCarouselActionCount(prev => prev + 1);
-    setRecommendedFilms((prevList) => {
-      if (typeof idOrUpdateFn === 'function') {
-        return idOrUpdateFn(prevList);
-      } else {
-        return prevList.filter(f => f.id !== idOrUpdateFn);
-      }
     });
   };
 
@@ -396,19 +353,14 @@ export default function RecommendationsPage() {
 
   const handleRefresh = async () => {
     if (isForYouRefreshing) return;
-    console.log('handleRefresh CALLED - setting isForYouRefreshing, NOT loading');
     setIsForYouRefreshing(true);
-    try {
-      await loadForYouData();
-    } catch (err) {
-      console.error("Failed to refresh For You data", err);
-    }
-    setCarouselActionCount(0);
+    await loadForYouData();
     setIsForYouRefreshing(false);
   };
 
   if (!token) return null;
 
+  // Render logic
   const renderContent = () => {
     if (activeView === 'forYou') {
       return (
@@ -421,7 +373,6 @@ export default function RecommendationsPage() {
         />
       );
     }
-
     return (
       <HomeRecommendationsView
         films={films}
@@ -434,7 +385,6 @@ export default function RecommendationsPage() {
     );
   };
 
-  // Show loading screen ONLY during initial data fetch
   if (loading) {
     return <FullScreenLoader />;
   }
@@ -453,10 +403,7 @@ export default function RecommendationsPage() {
         userName={user?.name}
         onLogout={handleLogout}
         onShowLiked={(type) => {
-          console.log('CLICKED LIKED/DISLIKED:', type);
-          console.log('Current loading state:', loading);
-          console.log('Liked films count:', likedFilms.length);
-          console.log('Disliked films count:', dislikedFilms.length);
+          // Open Modal, but DO NOT navigate
           setLikedModal({ open: true, type });
         }}
       />
@@ -468,14 +415,14 @@ export default function RecommendationsPage() {
           film={detailFilm}
           onClose={() => setDetailFilm(null)}
           token={token}
-          films={modalSource === 'home' ? films : (modalSource === 'carousel' ? recommendedFilms : [])}
-          setFilms={modalSource === 'home' ? handleHomeInteraction : handleCarouselListUpdate}
-          loadNextBatch={modalSource === 'home' ? loadNextBatch : null}
-          showActions={modalSource !== 'popular'}
+          films={films}
+          setFilms={handleHomeInteraction}
+          loadNextBatch={loadNextBatch}
+          showActions={modalSource === 'home'}
         />
       )}
 
-      {/* Liked / Disliked Modal - Renders ABOVE everything */}
+      {/* Liked / Disliked Modal */}
       {likedModal.open && (
         <LikedDislikedModal 
           type={likedModal.type}

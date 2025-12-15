@@ -22,11 +22,11 @@ export default function SettingsDrawer({ isOpen, onClose, userName, onLogout, on
   };
 
   const handleLikedClick = (type) => {
-    // FIXED: Removed navigation fallback. 
-    // We only want to open the modal via the parent callback.
+    // 1. Trigger the modal open in the parent (RecommendationsPage)
     if (onShowLiked) {
       onShowLiked(type);
     }
+    // 2. Close the drawer
     onClose();
   };
 
