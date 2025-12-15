@@ -47,7 +47,7 @@ export function sendInteraction(token, filmId, type) {
   });
 }
 
-// --- NEW FUNCTIONS ---
+// --- NEW FUNCTIONS REQUIRED FOR MODAL ---
 export function fetchLikedFilms() {
   return apiFetch("/api/interaction/liked");
 }

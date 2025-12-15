@@ -238,8 +238,8 @@ export default function RecommendationsPage() {
   const [films, setFilms] = useState([]);
   const [popularFilms, setPopularFilms] = useState([]);
   const [recommendedFilms, setRecommendedFilms] = useState([]);
-  const [likedFilms, setLikedFilms] = useState([]); // State for Liked
-  const [dislikedFilms, setDislikedFilms] = useState([]); // State for Disliked
+  const [likedFilms, setLikedFilms] = useState([]); // PRE-FETCH STATE
+  const [dislikedFilms, setDislikedFilms] = useState([]); // PRE-FETCH STATE
   
   const [isForYouRefreshing, setIsForYouRefreshing] = useState(false);
   const [isFetchingNext, setIsFetchingNext] = useState(false);
@@ -319,6 +319,7 @@ export default function RecommendationsPage() {
     const startAppSequence = async () => {
       try {
         setLoading(true);
+        // Load everything at startup
         await Promise.all([
             loadNextBatch(), 
             loadForYouData()
@@ -335,6 +336,7 @@ export default function RecommendationsPage() {
 
   useEffect(() => {
     if (carouselActionCount > 0 && carouselActionCount % 3 === 0) {
+      // Only refresh "For You" data, not everything
       setLoading(true);
       loadForYouData().then(() => {
         setCarouselActionCount(0);
@@ -457,7 +459,7 @@ export default function RecommendationsPage() {
       )}
 
       {/* Liked / Disliked Modal Overlay */}
-      {/* We pass the data immediately, no loading inside the modal */}
+      {/* We pass the pre-fetched data directly. NO LOADING here. */}
       {likedModal.open && (
         <LikedDislikedModal 
           type={likedModal.type}
