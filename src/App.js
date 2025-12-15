@@ -1,13 +1,13 @@
+/* src/App.js */
 import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
-import Main from "./pages/Main";
 import RecommendationsPage from "./pages/RecommendationsPage";
-import PrivateRoute from "./Components/PrivateRoute"
+import LikedDislikedPage from "./pages/LikedDislikedPage"; // New import
+import PrivateRoute from "./Components/PrivateRoute";
 
 function App() {
-  // FIX: specific effect to rename the app in the browser tab
   useEffect(() => {
     document.title = "Kino";
   }, []);
@@ -17,6 +17,7 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
+        
         <Route
           path="/recommendations"
           element={
@@ -25,7 +26,25 @@ function App() {
             </PrivateRoute>
           }
         />
-        {/* Redirect unknown routes to login */}
+
+        <Route
+          path="/liked"
+          element={
+            <PrivateRoute>
+              <LikedDislikedPage type="liked" />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/disliked"
+          element={
+            <PrivateRoute>
+              <LikedDislikedPage type="disliked" />
+            </PrivateRoute>
+          }
+        />
+
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>

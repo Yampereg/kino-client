@@ -1,7 +1,11 @@
+/* src/Components/SettingsDrawer.jsx */
 import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./SettingsDrawer.css";
 
 export default function SettingsDrawer({ isOpen, onClose, userName, onLogout }) {
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -11,6 +15,11 @@ export default function SettingsDrawer({ isOpen, onClose, userName, onLogout }) 
   }, [isOpen]);
 
   const displayedName = userName || "User";
+
+  const handleNavigation = (path) => {
+    navigate(path);
+    onClose();
+  };
 
   return (
     <>
@@ -36,17 +45,24 @@ export default function SettingsDrawer({ isOpen, onClose, userName, onLogout }) 
         </div>
 
         <div className="drawer-body">
-          <div className="nav-item active">Home</div>
-          <div className="nav-item">Profile</div>
-          <div className="nav-item">Settings</div>
+          <div className="nav-item active" onClick={() => handleNavigation("/recommendations")}>
+            For You
+          </div>
+          <div className="nav-item" onClick={() => handleNavigation("/liked")}>
+            Liked Films
+          </div>
+          <div className="nav-item" onClick={() => handleNavigation("/disliked")}>
+            Disliked Films
+          </div>
         </div>
 
         <div className="drawer-footer">
           <button className="logout-btn" onClick={onLogout}>
+            {/* Assuming img src is valid in your project structure */}
             <img src="/logout-icon.svg" alt="" className="btn-icon" />
             <span>Log Out</span>
           </button>
-          <div className="app-version">Kino v1.0</div>
+          <div className="app-version">Kino v1.1</div>
         </div>
       </div>
     </>

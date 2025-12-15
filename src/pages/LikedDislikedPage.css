@@ -1,0 +1,109 @@
+/* src/pages/LikedDislikedPage.css */
+.interaction-page-container {
+  min-height: 100vh;
+  background-color: #111;
+  color: #fff;
+  padding: 2rem;
+  font-family: 'KinoFont', sans-serif;
+  box-sizing: border-box;
+}
+
+/* Header */
+.interaction-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  position: sticky;
+  top: 0;
+  background-color: #111;
+  z-index: 10;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #333;
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.header-controls {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+/* Sort Dropdown */
+.sort-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sort-label {
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.sort-select {
+  background-color: #222;
+  color: #fff;
+  border: 1px solid #444;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.sort-select:hover {
+  border-color: #666;
+}
+
+/* Exit Button */
+.exit-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 2rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 0.5rem;
+  transition: transform 0.2s;
+}
+
+.exit-btn:hover {
+  transform: scale(1.1);
+  color: #ff4757;
+}
+
+/* Grid Layout */
+.films-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .films-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .films-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .interaction-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .header-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
