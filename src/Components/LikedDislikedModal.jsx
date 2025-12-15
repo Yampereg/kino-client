@@ -49,7 +49,7 @@ export default function LikedDislikedModal({ type, films, onClose }) {
         position: 'fixed',
         inset: 0,
         backgroundColor: '#111111',
-        zIndex: 999999, /* Ultra high z-index */
+        zIndex: 999999, /* Covers everything including TopNav */
         overflowY: 'auto',
         fontFamily: '"KinoFont", sans-serif',
         display: 'flex',
@@ -82,13 +82,13 @@ export default function LikedDislikedModal({ type, films, onClose }) {
         </div>
       </div>
 
-      {/* Content - 4 Column Grid */}
+      {/* Content - 4 Column Grid with BIGGER posters */}
       <div 
         className="films-grid" 
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: '1.5rem',
+          gap: '2rem', /* Bigger gap */
           padding: '0 2rem 4rem 2rem',
           width: '100%',
           boxSizing: 'border-box'
@@ -107,17 +107,35 @@ export default function LikedDislikedModal({ type, films, onClose }) {
                 key={film.id} 
                 className="grid-poster-card"
                 onClick={() => setSelectedFilm(film)}
-                style={{ aspectRatio: '2/3', cursor: 'pointer', position: 'relative' }}
+                style={{ 
+                  aspectRatio: '2/3', 
+                  cursor: 'pointer', 
+                  position: 'relative',
+                  borderRadius: '12px' /* Bigger radius for larger cards */
+                }}
               >
                 {posterUrl ? (
                   <img 
                     src={posterUrl} 
                     alt={film.title} 
                     loading="lazy"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+                    style={{ 
+                      width: '100%', 
+                      height: '100%', 
+                      objectFit: 'cover', 
+                      borderRadius: '12px' 
+                    }}
                   />
                 ) : (
-                  <div className="no-poster" style={{ width: '100%', height: '100%', background: '#222', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div className="no-poster" style={{ 
+                    width: '100%', 
+                    height: '100%', 
+                    background: '#222', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    borderRadius: '12px'
+                  }}>
                     <span>{film.title}</span>
                   </div>
                 )}
@@ -132,13 +150,15 @@ export default function LikedDislikedModal({ type, films, onClose }) {
         )}
       </div>
 
-      {/* Nested Detail Modal */}
+      {/* Nested Detail Modal - EVEN HIGHER z-index */}
       {selectedFilm && (
-        <FilmDetailModal
-          film={selectedFilm}
-          onClose={() => setSelectedFilm(null)}
-          showActions={false} 
-        />
+        <div style={{ zIndex: 9999999 }}> {/* Extra layer to ensure it's on top */}
+          <FilmDetailModal
+            film={selectedFilm}
+            onClose={() => setSelectedFilm(null)}
+            showActions={false} 
+          />
+        </div>
       )}
     </div>,
     document.body

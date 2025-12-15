@@ -8,7 +8,7 @@
   right: 0;
   padding: 20px 0;
   
-  /* FIXED: Lowered to 50 so it sits behind the drawer (1001) */
+  /* CRITICAL: Keep low z-index so modals can cover it */
   z-index: 50; 
   
   display: flex;
@@ -29,11 +29,11 @@
 
 .nav-item.active {
   color: #fff;
-  background: transparent !important; /* Explicitly ensure no white bg */
-  font-weight: 800; /* Bolder as requested */
+  background: transparent !important;
+  font-weight: 800;
 }
 
 .nav-sep {
   color: #555;
   margin: 0 4px;
-}
+} 

@@ -8,7 +8,7 @@
   position: sticky;
   top: 0;
   background-color: #111;
-  z-index: 100001;
+  z-index: 1000000; /* Higher than overlay to stay on top */
   padding: 1.5rem 2rem;
   border-bottom: 1px solid #333;
   color: #fff;
@@ -65,11 +65,11 @@
   color: #ff4757;
 }
 
-/* Grid Layout: Strictly 4 columns */
+/* Grid Layout: 4 columns with BIGGER posters */
 .films-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* Force 4 columns */
-  gap: 1.5rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem; /* Increased gap for better spacing */
   padding: 0 2rem 4rem 2rem;
   max-width: 100%;
 }
@@ -77,7 +77,7 @@
 .grid-poster-card {
   aspect-ratio: 2 / 3;
   background-color: #222;
-  border-radius: 8px;
+  border-radius: 12px; /* Slightly larger radius for bigger cards */
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
