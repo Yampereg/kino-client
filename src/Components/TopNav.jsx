@@ -1,35 +1,58 @@
 /* src/Components/TopNav.jsx */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./TopNav.css";
 
 export default function TopNav({ activeView, onViewChange }) {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const scrollableRef = useRef(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
+    // Find the scrollable container
+    const findScrollContainer = () => {
+      // For ForYou page, find the content-scroll-area
+      const forYouScroll = document.querySelector('.content-scroll-area');
+      if (forYouScroll) return forYouScroll;
+      
+      // Default to window
+      return window;
+    };
+
+    const handleScroll = (e) => {
+      const target = e.target === document ? window : e.target;
+      const currentScrollY = target.scrollTop || window.scrollY;
       
       // Show nav when at top, hide when scrolling down
       if (currentScrollY < 10) {
         setIsVisible(true);
-      } else if (currentScrollY > lastScrollY && currentScrollY > 50) {
-        // Scrolling down & past threshold
+      } else if (currentScrollY > lastScrollY && currentScrollY > 30) {
+        // Scrolling down & past threshold - HIDE
         setIsVisible(false);
       } else if (currentScrollY < lastScrollY) {
-        // Scrolling up
+        // Scrolling up - SHOW
         setIsVisible(true);
       }
       
       setLastScrollY(currentScrollY);
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    const scrollContainer = findScrollContainer();
+    
+    if (scrollContainer === window) {
+      window.addEventListener('scroll', handleScroll, { passive: true });
+    } else {
+      scrollContainer.addEventListener('scroll', handleScroll, { passive: true });
+      scrollableRef.current = scrollContainer;
+    }
     
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      if (scrollContainer === window) {
+        window.removeEventListener('scroll', handleScroll);
+      } else if (scrollableRef.current) {
+        scrollableRef.current.removeEventListener('scroll', handleScroll);
+      }
     };
-  }, [lastScrollY]);
+  }, [lastScrollY, activeView]);
 
   return (
     <header className={`top-nav ${!isVisible ? 'hidden' : ''}`}>
