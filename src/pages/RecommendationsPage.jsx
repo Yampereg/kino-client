@@ -318,6 +318,7 @@ export default function RecommendationsPage() {
   }, [loading]);
 
   useEffect(() => {
+    console.log('useEffect RUNNING - should only happen ONCE on mount');
     if (!token) {
       navigate("/login");
       return;
@@ -340,8 +341,8 @@ export default function RecommendationsPage() {
     };
 
     startAppSequence();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // ONLY RUN ONCE ON MOUNT
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // CRITICAL: Empty array = run only once on mount, never again
 
   // FIXED: Removed setLoading(true) to prevent blocking modal
   useEffect(() => {
