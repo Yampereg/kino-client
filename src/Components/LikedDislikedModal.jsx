@@ -4,9 +4,9 @@ import FilmDetailModal from "./FilmDetailModal";
 import { fetchLikedFilms, fetchDislikedFilms } from "../api/filmService";
 import "./LikedDislikedModal.css";
 
-// Reusing the loader style locally to ensure it renders correctly
+// Force solid background on the loader so we don't see the page behind it
 const FullScreenLoader = () => (
-  <div className="loading-screen font-kino" style={{ position: 'fixed', inset: 0, zIndex: 3001 }}>
+  <div className="modal-loader-container">
     <div className="loader-content">
       <div className="loader-ring"></div>
       <div className="loader-logo">KINO</div>
@@ -24,16 +24,22 @@ export default function LikedDislikedModal({ type, onClose }) {
   const title = isLiked ? "Liked Films" : "Disliked Films";
 
   useEffect(() => {
-    // Lock body scroll when modal is open
+    // Lock body scroll
     document.body.style.overflow = "hidden";
     
     const loadFilms = async () => {
       try {
         setLoading(true);
-        const data = isLiked ? await fetchLikedFilms() : await fetchDislikedFilms();
+        // Add a small artificial delay to ensure transition isn't jarring
+        // and data is fetched properly
+        const [data] = await Promise.all([
+           isLiked ? fetchLikedFilms() : fetchDislikedFilms(),
+           new Promise(resolve => setTimeout(resolve, 500))
+        ]);
         setFilms(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Failed to fetch films", error);
+        setFilms([]);
       } finally {
         setLoading(false);
       }
@@ -67,7 +73,7 @@ export default function LikedDislikedModal({ type, onClose }) {
 
   return (
     <div className="liked-modal-overlay">
-      {/* Header */}
+      {/* 1. Header is always visible unless loading takes over completely */}
       <div className="liked-modal-header">
         <h1 className="page-title">{title}</h1>
         
@@ -93,15 +99,14 @@ export default function LikedDislikedModal({ type, onClose }) {
         </div>
       </div>
 
-      {/* Loading State */}
-      {loading && <FullScreenLoader />}
-
-      {/* Grid - Only Posters */}
-      {!loading && (
+      {/* 2. Content Area */}
+      {loading ? (
+        <FullScreenLoader />
+      ) : (
         <div className="films-grid">
           {displayedFilms.length > 0 ? (
             displayedFilms.map((film) => {
-               const posterUrl = film.posterPath 
+              const posterUrl = film.posterPath 
                 ? `https://image.tmdb.org/t/p/w500/${film.posterPath}`
                 : film.bannerPath 
                 ? `https://image.tmdb.org/t/p/original/${film.bannerPath}`
@@ -114,11 +119,7 @@ export default function LikedDislikedModal({ type, onClose }) {
                   onClick={() => setSelectedFilm(film)}
                 >
                   {posterUrl ? (
-                    <img 
-                      src={posterUrl} 
-                      alt={film.title} 
-                      loading="lazy"
-                    />
+                    <img src={posterUrl} alt={film.title} loading="lazy"/>
                   ) : (
                     <div className="no-poster">
                       <span>{film.title}</span>
@@ -128,14 +129,15 @@ export default function LikedDislikedModal({ type, onClose }) {
               );
             })
           ) : (
-            <div style={{gridColumn: '1/-1', textAlign: 'center', color: '#666', marginTop: '5rem'}}>
-              No films found.
+            <div className="empty-message">
+              <h2>No films found</h2>
+              <p>Films you {isLiked ? "like" : "dislike"} will appear here.</p>
             </div>
           )}
         </div>
       )}
 
-      {/* Detail Modal */}
+      {/* 3. Detail Modal (Nested) */}
       {selectedFilm && (
         <FilmDetailModal
           film={selectedFilm}
