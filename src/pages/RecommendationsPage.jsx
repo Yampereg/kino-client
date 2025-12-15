@@ -1,3 +1,4 @@
+/* src/pages/RecommendationsPage.jsx */
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -9,6 +10,7 @@ import TopNav from "../Components/TopNav.jsx";
 import ActionButtons from "../Components/ActionButtons";
 import ForYouPage from "./ForYouPage.jsx";
 import SettingsDrawer from "../Components/SettingsDrawer.jsx";
+import LikedDislikedPage from "./LikedDislikedPage.jsx"; // IMPORT ADDED
 
 import "./RecommendationsPage.css";
 
@@ -153,7 +155,6 @@ function HomeRecommendationsView({ films, token, handleInteraction, loadNextBatc
             />
           ) : (
             <div className="empty-state font-kino">
-               {/* FIX: Use Full Screen Loader here if fetching */}
                {isFetchingNext ? (
                  <FullScreenLoader />
                ) : (
@@ -221,6 +222,9 @@ export default function RecommendationsPage() {
   const [activeView, setActiveView] = useState('home');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   
+  // State for Liked/Disliked Modal
+  const [likedModal, setLikedModal] = useState({ open: false, type: 'liked' });
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -379,7 +383,6 @@ export default function RecommendationsPage() {
 
   if (!token) return null;
 
-  // Use the reusable component for the initial main loading
   if (loading) {
     return <FullScreenLoader />;
   }
@@ -422,6 +425,7 @@ export default function RecommendationsPage() {
         onClose={() => setIsDrawerOpen(false)}
         userName={user?.name}
         onLogout={handleLogout}
+        onShowLiked={(type) => setLikedModal({ open: true, type })}
       />
 
       {renderContent()}
@@ -435,6 +439,14 @@ export default function RecommendationsPage() {
           setFilms={modalSource === 'home' ? handleHomeInteraction : handleCarouselListUpdate}
           loadNextBatch={modalSource === 'home' ? loadNextBatch : null}
           showActions={modalSource !== 'popular'}
+        />
+      )}
+
+      {/* Liked / Disliked Modal Overlay */}
+      {likedModal.open && (
+        <LikedDislikedPage 
+          type={likedModal.type} 
+          onClose={() => setLikedModal({ ...likedModal, open: false })} 
         />
       )}
     </>

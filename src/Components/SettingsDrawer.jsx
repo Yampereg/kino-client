@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./SettingsDrawer.css";
 
-export default function SettingsDrawer({ isOpen, onClose, userName, onLogout }) {
+export default function SettingsDrawer({ isOpen, onClose, userName, onLogout, onShowLiked }) {
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,6 +18,15 @@ export default function SettingsDrawer({ isOpen, onClose, userName, onLogout }) 
 
   const handleNavigation = (path) => {
     navigate(path);
+    onClose();
+  };
+
+  const handleLikedClick = (type) => {
+    if (onShowLiked) {
+      onShowLiked(type);
+    } else {
+      navigate(`/${type}`);
+    }
     onClose();
   };
 
@@ -48,17 +57,16 @@ export default function SettingsDrawer({ isOpen, onClose, userName, onLogout }) 
           <div className="nav-item active" onClick={() => handleNavigation("/recommendations")}>
             For You
           </div>
-          <div className="nav-item" onClick={() => handleNavigation("/liked")}>
+          <div className="nav-item" onClick={() => handleLikedClick("liked")}>
             Liked Films
           </div>
-          <div className="nav-item" onClick={() => handleNavigation("/disliked")}>
+          <div className="nav-item" onClick={() => handleLikedClick("disliked")}>
             Disliked Films
           </div>
         </div>
 
         <div className="drawer-footer">
           <button className="logout-btn" onClick={onLogout}>
-            {/* Assuming img src is valid in your project structure */}
             <img src="/logout-icon.svg" alt="" className="btn-icon" />
             <span>Log Out</span>
           </button>

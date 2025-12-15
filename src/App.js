@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import RecommendationsPage from "./pages/RecommendationsPage";
-import LikedDislikedPage from "./pages/LikedDislikedPage"; // New import
 import PrivateRoute from "./Components/PrivateRoute";
 
 function App() {
@@ -27,23 +26,7 @@ function App() {
           }
         />
 
-        <Route
-          path="/liked"
-          element={
-            <PrivateRoute>
-              <LikedDislikedPage type="liked" />
-            </PrivateRoute>
-          }
-        />
-
-        <Route
-          path="/disliked"
-          element={
-            <PrivateRoute>
-              <LikedDislikedPage type="disliked" />
-            </PrivateRoute>
-          }
-        />
+        {/* Routes for /liked and /disliked removed as they are now modals */}
 
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
