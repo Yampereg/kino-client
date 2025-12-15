@@ -22,8 +22,6 @@ export default function SettingsDrawer({ isOpen, onClose, userName, onLogout, on
   };
 
   const handleLikedClick = (type) => {
-    console.log(`SettingsDrawer: Clicked ${type}`); // Debug log
-    
     // 1. Trigger the modal open in the parent
     if (typeof onShowLiked === 'function') {
       onShowLiked(type);

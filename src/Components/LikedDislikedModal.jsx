@@ -42,7 +42,6 @@ export default function LikedDislikedModal({ type, films, onClose }) {
 
   const displayedFilms = getSortedFilms();
 
-  // We use inline styles for the container to guarantee it covers the screen
   return ReactDOM.createPortal(
     <div 
       className="liked-modal-overlay"

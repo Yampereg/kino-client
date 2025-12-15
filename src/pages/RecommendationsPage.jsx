@@ -415,6 +415,7 @@ export default function RecommendationsPage() {
         onClose={() => setIsDrawerOpen(false)}
         userName={user?.name}
         onLogout={handleLogout}
+        // This was likely missing in your file:
         onShowLiked={(type) => {
           console.log("RecommendationsPage: Received request to show", type);
           setLikedModal({ open: true, type });
