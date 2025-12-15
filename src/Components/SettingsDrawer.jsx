@@ -22,6 +22,8 @@ export default function SettingsDrawer({ isOpen, onClose, userName, onLogout, on
   };
 
   const handleLikedClick = (type) => {
+    // If onShowLiked is passed (which it is in RecommendationsPage), use it.
+    // Otherwise fall back to navigation (legacy support).
     if (onShowLiked) {
       onShowLiked(type);
     } else {

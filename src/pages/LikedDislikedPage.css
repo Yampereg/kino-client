@@ -1,18 +1,32 @@
-/* src/Components/LikedDislikedModal.css */
-/* Note: Main overlay styles are inline in JSX to guarantee visibility */
+/* src/pages/LikedDislikedPage.css */
+.interaction-page-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #111;
+  color: #fff;
+  padding: 2rem;
+  font-family: 'KinoFont', sans-serif;
+  box-sizing: border-box;
+  z-index: 2000; /* High z-index to sit on top of everything */
+  overflow-y: auto; /* Enable scrolling within the modal */
+}
 
-.liked-modal-header {
+/* Header */
+.interaction-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 2rem;
+  /* Sticky header within the modal */
   position: sticky;
   top: 0;
   background-color: #111;
-  z-index: 100001;
-  padding: 1rem 0;
+  z-index: 10;
+  padding-bottom: 1rem;
   border-bottom: 1px solid #333;
-  color: #fff;
 }
 
 .page-title {
@@ -51,6 +65,10 @@
   outline: none;
 }
 
+.sort-select:hover {
+  border-color: #666;
+}
+
 /* Exit Button */
 .exit-btn {
   background: none;
@@ -71,12 +89,11 @@
 /* Grid Layout */
 .films-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, 1fr); /* 4 posters per row */
   gap: 1.5rem;
-  padding-bottom: 4rem;
 }
 
-/* Poster Card */
+/* Poster Only Card */
 .grid-poster-card {
   aspect-ratio: 2 / 3;
   background-color: #222;
@@ -88,8 +105,8 @@
 }
 
 .grid-poster-card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.6);
+  transform: scale(1.03);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.5);
   z-index: 2;
 }
 
@@ -108,33 +125,9 @@
   color: #666;
   text-align: center;
   padding: 10px;
-  background: #1a1a1a;
 }
 
-/* Loader Animations */
-.loader-ring {
-  width: 60px;
-  height: 60px;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  border-top: 2px solid #fff;
-  border-radius: 50%;
-  animation: spin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-  margin-bottom: 20px;
-}
-
-.loader-logo {
-  font-size: 1.5rem;
-  font-weight: 900;
-  letter-spacing: 4px;
-  color: #fff;
-  text-align: center;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
+/* Responsive adjustments */
 @media (max-width: 1024px) {
   .films-grid {
     grid-template-columns: repeat(3, 1fr);
@@ -145,7 +138,7 @@
   .films-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  .liked-modal-header {
+  .interaction-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
