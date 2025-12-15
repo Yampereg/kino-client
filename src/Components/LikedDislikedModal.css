@@ -1,37 +1,31 @@
 /* src/Components/LikedDislikedModal.css */
 .liked-modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: #111; /* Solid black background */
+  inset: 0; /* Shorthand for top:0, right:0, bottom:0, left:0 */
+  background-color: #111111;
   color: #fff;
   padding: 2rem;
   font-family: 'KinoFont', sans-serif;
   box-sizing: border-box;
-  z-index: 9999; /* Highest priority */
-  overflow-y: auto;
-  animation: fadeIn 0.3s ease-out;
+  z-index: 10000; /* Higher than everything else */
+  overflow-y: auto; /* Allow scrolling within the modal */
+  animation: fadeIn 0.25s ease-out;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 /* Specific Loader for Modal */
 .modal-loader-container {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: #111;
+  inset: 0;
+  background-color: #111111;
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10000;
+  z-index: 10001; /* Above the header */
 }
 
 /* Header */
@@ -42,8 +36,8 @@
   margin-bottom: 2rem;
   position: sticky;
   top: 0;
-  background-color: #111;
-  z-index: 10;
+  background-color: #111111;
+  z-index: 50;
   padding-bottom: 1rem;
   border-bottom: 1px solid #333;
 }
@@ -110,19 +104,23 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
-  padding-bottom: 2rem;
+  padding-bottom: 4rem;
 }
 
 /* Empty State */
 .empty-message {
   grid-column: 1 / -1;
   text-align: center;
-  color: #888;
-  margin-top: 5rem;
+  color: #666;
+  margin-top: 20vh;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 .empty-message h2 {
   color: #fff;
-  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+  margin: 0;
 }
 
 /* Poster Only Card */
@@ -137,8 +135,8 @@
 }
 
 .grid-poster-card:hover {
-  transform: scale(1.03);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+  transform: scale(1.05);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.6);
   z-index: 2;
 }
 
@@ -157,6 +155,7 @@
   color: #666;
   text-align: center;
   padding: 10px;
+  background: #1a1a1a;
 }
 
 /* Responsive adjustments */
@@ -169,6 +168,7 @@
 @media (max-width: 600px) {
   .films-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
   }
   .liked-modal-header {
     flex-direction: column;
@@ -178,5 +178,8 @@
   .header-controls {
     width: 100%;
     justify-content: space-between;
+  }
+  .exit-btn {
+    order: -1; /* Keep close button easily accessible */
   }
 }
