@@ -246,7 +246,6 @@ export default function RecommendationsPage() {
 
   const [detailFilm, setDetailFilm] = useState(null);
   const [modalSource, setModalSource] = useState(null);
-  const [carouselActionCount, setCarouselActionCount] = useState(0);
 
   const seenFilmIds = useRef(new Set());
 
@@ -415,7 +414,7 @@ export default function RecommendationsPage() {
         onClose={() => setIsDrawerOpen(false)}
         userName={user?.name}
         onLogout={handleLogout}
-        // This was likely missing in your file:
+        // --- THIS PROP WAS MISSING, AND IS REQUIRED FOR THE BUTTON TO WORK ---
         onShowLiked={(type) => {
           console.log("RecommendationsPage: Received request to show", type);
           setLikedModal({ open: true, type });
